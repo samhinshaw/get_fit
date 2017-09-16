@@ -1,0 +1,4 @@
+node_modules
+.DS_Store
+.httr-oauth
+samGStoken.rds

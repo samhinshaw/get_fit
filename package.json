@@ -1,0 +1,31 @@
+{
+  "name": "get_fit",
+  "version": "1.0.0",
+  "description": "Fitness Tracker for Sam & Am",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/samhinshaw/get_fit.git"
+  },
+  "author": "Sam Hinshaw",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/samhinshaw/get_fit/issues"
+  },
+  "homepage": "https://github.com/samhinshaw/get_fit#readme",
+  "dependencies": {
+    "body-parser": "^1.18.1",
+    "express": "^4.15.4",
+    "express-validator": "^4.1.1",
+    "mongojs": "^2.4.1",
+    "nunjucks": "^3.0.1"
+  },
+  "devDependencies": {
+    "eslint": "^4.7.0",
+    "eslint-config-airbnb-base": "^12.0.0",
+    "eslint-plugin-import": "^2.7.0"
+  }
+}

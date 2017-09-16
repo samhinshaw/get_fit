@@ -1,0 +1,39 @@
+body {
+  background-color: #f0f0f0;
+  color: #242424;
+}
+
+.user-panel {
+  padding: 15px;
+}
+
+.user-panel-inner {
+  margin: 10px;
+  padding: 10px;
+}
+
+main-panel-title {
+  float: left;
+}
+
+.points-header {
+  float: right;
+}
+
+div.panel-body :first-child {
+  margin-top: 0;
+}
+
+.masc {
+  background-color: rgba(55, 43, 217, 0.49);
+  border: 1px rgba(55, 43, 217, 0.35) solid;
+}
+
+.fem {
+  background-color: rgba(203, 43, 217, 0.49);
+  border: 1px rgba(203, 43, 217, 0.35) solid;
+}
+
+.user-panel-title {
+  margin-top: 0;
+}
