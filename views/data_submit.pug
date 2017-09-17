@@ -1,0 +1,22 @@
+extends layout
+
+block header
+  h1 #{title}
+
+block content
+  form(method='POST', action='/data/submit')
+    .field
+      label.label Title:
+      .control
+        input.input(name='title', type='text')
+    .field
+      label.label Author:
+      .control.has-icons-left
+        input.input(name='author', type='text')
+        span.icon.is-small.is-left
+          i.fa.fa-check
+    .field
+      label.label Body:
+      .control
+        textarea.textarea(name='body')
+    input.button.is-primary(type='submit', value='submit')

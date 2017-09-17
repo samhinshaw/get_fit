@@ -1,0 +1,12 @@
+extends layout
+
+//- block header
+//-   h1 #{title}
+
+block content
+  //- aside.menu
+  //- p.menu-label Dates
+  //- ul.menu-list
+  ul
+    each date, i in dates
+      li #{date.date.day}-#{date.date.month}-#{date.date.year}, netting #{date.netCals} calories for the day

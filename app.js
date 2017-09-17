@@ -1,123 +1,172 @@
+// bring in express for routing
 const express = require('express');
+const path = require('path'); // core module included with Node.js
 const bodyParser = require('body-parser');
-const path = require('path');
-const nunjucks = require('nunjucks');
-const expressValidator = require('express-validator');
+const mongoose = require('mongoose');
 
-// Databases!
-var mongojs = require('mongojs');
-var db = mongojs('usersapp', ['users']);
+// set prefs
+const port = 8005;
 
-const app = express();
-const isDev = app.get('env') === 'development';
-// const expressNunjucks = require('express-nunjucks');
+// Connect to MongoDB
+// NOTE, this syntax is deprecated
+// http://mongoosejs.com/docs/connections.html#use-mongo-client
+// http://mongoosejs.com/docs/promises.html
+// THIS IS THE NEW SYNTAX
+// promise.then((db) => {});
+// const promise = mongoose.connect('mongodb://localhost/myapp', {
+//   useMongoClient: true,
+// });
+mongoose.connect('mongodb://localhost:27025/get_fit');
+const db = mongoose.connection;
 
-const port = '8005';
-
-const ObjectId = mongojs.ObjectId;
-
-nunjucks.configure('views', {
-  express: app
+// Check connection
+db.once('open', () => {
+  console.log('Connected to MongoDB');
 });
-// app.set('views', path.join(__dirname, 'views'));
+// Check for DB errors
+db.on('error', (err) => {
+  console.log(err);
+});
 
-// so we don't need to specify .njk exts in filenames
-app.set('view engine', 'njk');
+// initialize app
+const app = express();
+const Article = require('./models/article');
+const Date = require('./models/date');
+
+// Load View Engine
+app.set('views', path.join(__dirname, 'views'));
+app.set('view engine', 'pug');
 
 // Look up what these are in the bodyParser documentation
 // bodyParser middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-// middleware for our static assets If we wanted to use a client-side
-// framework, we could put that all in this folder to be sent down.
-// However, in this example we'll be doing server-side rendering.
+// Route for static assests such as CSS and JS
 app.use(express.static(path.join(__dirname, 'public')));
 
-// Global Vars
-app.use((req, res, next) => {
-  res.locals.errors = null;
-  next();
-});
-
-// express form validation
-app.use(
-  expressValidator({
-    errorFormatter: (param, msg, value) => {
-      const namespace = param.split('.'),
-        root = namespace.shift(),
-        formParam = root;
-
-      while (namespace.length) {
-        formParam += '[' + namespace.shift() + ']';
-      }
-      return {
-        param: formParam,
-        msg: msg,
-        value: value
-      };
-    }
-  })
-);
-
-app.get('/', (req, res, next) => {
-  db.users.find(function(err, docs) {
-    res.render('index', {
-      users: docs,
-      title: 'Customers'
-    });
-  });
-});
-
-app.post('/users/add', (req, res) => {
-  req.checkBody('firstName', 'First name is required').notEmpty;
-  req.checkBody('lastName', 'Last name is required').notEmpty;
-  req.checkBody('email', 'Email name is required').notEmpty;
-
-  const validationErrors = req.validationErrors();
-
-  if (validationErrors) {
-    res.render('index', {
-      users: docs,
-      title: 'Customers',
-      errors: validationErrors
-    });
-    console.log('Failure');
-  } else {
-    const newUser = {
-      firstName: req.body.firstName,
-      lastName: req.body.lastName,
-      email: req.body.email
-    };
-    console.log('Success');
-
-    db.users.insert(newUser, (err, result) => {
-      if (err) {
-        console.log(err);
-      } else {
-        res.redirect('/');
-      }
-    });
-  }
-});
-
-app.delete('/users/delete/:id', (req, res) => {
-  db.users.remove(
+// Home Route
+app.get('/', (req, res) => {
+  Article.find(
     {
-      _id: ObjectId(req.params.id)
+      // empty curly braces for blank find function
+      // this will pull ALL results for us
     },
-    (err, result) => {
+    (err, articles) => {
       if (err) {
         console.log(err);
       } else {
-        res.redirect('/');
+        res.render('index', {
+          // Object to send data along with response
+          title: 'Get Fit!',
+          articles
+        });
       }
     }
   );
 });
 
-// look up form validation libraries
+// Route to Sam's Data
+app.get('/sam', (req, res) => {
+  Date.find(
+    {
+      // maybe we'll want a Date object in MongoDB later
+      // maybe logic for date range
+    },
+    (err, dates) => {
+      if (err) {
+        console.log(err);
+      } else {
+        res.render('sam', {
+          // Object to send data along with response
+          title: 'Get Sam Fit!',
+          dates
+        });
+      }
+    }
+  );
+});
 
+// Add a new route for submitting articles Note: For some reason, if this is
+// called AFTER the route for individual articles, the view template 'data' gets
+// called instead. Perhaps something to do with it trying to find an artcile
+// with the `:id`/`._id` of 'submit'?
+app.get('/data/submit', (req, res) => {
+  res.render('data_submit', {
+    title: 'Submit Data'
+  });
+});
+
+// Add route for individual articles
+app.get('/data/:id', (req, res) => {
+  Article.findById(req.params.id, (err, article) => {
+    res.render('data', {
+      article
+    });
+  });
+});
+
+// Add route for editing articles
+app.get('/data/edit/:id', (req, res) => {
+  Article.findById(req.params.id, (err, article) => {
+    res.render('data_edit', {
+      title: 'Edit Article',
+      article
+    });
+  });
+});
+
+// Catch the POST requests from the edit form!
+app.post('/data/edit/:id', (req, res) => {
+  const article = {};
+  article.title = req.body.title;
+  article.author = req.body.author;
+  article.body = req.body.body;
+
+  const query = { _id: req.params.id };
+
+  Article.update(query, article, (err) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.redirect('/');
+    }
+  });
+});
+
+// Catch the POST requests from the submit form!
+app.post('/data/submit', (req, res) => {
+  const article = new Article();
+  article.title = req.body.title;
+  article.author = req.body.author;
+  article.body = req.body.body;
+
+  article.save((err) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.redirect('/');
+    }
+  });
+});
+
+// Deleting is more difficult! With our forms and buttons we can only process
+// POST and GET requests, but we want to process a DELETE request! So we'll have
+// to use AJAX
+
+app.delete('/article/:id', (req, res) => {
+  const query = { _id: req.params.id };
+
+  Article.remove(query, (err) => {
+    if (err) {
+      console.log(err);
+    }
+
+    res.send('Success'); // by default will send 200
+  });
+});
+
+// Start Server
 app.listen(port, () => {
-  console.log('Server started in port ' + port);
+  console.log(`Server started on port ${port}`);
 });

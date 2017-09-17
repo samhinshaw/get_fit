@@ -5,6 +5,13 @@ import json
 import feather
 import pandas as pd
 import csv
+# import pymongo
+# from pymongo import MongoClient
+
+# client = MongoClient('mongodb://localhost:27025/')
+# db = client.get_fit
+# sam = db.sam
+
 # import os.path
 
 # sys.argv[0] - script name
@@ -30,6 +37,7 @@ samCals = datesOfInterest
 
 # Define function with error handling to map IDs to reactions_of_compound
 
+
 # was getting error trying to include the MFP client object as an argument, so embedded it into the function definition instead
 def mapDatesToSamCals(year, month, day):
     try:
@@ -38,6 +46,7 @@ def mapDatesToSamCals(year, month, day):
         return calsOnDate
     except:
         return None
+
 
 def mapDatesToSamCalsBurnt(year, month, day):
     try:
@@ -49,6 +58,7 @@ def mapDatesToSamCalsBurnt(year, month, day):
     except:
         return None
 
+
 def mapDatesToSamExercise(year, month, day):
     try:
         dateExercise = samMFP.get_exercise(year, month, day)
@@ -56,24 +66,38 @@ def mapDatesToSamExercise(year, month, day):
         df = []
         if len(dateExercise[0].entries) > 0:
             for n in range(0, len(dateExercise[0].entries)):
-                df.append({'name': dateExercise[0].entries[n].name, 'minutes': dateExercise[0].entries[n]['minutes'], 'cals': dateExercise[0].entries[n]['calories burned']})
+                df.append({
+                    'name': dateExercise[0].entries[n].name,
+                    'minutes': dateExercise[0].entries[n]['minutes'],
+                    'cals': dateExercise[0].entries[n]['calories burned']
+                })
             with open(catFilename, 'w') as outfile:
-                    json.dump(df, outfile)
+                json.dump(df, outfile)
         else:
             return None
     except:
         return None
 
+
 print 'Pulling meal information for Sam...'
 samCals["cals"] = ""
-samCals["cals"] = samCals.apply(lambda l: map(mapDatesToSamCals, samCals['year'], samCals['month'], samCals['date']))
+samCals["cals"] = samCals.apply(
+    lambda l: map(mapDatesToSamCals, samCals['year'], samCals['month'], samCals['date'])
+)
 
 # print 'Pulling calories burnt information for Sam...'
 # samCals["calsBurnt"] = ""
 # samCals["calsBurnt"] = samCals.apply(lambda l: map(mapDatesToSamCalsBurnt, samCals['year'], samCals['month'], samCals['date']))
 
 print 'Pulling exercise information for Sam...'
-samCals.apply(lambda l: map(mapDatesToSamExercise, samCals['year'], samCals['month'], samCals['date']))
+samCals.apply(
+    lambda l: map(mapDatesToSamExercise, samCals['year'], samCals['month'], samCals['date'])
+)
+
+# write to MongoDB
+# first convert pandas DF to JSON
+# samSummary = samCals.to_json()
+# sam.insert_one(samSummary)
 
 feather.write_dataframe(samCals, 'temp/sam_MFP_calories.feather')
 
@@ -85,6 +109,7 @@ amCals = datesOfInterest
 
 # Define function with error handling to map IDs to reactions_of_compound
 
+
 # was getting error trying to include the MFP client object as an argument, so embedded it into the function definition instead
 def mapDatesToAmCals(year, month, day):
     try:
@@ -93,6 +118,7 @@ def mapDatesToAmCals(year, month, day):
         return calsOnDate
     except:
         return None
+
 
 def mapDatesToAmCalsBurnt(year, month, day):
     try:
@@ -104,9 +130,12 @@ def mapDatesToAmCalsBurnt(year, month, day):
     except:
         return None
 
+
 print 'Pulling meal information for Amelia...'
 amCals["cals"] = ""
-amCals["cals"] = amCals.apply(lambda l: map(mapDatesToAmCals, amCals['year'], amCals['month'], amCals['date']))
+amCals["cals"] = amCals.apply(
+    lambda l: map(mapDatesToAmCals, amCals['year'], amCals['month'], amCals['date'])
+)
 
 # print 'Pulling calories burned information for Amelia...'
 # amCals["calsBurnt"] = ""

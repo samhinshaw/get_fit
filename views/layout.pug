@@ -1,0 +1,39 @@
+doctype html
+html
+  head
+    title Get Fit!
+    link(rel='stylesheet', href='/bower_components/bulma/css/bulma.css')
+    link(rel='stylesheet', href='/bower_components/font-awesome/css/font-awesome.min.css')
+    link(rel='stylesheet', href='/css/styles.css')
+
+  body.Site
+    nav.navbar.has-shadow
+      .container
+        .navbar-brand
+          a.navbar-item(href='/')
+            img(src="/images/sam_avatar.png", alt="Sam Hinshaw", height="28")
+          div.navbar-burger(data-target='navMenu')
+            span
+            span
+            span
+        #navMenu.navbar-menu
+          .navbar-start
+            a.navbar-item(href="/data/submit") Submit
+          .navbar-end
+    .section.section
+      header.header
+        .container.has-text-centered
+          .content
+            block header
+              h1.title #{title}
+    .Site-content
+      .container.is-fluid
+        .content
+          section.section
+            block content
+              p Text text text text
+    footer
+      hr
+      p Copyright &copy; 2017
+    script(type='text/javascript', src='/bower_components/jquery/dist/jquery.min.js')
+    script(type='text/javascript', src='/js/client.js')
