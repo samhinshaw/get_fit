@@ -10,7 +10,7 @@ const Article = require('../models/article');
 // Print in the page info we're using to style the page with Bulma
 const pageInfo = {
   heroType: 'success',
-  route: '/data'
+  route: 'data'
 };
 
 // Print in the user info we're using to style the page with Bulma

@@ -27,7 +27,7 @@ const today = {
 // Print in the page info we're using to style the page with Bulma
 const pageInfo = {
   heroType: 'info',
-  route: '/amelia'
+  route: 'amelia'
 };
 
 // Print in the user info we're using to style the page with Bulma

@@ -4,34 +4,52 @@ block header
   p.title
     | Amelia's Fitness
   p.subtitle
-    | Working hard towards that 
-    strong perfect tight booty, 
+    | Working hard towards a 
+    strong tight round booty, 
     |  Kelly tape by Kelly tape!
 
+block subnav
+  nav.navbar.has-shadow.is-white
+    .container
+      .navbar-tabs
+        a.navbar-item.is-tab.is-active(href='#')
+          | General
+        a.navbar-item.is-tab(href='#')
+          | Weight
+        a.navbar-item.is-tab(href='#')
+          | Spend Points
+
 block content
-  p To Do: Make this a form with POST method for updating a range of dates. 
-  ul 
-    li Today
-    li Last Week
-    li Last Two Weeks
-  p To Do: Allow a range of dates to be shown
-  p To Do: Handle Python Errors Better
-  ul
-    li Allow python to return empty object if no data yet (figure out which step error is coming from)
-  .control
-    button.button.is-small.is-info.is-pulled-left.update-entry(data-year=today.year, data-month=today.month, data-day=today.day) Get Today
-    button.button.is-small.is-info.is-pulled-left.update-entry(data-year=today.year, data-month=today.month, data-day='19') Get Tomorrow
+  //- p To Do: Make this a form with POST method for updating a range of dates. 
+  //- ul 
+  //-   li Today
+  //-   li Last Week
+  //-   li Last Two Weeks
+  //- p To Do: Allow a range of dates to be shown
+  //- p To Do: Handle Python Errors Better
+  //- ul
+  //-   li Allow python to return empty object if no data yet (figure out which step error is coming from)
+  .field.is-grouped
+    .control
+      button.button.is-small.is-info.is-pulled-left.update-entry(data-year=today.year, data-month=today.month, data-day=today.day) 
+        | Get Today
+    .control
+      button.button.is-small.is-info.is-pulled-left.update-entry(data-year=today.year, data-month=today.month, data-day='19') 
+        | Get Tomorrow
   br
 
 block data
   aside.menu
-    p.menu-label Dates
+    p.menu-label 
+      | Dates
     ul.menu-list
       each date, i in dates
         li
-          button.button.is-small.is-info.is-pulled-right.update-entry(data-id=date._id, data-year=date.date.year, data-month=date.date.month, data-day=date.date.day) Update Entry
-          a #{date.date.month}-#{date.date.day}-#{date.date.year}, netting #{date.netCals} calories for the day
-            if date.date.year === today.year && date.date.month === today.month && date.date.day === today.day
+          button.button.is-small.is-info.is-pulled-right.update-entry(data-id=date._id, data-year=date.date.year, data-month=date.date.month, data-day=date.date.day) 
+            | Update Entry
+          a 
+            | #{date.date.month}-#{date.date.day}-#{date.date.year}, netting #{date.netCals} calories for the day
+            //- if date.date.year === today.year && date.date.month === today.month && date.date.day === today.day
               span.tag.is-dark Today
               span.tag.is-success #{today.dayOfWeek}
             if date.exercise.length > 0

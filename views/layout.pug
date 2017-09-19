@@ -60,14 +60,14 @@ html
               //- https://github.com/pugjs/pug/issues/240
               li(class=(pageInfo.route === "/"  ? 'is-active' : false))
                 a(href="/") Home
-              li(class=(pageInfo.route === "/data" ? 'is-active' : false))
-                a(href="/data/submit") Submit
-              li(class=(pageInfo.route === "/sam" ? 'is-active' : false))
+              //- li(class=(pageInfo.route === "data" ? 'is-active' : false))
+              //-   a(href="/data/submit") Submit
+              li(class=(pageInfo.route === "sam" ? 'is-active' : false))
                 a(href="/sam") 
                   | Sam
                   span.tag(style='margin-left: 1em;', class='is-' + userInfo.sam.pointsClass)
                     | #{userInfo.sam.points}
-              li(class=(pageInfo.route === "/amelia" ? 'is-active' : false))
+              li(class=(pageInfo.route === "amelia" ? 'is-active' : false))
                 a(href="/amelia")
                   | Amelia
                   span.tag(style='margin-left: 1em;', class='is-' + userInfo.amelia.pointsClass)   

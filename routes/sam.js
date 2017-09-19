@@ -7,6 +7,7 @@ const startOfToday = require('date-fns/start_of_today');
 const getYear = require('date-fns/get_year');
 const getMonth = require('date-fns/get_month');
 const getDate = require('date-fns/get_date');
+const parse = require('date-fns/parse');
 // const getDay = require('date-fns/get_day');
 const format = require('date-fns/format');
 
@@ -21,13 +22,13 @@ const today = {
   year: getYear(theStartOfToday),
   month: getMonth(theStartOfToday) + 1, // indexed to 0 FOR SOME REASON
   day: getDate(theStartOfToday),
-  dayOfWeek: format(theStartOfToday, 'dddd')
+  dayOfWeek: format(theStartOfToday, 'ddd')
 };
 
 // Print in the page info we're using to style the page with Bulma
 const pageInfo = {
   heroType: 'warning',
-  route: '/sam'
+  route: 'sam'
 };
 
 // Print in the user info we're using to style the page with Bulma
