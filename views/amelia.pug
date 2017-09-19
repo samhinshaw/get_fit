@@ -1,15 +1,17 @@
-extends layout
+extends partials/layout
 
 block header
   p.title
-    | Amelia's Fitness
+    | Amelia
   p.subtitle
-    | Working hard towards a 
-    strong tight round booty, 
-    |  Kelly tape by Kelly tape!
+    | Working towards a 
+    strong tight round booty
+    |  🍑 step by step!
 
+//- This could be an include, but leaving it here will
+//- allow us to work with the 'is-active' logic better
 block subnav
-  nav.navbar.has-shadow.is-white
+  nav#amelia-subnav.navbar.has-shadow.is-white
     .container
       .navbar-tabs
         a.navbar-item.is-tab.is-active(href='#')
@@ -20,50 +22,43 @@ block subnav
           | Spend Points
 
 block content
-  //- p To Do: Make this a form with POST method for updating a range of dates. 
-  //- ul 
-  //-   li Today
-  //-   li Last Week
-  //-   li Last Two Weeks
-  //- p To Do: Allow a range of dates to be shown
-  //- p To Do: Handle Python Errors Better
-  //- ul
-  //-   li Allow python to return empty object if no data yet (figure out which step error is coming from)
+  //- Set up date information here. 
+  //- Unfortunately this can't be done at the top level of an extending template
+  - const moment = require('moment');
+  - moment().format();
+
+  - const now = moment.utc();
+  - const today = now.clone().startOf('day');
+  - const todayPretty = today.format('YYYY-MM-DD');
+
+  - const tomorrow = today.clone().add(1, 'day');
+  - const tomorrowPretty = tomorrow.format('YYYY-MM-DD');
+
   .field.is-grouped
     .control
-      button.button.is-small.is-info.is-pulled-left.update-entry(data-year=today.year, data-month=today.month, data-day=today.day) 
-        | Get Today
+      button.button.is-small.is-info.is-pulled-left.update-entry(data-date=todayPretty) Get Today
     .control
-      button.button.is-small.is-info.is-pulled-left.update-entry(data-year=today.year, data-month=today.month, data-day='19') 
-        | Get Tomorrow
+      button.button.is-small.is-info.is-pulled-left.update-entry(data-date=tomorrowPretty) Get Tomorrow
   br
 
 block data
   aside.menu
-    p.menu-label 
-      | Dates
+    p.menu-label Entries
     ul.menu-list
-      each date, i in dates
+      each entry, i in entries
+        - const entryDate = moment.utc(entry.date);
+        - const datePretty = entryDate.format('YYYY-MM-DD');
+        - const dateHuman = entryDate.format('MM-DD-YYYY');
         li
-          button.button.is-small.is-info.is-pulled-right.update-entry(data-id=date._id, data-year=date.date.year, data-month=date.date.month, data-day=date.date.day) 
-            | Update Entry
-          a 
-            | #{date.date.month}-#{date.date.day}-#{date.date.year}, netting #{date.netCals} calories for the day
-            //- if date.date.year === today.year && date.date.month === today.month && date.date.day === today.day
+          button.button.is-small.is-info.is-pulled-right.update-entry(data-id=entry._id, data-date=datePretty) Update Entry
+          a #{dateHuman}, netting #{entry.netCals} calories for the day
+            //- Could also check datePretty vs todayPretty
+            //- This will check Date object vs Date object
+            //- It may be more error prone, but also much more specific
+            if entry.date === today
               span.tag.is-dark Today
               span.tag.is-success #{today.dayOfWeek}
-            if date.exercise.length > 0
+            if entry.exercise.length > 0
             ul.menu-list
-              each exercise, i in date.exercise
+              each exercise, i in entry.exercise
                 li #{exercise.name}, (#{exercise.minutes}mins, #{exercise.cals}cals)
-  //- aside.menu
-  //- p.menu-label Dates
-  //- ul.menu-list
-  //- ul
-    each date, i in dates
-      li #{date.date.day}-#{date.date.month}-#{date.date.year}, netting #{date.netCals} calories for the day
-        button.button.is-small.is-info.update-entry(data-id=date._id, data-year=date.date.year, data-month=date.date.month, data-day=date.date.day) Update Entry
-  //- form(method='POST', action='/sam/submit')
-  //-   .field
-  //-     .control
-  //-       input.button.is-primary(type='submit', value='Submit')

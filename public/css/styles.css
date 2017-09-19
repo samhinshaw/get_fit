@@ -46,3 +46,22 @@
 .is-hidden {
   display: none;
 }
+
+/* Manually replace the variable $navbar-item-active-color */
+#sam-subnav .navbar-item.is-tab {
+  color: whitesmoke;
+}
+
+#sam-subnav .navbar-item.is-tab.is-active {
+  /* background-color: #292929; */
+  font-weight: 600;
+  border-bottom-color: whitesmoke;
+  color: whitesmoke;
+}
+
+#amelia-subnav .navbar-item.is-tab.is-active {
+  /* background-color: #292929; */
+  font-weight: 600;
+  border-bottom-color: #3273dc;
+  color: #3273dc;
+}

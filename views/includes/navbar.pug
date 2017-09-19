@@ -1,0 +1,27 @@
+nav.navbar.is-info
+  .container
+    .navbar-brand
+      a.navbar-item(href='/')
+        img(src="/images/sam_avatar.png", alt="Sam Hinshaw", height="28")
+      div.navbar-burger(data-target='navMenu')
+        span
+        span
+        span
+    #navMenu.navbar-menu
+      .navbar-start
+        a.navbar-item(href="/data/submit") Submit
+        a.navbar-item(href="/sam") Sam
+        a.navbar-item(href="/amelia") Amelia
+      .navbar-end
+        .navbar-item
+          .field.is-grouped
+            p.control
+              a.button.is-primary(href='/users/login')
+                span.icon
+                  i.mdi.mdi-light.mdi-account
+                span Login
+            p.control
+              a.button.is-info(href='/users/register')
+                span.icon
+                  i.mdi.mdi-light.mdi-account-plus
+                span Register
