@@ -1,7 +1,7 @@
 extends layout
 
-block header
-  h1 #{title}
+//- block header
+  //- h1.title Submit Data
 
 block content
   form(method='POST', action='/data/submit')
@@ -14,9 +14,10 @@ block content
       .control.has-icons-left
         input.input(name='author', type='text')
         span.icon.is-small.is-left
-          i.fa.fa-check
+          i.mdi.mdi-check.mdi-dark
     .field
       label.label Body:
       .control
         textarea.textarea(name='body')
-    input.button.is-primary(type='submit', value='submit')
+    input.button.is-primary(type='submit', value='Submit')
+

@@ -9,26 +9,26 @@ const handlers = {
     // Check if there are any nav burgers
     if (navbarBurgers.length > 0) {
       // Add a click event on each of them
-      navbarBurgers.forEach((el) => {
-        el.addEventListener('click', () => {
+      navbarBurgers.forEach((element) => {
+        element.addEventListener('click', () => {
           // Get the target from the "data-target" attribute
-          let target = el.dataset.target;
+          let target = element.dataset.target;
           target = document.getElementById(target);
 
           // Toggle the class on both the "navbar-burger" and the "navbar-menu"
-          el.classList.toggle('is-active');
+          element.classList.toggle('is-active');
           target.classList.toggle('is-active');
         });
       });
     }
   },
   deleteArticle: () => {
-    $('.delete-article').on('click', (e) => {
-      $target = $(e.target);
+    $('.delete-article').on('click', (event) => {
+      $target = $(event.target);
       const id = $target.attr('data-id');
       $.ajax({
         type: 'DELETE',
-        url: `/article/${id}`,
+        url: `/data/${id}`,
         success: (res) => {
           alert('Deleting Article');
           window.location.href = '/';
@@ -38,6 +38,53 @@ const handlers = {
         }
       });
     });
+  },
+  updateEntry: () => {
+    $('.update-entry').on('click', (event) => {
+      // Get the Dates
+      // const id = $(event.target).attr('data-id');
+      const year = $(event.target).attr('data-year');
+      const month = $(event.target).attr('data-month');
+      const day = $(event.target).attr('data-day');
+      // Add the loading class
+      $(event.target).addClass('is-loading');
+      // Make the AJAX request to update the entry
+      $.ajax({
+        type: 'POST',
+        url: `/sam/${year}/${month}/${day}`,
+        // handle successes!
+        success: (res) => {
+          // alert('Updating Entry...');
+          window.location.reload();
+          // window.location.href = '#';
+        },
+        // handle errors
+        error: (err) => {
+          console.log(err);
+          window.location.reload();
+        }
+      });
+    });
+  },
+  dismissNotification: () => {
+    $('.messages').on('click', (event) => {
+      // before we delete anything, check to see if this is the last alert
+      if (
+        $(event.target)
+          .parent()
+          .siblings().length === 0
+      ) {
+        // if it's the last alert, remove the entire .messages section
+        $(event.currentTarget)
+          .addClass('is-hidden')
+          .remove();
+      } else {
+        $(event.target)
+          .parent()
+          .addClass('is-hidden')
+          .remove();
+      }
+    });
   }
 };
 
@@ -45,4 +92,6 @@ const handlers = {
 document.addEventListener('DOMContentLoaded', () => {
   handlers.toggleNavBarBurger();
   handlers.deleteArticle();
+  handlers.dismissNotification();
+  handlers.updateEntry();
 });

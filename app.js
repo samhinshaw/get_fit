@@ -3,6 +3,9 @@ const express = require('express');
 const path = require('path'); // core module included with Node.js
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
+const session = require('express-session');
+const expressValidator = require('express-validator');
+const flash = require('connect-flash');
 
 // set prefs
 const port = 8005;
@@ -45,6 +48,67 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // Route for static assests such as CSS and JS
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Middleware for Lesson 8, Messaging & Validation
+// Session Handling Middleware
+app.use(session({
+  secret: 'little chessie',
+  resave: true,
+  saveUninitialized: true
+  // cookie: { secure: true }
+}));
+
+// Messages Middleware (pretty client messaging)
+app.use(require('connect-flash')());
+
+app.use((req, res, next) => {
+  res.locals.messages = require('express-messages')(req, res);
+  next();
+});
+
+// Form Validation Middleware
+app.use(expressValidator({
+  errorFormatter: (param, msg, value) => {
+    const namespace = param.split('.');
+    const root = namespace.shift();
+    let formParam = root;
+
+    while (namespace.length) {
+      formParam += `[${namespace.shift()}]`;
+    }
+    return {
+      param: formParam,
+      msg,
+      value
+    };
+  }
+}));
+
+// Print in the page info we're using to style the page with Bulma
+const pageInfo = {
+  heroType: 'dark',
+  route: '/'
+};
+
+// Print in the user info we're using to style the page with Bulma
+const userInfo = {
+  sam: {
+    points: 3,
+    pointsClass: 'danger'
+  },
+  amelia: {
+    points: 0,
+    pointsClass: 'danger'
+  }
+};
+
+// Use middleware to modify locals object (makes available to view engine!)
+// https://stackoverflow.com/questions/12550067/expressjs-3-0-how-to-pass-res-locals-to-a-jade-view
+app.use((req, res, next) => {
+  res.locals.pageInfo = pageInfo;
+  res.locals.userInfo = userInfo;
+  next();
+});
+
 // Home Route
 app.get('/', (req, res) => {
   Article.find(
@@ -66,105 +130,16 @@ app.get('/', (req, res) => {
   );
 });
 
-// Route to Sam's Data
-app.get('/sam', (req, res) => {
-  Date.find(
-    {
-      // maybe we'll want a Date object in MongoDB later
-      // maybe logic for date range
-    },
-    (err, dates) => {
-      if (err) {
-        console.log(err);
-      } else {
-        res.render('sam', {
-          // Object to send data along with response
-          title: 'Get Sam Fit!',
-          dates
-        });
-      }
-    }
-  );
-});
+// Bring in route files
+const data = require('./routes/data');
+const users = require('./routes/users');
+const sam = require('./routes/sam');
+const amelia = require('./routes/amelia');
 
-// Add a new route for submitting articles Note: For some reason, if this is
-// called AFTER the route for individual articles, the view template 'data' gets
-// called instead. Perhaps something to do with it trying to find an artcile
-// with the `:id`/`._id` of 'submit'?
-app.get('/data/submit', (req, res) => {
-  res.render('data_submit', {
-    title: 'Submit Data'
-  });
-});
-
-// Add route for individual articles
-app.get('/data/:id', (req, res) => {
-  Article.findById(req.params.id, (err, article) => {
-    res.render('data', {
-      article
-    });
-  });
-});
-
-// Add route for editing articles
-app.get('/data/edit/:id', (req, res) => {
-  Article.findById(req.params.id, (err, article) => {
-    res.render('data_edit', {
-      title: 'Edit Article',
-      article
-    });
-  });
-});
-
-// Catch the POST requests from the edit form!
-app.post('/data/edit/:id', (req, res) => {
-  const article = {};
-  article.title = req.body.title;
-  article.author = req.body.author;
-  article.body = req.body.body;
-
-  const query = { _id: req.params.id };
-
-  Article.update(query, article, (err) => {
-    if (err) {
-      console.log(err);
-    } else {
-      res.redirect('/');
-    }
-  });
-});
-
-// Catch the POST requests from the submit form!
-app.post('/data/submit', (req, res) => {
-  const article = new Article();
-  article.title = req.body.title;
-  article.author = req.body.author;
-  article.body = req.body.body;
-
-  article.save((err) => {
-    if (err) {
-      console.log(err);
-    } else {
-      res.redirect('/');
-    }
-  });
-});
-
-// Deleting is more difficult! With our forms and buttons we can only process
-// POST and GET requests, but we want to process a DELETE request! So we'll have
-// to use AJAX
-
-app.delete('/article/:id', (req, res) => {
-  const query = { _id: req.params.id };
-
-  Article.remove(query, (err) => {
-    if (err) {
-      console.log(err);
-    }
-
-    res.send('Success'); // by default will send 200
-  });
-});
+app.use('/data', data);
+app.use('/users', users);
+app.use('/sam', sam);
+app.use('/amelia', amelia);
 
 // Start Server
 app.listen(port, () => {

@@ -1,0 +1,8 @@
+//- Include for Messaging!
+section.section.messages
+  .container
+    each type in Object.keys(messages)
+      each message in messages[type]
+        div(class='notification is-'+type)
+          button.delete
+          p #{message}

@@ -10,9 +10,39 @@
   flex: 1;
 }
 
-/* for some reason need to manually remove bulled points */
-ul.is-unstyled {
+/* need to manually remove bulled points if menu-list is within .content div */
+/* ul.is-unstyled {
   list-style: none;
   margin: 0;
   padding: 0;
+  list-style-type: none;
+} */
+
+/* Give titles some more room to breathe! */
+.title {
+  font-size: 10vmin;
+  /* fixed with proper section usage */
+  /* margin: 0.67em 0; */
+}
+
+/* Make footer margins wayyy smaller */
+.footer {
+  padding: 1.5rem;
+}
+
+/* Specifically, make the messages section have no bottom padding */
+.messages {
+  padding-bottom: 0;
+}
+
+/* Add CSS for handling removal of Bulma notifications */
+.notification > button.delete {
+  border: none;
+  border-radius: 0;
+  top: 0;
+  right: 0;
+}
+
+.is-hidden {
+  display: none;
 }

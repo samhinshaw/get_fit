@@ -6,7 +6,7 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
-// Article Schema
+// Date Schema
 
 const dateSchema = new Schema(
   {

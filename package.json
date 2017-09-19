@@ -17,13 +17,21 @@
   },
   "homepage": "https://github.com/samhinshaw/get_fit#readme",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.1",
+    "connect-flash": "^0.1.1",
+    "date-fns": "^1.28.5",
     "express": "^4.15.4",
     "express-messages": "^1.0.1",
+    "express-session": "^1.15.5",
     "express-validator": "^4.1.1",
+    "lodash": "^4.17.4",
     "mongoose": "^4.11.11",
     "nunjucks": "^3.0.1",
-    "pug": "^2.0.0-rc.4"
+    "passport": "^0.4.0",
+    "passport-local": "^1.0.0",
+    "pug": "^2.0.0-rc.4",
+    "python-shell": "^0.4.0"
   },
   "devDependencies": {
     "eslint": "^4.7.0",
