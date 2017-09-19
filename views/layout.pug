@@ -72,7 +72,8 @@ html
                   | Amelia
                   span.tag(style='margin-left: 1em;', class='is-' + userInfo.amelia.pointsClass)   
                     | #{userInfo.amelia.points}
-    nav.navbar.has-shadow.is-white
+    block subnav
+    //- nav.navbar.has-shadow.is-white
       .container
         .navbar-tabs
           a.navbar-item.is-tab.is-active(href='http://bulma.io/documentation/form/general/')
