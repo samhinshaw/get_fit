@@ -43,15 +43,13 @@ const handlers = {
     $('.update-entry').on('click', (event) => {
       // Get the Dates
       // const id = $(event.target).attr('data-id');
-      const year = $(event.target).attr('data-year');
-      const month = $(event.target).attr('data-month');
-      const day = $(event.target).attr('data-day');
+      const date = $(event.target).attr('data-date');
       // Add the loading class
       $(event.target).addClass('is-loading');
       // Make the AJAX request to update the entry
       $.ajax({
         type: 'POST',
-        url: `/sam/${year}/${month}/${day}`,
+        url: `/sam/${date}`,
         // handle successes!
         success: (res) => {
           // alert('Updating Entry...');

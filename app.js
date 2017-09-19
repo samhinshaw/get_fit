@@ -33,8 +33,11 @@ db.on('error', (err) => {
 
 // initialize app
 const app = express();
+
+// Load MongoDB Models
 const Article = require('./models/article');
-const Date = require('./models/date');
+// const Sam = require('./models/sam');
+// const Amelia = require('./models/amelia');
 
 // Load View Engine
 app.set('views', path.join(__dirname, 'views'));

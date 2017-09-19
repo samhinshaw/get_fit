@@ -8,10 +8,10 @@ const Schema = mongoose.Schema;
 
 // Date Schema
 
-const dateSchema = new Schema(
+const samSchema = new Schema(
   {
     date: {
-      type: Schema.Types.Mixed,
+      type: Date,
       required: true
     },
     totalCals: {
@@ -29,10 +29,14 @@ const dateSchema = new Schema(
     netCals: {
       type: Number,
       required: true
+    },
+    isEmpty: {
+      type: Boolean,
+      required: true
     }
   },
   { collection: 'sam' }
 );
 
-const Date = mongoose.model('date', dateSchema);
-module.exports = Date;
+const Sam = mongoose.model('sam', samSchema);
+module.exports = Sam;
