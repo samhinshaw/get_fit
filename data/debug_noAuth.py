@@ -63,7 +63,7 @@ iconDict = json.loads(parsedDict)['icons']
 exerTypeDict = json.loads(parsedDict)['exerciseTypes']
 
 
-### Define Logic to Save Authenticated Session ###
+## Define Logic to Save Authenticated Session ###
 def save_object(obj, filename):
     with open(filename, 'wb') as output:
         pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
@@ -156,7 +156,6 @@ if len(exerEntries) > 0:
         exerName = exerEntries[n].name.lower()
         exerMins = exerEntries[n]['minutes']
         exerCals = exerEntries[n]['calories burned']
-        print 'Original Name: ' + exerName.lower()
 
         exerciseHits = []
         # check for exercises and set name to key
@@ -172,25 +171,27 @@ if len(exerEntries) > 0:
                 exerciseHits.extend([exerciseDict[matchedEx]])
 
         # After searching, if no hits keep original
-        print exerciseHits
         if len(exerciseHits) == 0:
             renamedEx = exerName
         elif len(exerciseHits) == 1:
             renamedEx = exerciseHits[0]
         elif len(exerciseHits) > 1:
-            print "We found more than one hit for this exercise. Reevaluate your search or matching method!"
-            renamedEx = exerName
+            print("We found more than one hit for this exercise. '" + exerName
+                  + "' mapped to all of these hits: " + ', '.join(exerciseHits)
+                  + ". By default, we will map to the first hit, " +
+                  exerciseHits[0])
+            renamedEx = exerciseHits[0]
         else:
+            print "No hits!"
             renamedEx = exerName
 
         # Assign icons. We have already assigned sanitized names, so we can do a
         # simply dictionary replacement.
-        exerIcon = iconDict[renamedEx]
+        try:
+            exerIcon = iconDict[renamedEx]
         # if no hits, use generic exercise icons
-        if exerIcon is None:
+        except:
             exerIcon = 'exercise.png'
-
-        print "Icon Name: " + exerIcon
 
         # award points based on workout type
         if renamedEx in exerTypeDict["coolDown"]:

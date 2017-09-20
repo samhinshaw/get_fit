@@ -8,7 +8,7 @@ from __future__ import division
 import sys  # for system operations such as exit status codes
 import re  # regex library
 import json  # for parsing json
-# import pickle  # for saving
+import pickle  # for saving
 # import os
 # import feather
 # import pandas as pd
@@ -62,10 +62,12 @@ exerciseDict = json.loads(parsedDict)['exercises']
 iconDict = json.loads(parsedDict)['icons']
 exerTypeDict = json.loads(parsedDict)['exerciseTypes']
 
-### Define Logic to Save Authenticated Session ###
-# def save_object(obj, filename):
-#     with open(filename, 'wb') as output:
-#         pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
+
+## Define Logic to Save Authenticated Session ###
+def save_object(obj, filename):
+    with open(filename, 'wb') as output:
+        pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
+
 
 print 'Connecting to MongoDB database...'
 client = MongoClient('mongodb://localhost:27025/')
@@ -75,15 +77,15 @@ db = client.get_fit
 if user == 'sam':
     collection = db.sam
     # with open('data/samMFPClient.pkl', 'rb') as input:
-    # MFPclient = pickle.load(input)
+    #     MFPclient = pickle.load(input)
     MFPclient = myfitnesspal.Client('jetknife')
-    # save_object(MFPclient, 'data/samMFPClient.pkl')
+    save_object(MFPclient, 'data/samMFPClient.pkl')
 elif user == 'amelia':
     collection = db.amelia
     # with open('data/ameliaMFPClient.pkl', 'rb') as input:
-    # MFPclient = pickle.load(input)
+    #     MFPclient = pickle.load(input)
     MFPclient = myfitnesspal.Client('ameliaho')
-    # save_object(MFPclient, 'data/ameliaMFPClient.pkl')
+    save_object(MFPclient, 'data/ameliaMFPClient.pkl')
 else:
     sys.exit('Could not find user "' + user + '" in the database.')
 
@@ -174,8 +176,11 @@ if len(exerEntries) > 0:
         elif len(exerciseHits) == 1:
             renamedEx = exerciseHits[0]
         elif len(exerciseHits) > 1:
-            print "We found more than one hit for this exercise. Reevaluate your search or matching method!"
-            renamedEx = exerName
+            print("We found more than one hit for this exercise. '" + exerName
+                  + "' mapped to all of these hits: " + ', '.join(exerciseHits)
+                  + ". By default, we will map to the first hit, " +
+                  exerciseHits[0])
+            renamedEx = exerciseHits[0]
         else:
             print "No hits!"
             renamedEx = exerName
