@@ -4,3 +4,4 @@ node_modules
 samGStoken.rds
 .Rproj.user
 .vscode
+*.pkl
