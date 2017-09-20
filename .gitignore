@@ -3,3 +3,4 @@ node_modules
 .httr-oauth
 samGStoken.rds
 .Rproj.user
+.vscode
