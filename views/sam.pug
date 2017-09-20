@@ -56,7 +56,7 @@ block data
         .content
           p
             strong= dateHuman
-            //- small  &middot; @johnsmith
+            small  &middot; #{entry.points} pts
             //- small  &middot; 31m
             br
             //- First check to see if this entry was reported empty
@@ -76,13 +76,13 @@ block data
             //- Could also check datePretty vs todayPretty
             //- This will check Date object vs Date object
             //- It may be more error prone, but also much more specific
-            if entry.date === today
-              span.tag.is-dark Today
-              span.tag.is-success #{today.dayOfWeek}
+            //- if entry.date === today
+            //-   span.tag.is-dark Today
+            //-   span.tag.is-success #{today.dayOfWeek}
             if entry.exercise.length > 0
-            ul.menu-list
-              each exercise, i in entry.exercise
-                li #{exercise.name}, (#{exercise.minutes}mins, #{exercise.cals}cals)
+              ul.menu-list
+                each exercise, i in entry.exercise
+                  li #{exercise.points}pts - #{exercise.name}, (#{exercise.minutes}mins, #{exercise.cals}cals)
       .media-right
         a.button.update-entry(data-id=entry._id, data-date=datePretty)
           span.icon.is-small
