@@ -49,21 +49,17 @@ block data
     - const weekDay = entryDate.format('ddd');
     article.media
       figure.media-left
-        p= weekDay 
+        p.image.is-48x48
+          span.is-pulled-right #{weekDay}
+          br
+          span.is-pulled-right #{entry.points}
+
         //- p.image.is-64x64
         //-   img(src='http://bulma.io/images/placeholders/128x128.png')
       .media-content
         .content
           p
             strong= dateHuman
-            //- check for single pt vs multiple pts
-            case entry.points
-              when 1
-                span  &middot; 1 pt
-              default
-                span  &middot; #{entry.points} pts
-            //- small  &middot; 31m
-            //- br
             span  &middot; 
             //- First check to see if this entry was reported empty
             if entry.isEmpty
