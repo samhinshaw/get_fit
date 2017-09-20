@@ -48,6 +48,9 @@ const handlers = {
       const route = window.location.pathname;
       // Add the loading class
       $(event.currentTarget).addClass('is-loading');
+      // $(event.currentTarget)
+      //   .find('i')
+      //   .addClass('fa-spin');
       // Make the AJAX request to update the entry
       $.ajax({
         type: 'POST',

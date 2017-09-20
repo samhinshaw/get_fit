@@ -8,7 +8,7 @@ from __future__ import division
 import sys  # for system operations such as exit status codes
 import re  # regex library
 import json  # for parsing json
-# import pickle  # for saving
+import pickle  # for saving
 # import os
 # import feather
 # import pandas as pd
@@ -62,10 +62,12 @@ exerciseDict = json.loads(parsedDict)['exercises']
 iconDict = json.loads(parsedDict)['icons']
 exerTypeDict = json.loads(parsedDict)['exerciseTypes']
 
+
 ### Define Logic to Save Authenticated Session ###
-# def save_object(obj, filename):
-#     with open(filename, 'wb') as output:
-#         pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
+def save_object(obj, filename):
+    with open(filename, 'wb') as output:
+        pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
+
 
 print 'Connecting to MongoDB database...'
 client = MongoClient('mongodb://localhost:27025/')
@@ -74,15 +76,15 @@ db = client.get_fit
 # Assign database collection and MFP connection
 if user == 'sam':
     collection = db.sam
-    # with open('data/samMFPClient.pkl', 'rb') as input:
-    # MFPclient = pickle.load(input)
-    MFPclient = myfitnesspal.Client('jetknife')
+    with open('data/samMFPClient.pkl', 'rb') as input:
+        MFPclient = pickle.load(input)
+    # MFPclient = myfitnesspal.Client('jetknife')
     # save_object(MFPclient, 'data/samMFPClient.pkl')
 elif user == 'amelia':
     collection = db.amelia
-    # with open('data/ameliaMFPClient.pkl', 'rb') as input:
-    # MFPclient = pickle.load(input)
-    MFPclient = myfitnesspal.Client('ameliaho')
+    with open('data/ameliaMFPClient.pkl', 'rb') as input:
+        MFPclient = pickle.load(input)
+    # MFPclient = myfitnesspal.Client('ameliaho')
     # save_object(MFPclient, 'data/ameliaMFPClient.pkl')
 else:
     sys.exit('Could not find user "' + user + '" in the database.')
@@ -154,6 +156,7 @@ if len(exerEntries) > 0:
         exerName = exerEntries[n].name.lower()
         exerMins = exerEntries[n]['minutes']
         exerCals = exerEntries[n]['calories burned']
+        print 'Original Name: ' + exerName.lower()
 
         exerciseHits = []
         # check for exercises and set name to key
@@ -169,6 +172,7 @@ if len(exerEntries) > 0:
                 exerciseHits.extend([exerciseDict[matchedEx]])
 
         # After searching, if no hits keep original
+        print exerciseHits
         if len(exerciseHits) == 0:
             renamedEx = exerName
         elif len(exerciseHits) == 1:
@@ -177,16 +181,16 @@ if len(exerEntries) > 0:
             print "We found more than one hit for this exercise. Reevaluate your search or matching method!"
             renamedEx = exerName
         else:
-            print "No hits!"
             renamedEx = exerName
 
         # Assign icons. We have already assigned sanitized names, so we can do a
         # simply dictionary replacement.
-        try:
-            exerIcon = iconDict[renamedEx]
+        exerIcon = iconDict[renamedEx]
         # if no hits, use generic exercise icons
-        except:
+        if exerIcon is None:
             exerIcon = 'exercise.png'
+
+        print "Icon Name: " + exerIcon
 
         # award points based on workout type
         if renamedEx in exerTypeDict["coolDown"]:

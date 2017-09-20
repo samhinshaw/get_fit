@@ -33,6 +33,10 @@ const ameliaSchema = new Schema(
     isEmpty: {
       type: Boolean,
       required: true
+    },
+    points: {
+      type: Number,
+      required: true
     }
     // lastUpdated: {
     //   type: Date,

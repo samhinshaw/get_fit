@@ -93,3 +93,8 @@
   /* background-color: #e8e8e8; */
   border-bottom-color: #363636;
 }
+
+/* Remove padding on exercise media elements */
+.media.exercise.level:not(:last-child) {
+  margin-bottom: 1rem;
+}
