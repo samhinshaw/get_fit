@@ -3,11 +3,13 @@ const PythonShell = require('python-shell');
 const express = require('express');
 const _ = require('lodash');
 // datetime functions
-const moment = require('moment');
+// const moment = require('moment');
+const moment = require('moment-timezone');
 
 // Initialize Moment & Today Object
 moment().format(); // required by package entirely
-const now = moment.utc();
+// const now = moment.utc();
+const now = moment().tz('US/Pacific');
 const today = now.clone().startOf('day');
 
 const router = express.Router();
@@ -29,7 +31,7 @@ const userInfo = {
     pointsClass: 'danger'
   },
   amelia: {
-    points: 0,
+    points: -1,
     pointsClass: 'danger'
   }
 };

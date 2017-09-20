@@ -2,7 +2,7 @@
 Python script for pulling user's data from MyFitnessPal
 """
 import sys
-# import re
+import re  # regex library
 # import json
 # import feather
 # import pandas as pd
@@ -23,8 +23,11 @@ import myfitnesspal
 inputDate = sys.argv[1]
 user = sys.argv[2]
 
-# insert false date
-date = arrow.get(inputDate, 'YYYY-MM-DD', tzinfo=tzutc())
+# date = arrow.get(inputDate, 'YYYY-MM-DD', tzinfo=tzutc())
+# now = arrow.utcnow()
+date = arrow.get(inputDate, 'YYYY-MM-DD', tzinfo='US/Pacific')
+now = arrow.now('US/Pacific')
+print now
 # dateObj = {'year': date.year, 'month': date.month, 'day': date.day}
 
 ############
@@ -41,6 +44,7 @@ date = arrow.get(inputDate, 'YYYY-MM-DD', tzinfo=tzutc())
 # Make sure these are treated as numeric values, not strings!!!
 # date = {'year': int(year), 'month': int(month), 'day': int(day)}
 
+# if we want to insert fake date
 # date = datetime(2017, 9, 15)
 
 print 'Connecting to MongoDB database...'
@@ -79,6 +83,18 @@ try:
 except:
     sys.exit('There was an error retrieving your data from MyFitnessPal.')
 
+# Workout points
+
+# cardioExercises = ['jogging', 'dancing', 'SUP']
+# lowIntensityExercises = ['yoga', 'stretching']
+# crossTrainingExercises = ['XT']
+
+#   if (str_detect(name, 'jog'))      { return('cardio') }
+#   if (str_detect(name, 'yoga'))     { return('yoga') }
+#   if (str_detect(name, 'train'))    { return('XT') }
+#   if (str_detect(name, 'danc'))     { return('dancing') }
+#   if (str_detect(name, 'stretch'))  { return('stretching') }
+
 # A specific error is better than a silent error
 try:
     MFPexer = MFPclient.get_exercise(date.year, date.month, date.day)
@@ -87,11 +103,75 @@ except:
 exercises = []
 if len(MFPexer[0].entries) > 0:
     for n in range(0, len(MFPexer[0].entries)):
+        # if MFPexer[0].entries[n].name in lowIntensityExercises:
+        #     points = MFPexer[0].entries[n]['minutes'] / 60
+        # elif MFPexer[0].entries[n].name in cardioExercises:
+        #     points = MFPexer[0].entries[n]['minutes'] / 30
+        # elif MFPexer[0].entries[n].name in crossTrainingExercises:
+        #     points = MFPexer[0].entries[n]['minutes'] / 15
+        # else:
+        #     points = 0
+
         exercises.append({
             'name': MFPexer[0].entries[n].name,
             'minutes': MFPexer[0].entries[n]['minutes'],
             'cals': MFPexer[0].entries[n]['calories burned']
+            # 'points': points
         })
+
+# Calculate points based on that day's statistics!
+# Current values are:
+# NET CALS:
+#   - netCals >= 0    //  1pt
+#   - netCals < 0     //  0pt
+#   - netCals < -300  // -1pt
+#   - isEmpty == True // -1pt
+# Exercise!
+#   - flex   = 1pt/60min
+#   - cardio = 1pt/30min
+#   - XT     = 1pt/15min
+
+# First we need to sanitize our exercise names. We can't rely on good inputs
+# because of things like connected apps auto-inserting exercises.
+
+# calculateExPoints <- function(name, minutes) {
+#   if (is.null(name)) {
+#     return(0)
+#   } else if (is.na(name)) {
+#     return(0)
+#   } else if (minutes == 0) {
+#     return(0)
+#   } else if (name %in% c('jogging', 'dancing', 'SUP')) {
+#     return(minutes / 30)
+#   } else if (name == 'XT') {
+#     return(minutes / 15)
+#   } else if (name %in% c('yoga', 'stretching')) {
+#     return(minutes / 60)
+#   } else {
+#     return(0)
+#   }
+# }
+
+# calculateCalPoints <- function(calsRem) {
+#   # -1pt if not filled out
+#   if (is.null(calsRem)) {
+#     return(-1)
+#   # -1pt if not filled out
+#   } else if (is.na(calsRem)) {
+#     return(-1)
+#   # 1pt for ending with cals left or at 0
+#   } else if (calsRem >= 0) {
+#     return(1)
+#   # No points if within 300 cals of target
+#   } else if (calsRem < 0 & calsRem > -300) {
+#     return(0)
+#   # -1pt if over 300 over that day
+#   }  else if (calsRem < -300) {
+#     return(-1)
+#   } else {
+#     return(0)
+#   }
+# }
 
 # construct object for db insertion
 MFPdata = {
@@ -100,7 +180,8 @@ MFPdata = {
     'goalCals': goalCals,
     'netCals': netCals,
     'exercise': exercises,
-    'isEmpty': isEmpty
+    'isEmpty': isEmpty,
+    # 'lastUpdated': now.datetime
 }
 
 print 'Writing data to MongoDB...'

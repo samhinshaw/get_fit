@@ -20,7 +20,7 @@ const userInfo = {
     pointsClass: 'danger'
   },
   amelia: {
-    points: 0,
+    points: -1,
     pointsClass: 'danger'
   }
 };

@@ -1,12 +1,31 @@
 extends partials/layout
 
-//- block header
-//-   h1 #{title}
+block header
+  p.title
+    | Get Fit!
+  p.subtitle
+    | Sam & Amelia are gonna be 
+    strong sexy 
+    | next summer! 👙 🏖
 
-block content
-  aside.menu
-    p.menu-label Articles
-    ul.menu-list.is-unstyled
-      each article, i in articles
-        li
-          a(href='/data/' + article._id)= article.title
+block subnav
+  nav.navbar.has-shadow.is-light(id=pageInfo.user+'-subnav')
+    .container
+      .navbar-tabs
+        a.navbar-item.is-tab.is-active(href='#')
+          | Summary
+        //- a.navbar-item.is-tab(href='#')
+        //-   | Weight
+        //- a.navbar-item.is-tab(href='#')
+        //-   | Spend Points
+
+block data
+  table.table
+    thead
+      td
+      td Sam
+      td Amelia
+    tr
+      td Points
+      td= userInfo.sam.points
+      td= userInfo.amelia.points

@@ -89,7 +89,8 @@ app.use(expressValidator({
 // Print in the page info we're using to style the page with Bulma
 const pageInfo = {
   heroType: 'dark',
-  route: '/'
+  route: '/',
+  user: 'main'
 };
 
 // Print in the user info we're using to style the page with Bulma
@@ -99,7 +100,7 @@ const userInfo = {
     pointsClass: 'danger'
   },
   amelia: {
-    points: 0,
+    points: -1,
     pointsClass: 'danger'
   }
 };

@@ -43,18 +43,18 @@ const handlers = {
     $('.update-entry').on('click', (event) => {
       // Get the Dates
       // const id = $(event.target).attr('data-id');
-      const date = $(event.target).attr('data-date');
+      const date = $(event.currentTarget).attr('data-date');
+      // set current subroute based on location. So we'll post to sam if we're on /sam
+      const route = window.location.pathname;
       // Add the loading class
-      $(event.target).addClass('is-loading');
+      $(event.currentTarget).addClass('is-loading');
       // Make the AJAX request to update the entry
       $.ajax({
         type: 'POST',
-        url: `/sam/${date}`,
+        url: `${route}/${date}`,
         // handle successes!
         success: (res) => {
-          // alert('Updating Entry...');
           window.location.reload();
-          // window.location.href = '#';
         },
         // handle errors
         error: (err) => {

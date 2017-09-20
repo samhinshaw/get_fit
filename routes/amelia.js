@@ -3,12 +3,15 @@ const PythonShell = require('python-shell');
 const express = require('express');
 const _ = require('lodash');
 // datetime functions
-const moment = require('moment');
+// const moment = require('moment');
+const moment = require('moment-timezone');
 
 // Initialize Moment & Today Object
 moment().format(); // required by package entirely
-const now = moment.utc();
+// const now = moment.utc();
+const now = moment().tz('US/Pacific');
 const today = now.clone().startOf('day');
+const twoWeeksAgo = today.clone().subtract(14, 'days');
 
 const router = express.Router();
 
@@ -29,7 +32,7 @@ const userInfo = {
     pointsClass: 'danger'
   },
   amelia: {
-    points: 0,
+    points: -1,
     pointsClass: 'danger'
   }
 };
@@ -48,9 +51,10 @@ router.use((req, res, next) => {
 router.get('/', (req, res) => {
   Amelia.find(
     {
-      // maybe we'll want a Date object in MongoDB later
-      // maybe logic for date range
-      // Say period of past two weeks?
+      date: {
+        $gte: twoWeeksAgo.toDate(),
+        $lte: today.toDate()
+      }
     },
     (err, entries) => {
       if (err) {
@@ -71,12 +75,12 @@ router.get('/', (req, res) => {
 
 router.post('/:date', (req, res) => {
   // parse date that was POSTed as string
-  const postedDate = moment.utc(req.params.date, 'YYYY-MM-DD');
+  // const postedDate = moment.utc(req.params.date, 'YYYY-MM-DD');
 
   // construct query to pass to python script
   const args = {
     // _id: req.params.id
-    date: postedDate,
+    date: req.params.date,
     user: pageInfo.user
   };
 
@@ -86,7 +90,7 @@ router.post('/:date', (req, res) => {
     // pythonPath: '/Users/samhinshaw/.miniconda2/bin/python',
     // pythonOptions: ['-u'],
     scriptPath: './data',
-    args: [args.postedDate, args.user]
+    args: [args.date, args.user]
   };
 
   let pyError;

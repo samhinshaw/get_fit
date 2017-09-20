@@ -1,0 +1,12 @@
+extends partials/layout
+
+//- block header
+//-   h1 #{title}
+
+block content
+  aside.menu
+    p.menu-label Articles
+    ul.menu-list.is-unstyled
+      each article, i in articles
+        li
+          a(href='/data/' + article._id)= article.title

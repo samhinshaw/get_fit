@@ -34,6 +34,10 @@ const ameliaSchema = new Schema(
       type: Boolean,
       required: true
     }
+    // lastUpdated: {
+    //   type: Date,
+    //   required: true
+    // }
   },
   { collection: 'amelia' }
 );

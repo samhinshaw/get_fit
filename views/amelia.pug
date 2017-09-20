@@ -4,18 +4,18 @@ block header
   p.title
     | Amelia
   p.subtitle
-    | Working towards a 
+    | Working towards that 
     strong tight round booty
-    |  🍑 step by step!
+    |  🍑 
 
 //- This could be an include, but leaving it here will
 //- allow us to work with the 'is-active' logic better
 block subnav
-  nav#amelia-subnav.navbar.has-shadow.is-white
+  nav.navbar.has-shadow.is-white(id=pageInfo.user+'-subnav')
     .container
       .navbar-tabs
         a.navbar-item.is-tab.is-active(href='#')
-          | General
+          | Overview
         a.navbar-item.is-tab(href='#')
           | Weight
         a.navbar-item.is-tab(href='#')
@@ -24,34 +24,56 @@ block subnav
 block content
   //- Set up date information here. 
   //- Unfortunately this can't be done at the top level of an extending template
-  - const moment = require('moment');
+  //- - const moment = require('moment');
+  - const moment = require('moment-timezone');
   - moment().format();
 
-  - const now = moment.utc();
+  //- - const now = moment.utc();
+  - const now = moment.tz('US/Pacific');
   - const today = now.clone().startOf('day');
   - const todayPretty = today.format('YYYY-MM-DD');
 
-  - const tomorrow = today.clone().add(1, 'day');
-  - const tomorrowPretty = tomorrow.format('YYYY-MM-DD');
+  //- - const tomorrow = today.clone().add(1, 'day');
+  //- - const tomorrowPretty = tomorrow.format('YYYY-MM-DD');
 
   .field.is-grouped
     .control
       button.button.is-small.is-info.is-pulled-left.update-entry(data-date=todayPretty) Get Today
-    .control
-      button.button.is-small.is-info.is-pulled-left.update-entry(data-date=tomorrowPretty) Get Tomorrow
   br
 
 block data
-  aside.menu
-    p.menu-label Entries
-    ul.menu-list
-      each entry, i in entries
-        - const entryDate = moment.utc(entry.date);
-        - const datePretty = entryDate.format('YYYY-MM-DD');
-        - const dateHuman = entryDate.format('MM-DD-YYYY');
-        li
-          button.button.is-small.is-info.is-pulled-right.update-entry(data-id=entry._id, data-date=datePretty) Update Entry
-          a #{dateHuman}, netting #{entry.netCals} calories for the day
+  each entry, i in entries
+    //- - const entryDate = moment.utc(entry.date);
+    - const entryDate = moment.tz(entry.date, 'US/Pacific');
+    - const datePretty = entryDate.format('YYYY-MM-DD');
+    - const dateHuman = entryDate.format('MM-DD-YYYY');
+    - const weekDay = entryDate.format('ddd');
+    article.media
+      figure.media-left
+        p= weekDay 
+        //- p.image.is-64x64
+        //-   img(src='http://bulma.io/images/placeholders/128x128.png')
+      .media-content
+        .content
+          p
+            strong= dateHuman
+            //- small  &middot; @johnsmith
+            //- small  &middot; 31m
+            br
+            //- First check to see if this entry was reported empty
+            if entry.isEmpty
+              span No data yet!
+            //- Then, if left over calories, report remaining!
+            else if entry.netCals > 0
+              span #{entry.netCals} cals remaining
+            else if entry.netCals < 0
+              if entry.netCals < -300
+                span.tag.is-danger #{-entry.netCals} 
+              else 
+                span.tag.is-warning #{-entry.netCals} 
+              span  cals over
+            else if entry.netCals === 0
+              span you hit your goal EXACTLY
             //- Could also check datePretty vs todayPretty
             //- This will check Date object vs Date object
             //- It may be more error prone, but also much more specific
@@ -62,3 +84,7 @@ block data
             ul.menu-list
               each exercise, i in entry.exercise
                 li #{exercise.name}, (#{exercise.minutes}mins, #{exercise.cals}cals)
+      .media-right
+        a.button.update-entry(data-id=entry._id, data-date=datePretty)
+          span.icon.is-small
+            i.mdi.mdi-update
