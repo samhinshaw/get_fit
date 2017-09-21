@@ -38,6 +38,8 @@ block content
     .control
       button.button.is-small.is-info.is-pulled-left.update-entry(data-date=todayPretty)
         | Get Today
+      span.tag(style='margin-left: 1em;', class='is-' + userInfo.sam.pointsClass)
+        | #{periodPoints}
   br
 
 block data
@@ -47,6 +49,9 @@ block data
     - const datePretty = entryDate.format('YYYY-MM-DD');
     - const dateHuman = entryDate.format('MM-DD-YYYY');
     - const weekDay = entryDate.format('ddd');
+    //- Break up into weeks and we'll come back to this for a weekly point total
+    if weekDay === 'Sun'
+      hr.thick
     article.media
       figure.media-left
         p.image.is-48x48
@@ -66,13 +71,24 @@ block data
               span No data yet!
             //- Then, if left over calories, report remaining!
             else if entry.netCals > 0
-              span #{entry.netCals} cals remaining
+              span #{entry.netCals} 
+              case entry.netCals
+                when -1
+                when 1
+                  | cal remaining
+                default 
+                  | cals remaining
             else if entry.netCals < 0
               if entry.netCals < -300
-                span.tag.is-danger #{-entry.netCals} 
+                span.is-danger #{-entry.netCals} 
               else 
-                span.tag.is-warning #{-entry.netCals} 
-              span  cals over
+                span.is-warning #{-entry.netCals} 
+              case entry.netCals
+                when -1
+                when 1
+                  span cal over
+                default 
+                  span cals over
             else if entry.netCals === 0
               span you hit your goal EXACTLY
             //- Could also check datePretty vs todayPretty

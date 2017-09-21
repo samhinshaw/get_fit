@@ -17,3 +17,5 @@ Back End
 Front End  
 - Transition animations between tabs!  
     + abrupt transition between similar looking tabs is jarring
+- Theme body in the same color as the hero
+    + shrink the main containers so the app has a card view (on desktop only)

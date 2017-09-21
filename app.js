@@ -34,9 +34,10 @@ db.on('error', (err) => {
 // initialize app
 const app = express();
 
-// Load MongoDB Models
-const Article = require('./models/article');
-// const Sam = require('./models/sam');
+// Include document Schemas
+// const Purchase = require('./models/purchase');
+const Period = require('./models/period');
+const Sam = require('./models/sam');
 // const Amelia = require('./models/amelia');
 
 // Load View Engine
@@ -86,6 +87,8 @@ app.use(expressValidator({
   }
 }));
 
+app.use((req, res, next) => {});
+
 // Print in the page info we're using to style the page with Bulma
 const pageInfo = {
   heroType: 'dark',
@@ -115,23 +118,10 @@ app.use((req, res, next) => {
 
 // Home Route
 app.get('/', (req, res) => {
-  Article.find(
-    {
-      // empty curly braces for blank find function
-      // this will pull ALL results for us
-    },
-    (err, articles) => {
-      if (err) {
-        console.log(err);
-      } else {
-        res.render('index', {
-          // Object to send data along with response
-          title: 'Get Fit!',
-          articles
-        });
-      }
-    }
-  );
+  res.render('index', {
+    // Object to send data along with response
+    title: 'Get Fit!'
+  });
 });
 
 // Bring in route files

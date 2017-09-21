@@ -98,3 +98,7 @@
 .media.exercise.level:not(:last-child) {
   margin-bottom: 1rem;
 }
+
+.thick {
+  height: 5px;
+}

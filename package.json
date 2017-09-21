@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/samhinshaw/get_fit#readme",
   "dependencies": {
+    "async": "^2.5.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.1",
     "connect-flash": "^0.1.1",
@@ -26,6 +27,7 @@
     "express-validator": "^4.1.1",
     "lodash": "^4.17.4",
     "moment": "^2.18.1",
+    "moment-range": "^3.0.3",
     "moment-timezone": "^0.5.13",
     "mongoose": "^4.11.11",
     "nunjucks": "^3.0.1",
