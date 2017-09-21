@@ -87,7 +87,9 @@ app.use(expressValidator({
   }
 }));
 
-app.use((req, res, next) => {});
+// app.use((req, res, next) => {
+//   next();
+// });
 
 // Print in the page info we're using to style the page with Bulma
 const pageInfo = {
