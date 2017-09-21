@@ -1,5 +1,5 @@
 """
-Python script for pulling user's data from MyFitnessPal
+Pull user's data from MyFitnessPal
 """
 # since we're using python 2, we need to import this. OTHERWISE when calculating
 # points for exercise we get stuck with 0s because int/int = int. So 14/15 = 0.
@@ -73,6 +73,8 @@ print 'Connecting to MongoDB database...'
 client = MongoClient('mongodb://localhost:27025/')
 db = client.get_fit
 
+print 'Pulling in MyFitnessPal information for ' + user + '...'
+
 # Assign database collection and MFP connection
 if user == 'sam':
     collection = db.sam
@@ -88,8 +90,6 @@ elif user == 'amelia':
     save_object(MFPclient, 'data/ameliaMFPClient.pkl')
 else:
     sys.exit('Could not find user "' + user + '" in the database.')
-
-print 'Pulling in MyFitnessPal information for ' + user + '...'
 
 # Calculate points based on that day's statistics!
 # Current values are:
@@ -143,6 +143,8 @@ try:
 
 except:
     sys.exit('We were not able to retrieve your exercise for this date!')
+
+print 'Processing MyFitnessPal data...'
 
 # set up empty exercise array to handle multiple exercises in a day
 exercises = []
@@ -206,7 +208,7 @@ if len(exerEntries) > 0:
         # Then round to 2 decimal places
         points = round(points, 1)
 
-        totExerPoints = totExerPoints + points
+        totExerPoints += points
 
         exercises.append({
             'name': renamedEx,
