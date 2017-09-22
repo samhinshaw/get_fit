@@ -25,24 +25,11 @@ const pageInfo = {
   user: 'amelia'
 };
 
-// Print in the user info we're using to style the page with Bulma
-const userInfo = {
-  sam: {
-    points: 3,
-    pointsClass: 'danger'
-  },
-  amelia: {
-    points: -1,
-    pointsClass: 'danger'
-  }
-};
-
 // Use middleware to modify locals object (makes available to view engine (Pug)!)
 // https://stackoverflow.com/questions/12550067/expressjs-3-0-how-to-pass-res-locals-to-a-jade-view
 router.use((req, res, next) => {
   res.locals.today = today;
   res.locals.pageInfo = pageInfo;
-  res.locals.userInfo = userInfo;
   res.locals.require = require;
   next();
 });

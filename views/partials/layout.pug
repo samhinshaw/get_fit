@@ -35,13 +35,13 @@ html
               li(class=(pageInfo.route === "/sam" ? 'is-active' : false))
                 a(href="/sam") 
                   | Sam
-                  span.tag(style='margin-left: 1em;', class='is-' + userInfo.sam.pointsClass)
-                    | #{userInfo.sam.points}
+                  span.tag(style='margin-left: 1em;', class='is-danger')
+                    | #{pointTally.sam.toFixed(1)}
               li(class=(pageInfo.route === "/amelia" ? 'is-active' : false))
                 a(href="/amelia")
                   | Amelia
-                  span.tag(style='margin-left: 1em;', class='is-' + userInfo.amelia.pointsClass)   
-                    | #{userInfo.amelia.points}
+                  span.tag(style='margin-left: 1em;', class='is-danger')   
+                    | #{pointTally.amelia.toFixed(1)}
     block subnav
 
     != messages('includes/message', locals)

@@ -6,8 +6,14 @@
 ## Features to Implement
 
 Back End  
-- Calculate points earned  
-    + By day, in total, and in the past two weeks
+- ~~Calculate points earned~~  
+    + ~~By day, in total, and in the past two weeks~~
+- Store points in database for retrieval
+    + Right now, points from a given timespan are calculated from daily point earnings **every time** the page renders
+    + Update point calculations only when post request is made to update data
+
+- Implement authentication so we know who is logged in
+
 - Implement spending points  
     + create entry in db for request. 
     + store bool states for 'agreedTo' and 'fulfilled' 

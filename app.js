@@ -10,6 +10,11 @@ const flash = require('connect-flash');
 // set prefs
 const port = 8005;
 
+// Define Async middleware wrapper to avoid try-catch
+const asyncMiddleware = fn => (req, res, next) => {
+  Promise.resolve(fn(req, res, next)).catch(next);
+};
+
 // Connect to MongoDB
 // NOTE, this syntax is deprecated
 // http://mongoosejs.com/docs/connections.html#use-mongo-client
@@ -38,7 +43,7 @@ const app = express();
 // const Purchase = require('./models/purchase');
 const Period = require('./models/period');
 const Sam = require('./models/sam');
-// const Amelia = require('./models/amelia');
+const Amelia = require('./models/amelia');
 
 // Load View Engine
 app.set('views', path.join(__dirname, 'views'));
@@ -87,9 +92,49 @@ app.use(expressValidator({
   }
 }));
 
-// app.use((req, res, next) => {
-//   next();
-// });
+// Include custom middleware
+const mongoMiddleware = require('./middlewares/mongoMiddleware');
+
+// ////////////////////////////////////////////////////////////////
+// /////////.///// MIDDLEWARE TO CALCULATE POINTS /////////////////
+// ////////////////////////////////////////////////////////////////
+app.use(asyncMiddleware(async (req, res, next) => {
+  // Don't need try, catch anymore since asyncMiddleware (see top of app.js) is
+  // handling async errors
+  const samWeekPeriods = await mongoMiddleware.queryWeeksFromMongo(Sam);
+  const samCustomPeriods = await mongoMiddleware.queryCustomPeriodsFromMongo(Sam);
+  const ameliaWeekPeriods = await mongoMiddleware.queryWeeksFromMongo(Amelia);
+  const ameliaCustomPeriods = await mongoMiddleware.queryCustomPeriodsFromMongo(Amelia);
+
+  const pointTotals = {
+    sam: {
+      weekTotals: samWeekPeriods,
+      customTotals: samCustomPeriods
+    },
+    amelia: {
+      weekTotals: ameliaWeekPeriods,
+      customTotals: ameliaCustomPeriods
+    }
+  };
+  res.locals.pointTotals = pointTotals;
+
+  // make the most important entries available at the top level
+  // if more specific ones needed, we can get those within the views template
+  const samPointTally = samCustomPeriods.find(element => element.key === 'sinceStart');
+  const ameliaPointTally = ameliaCustomPeriods.find(element => element.key === 'sinceStart');
+
+  const pointTally = {
+    sam: parseFloat(samPointTally.points),
+    amelia: parseFloat(ameliaPointTally.points)
+  };
+
+  res.locals.pointTally = pointTally;
+  next();
+}));
+
+// ////////////////////////////////////////////////////////////////
+// /////////.///// MIDDLEWARE TO CALCULATE POINTS /////////////////
+// ////////////////////////////////////////////////////////////////
 
 // Print in the page info we're using to style the page with Bulma
 const pageInfo = {
@@ -98,23 +143,10 @@ const pageInfo = {
   user: 'main'
 };
 
-// Print in the user info we're using to style the page with Bulma
-const userInfo = {
-  sam: {
-    points: 3,
-    pointsClass: 'danger'
-  },
-  amelia: {
-    points: -1,
-    pointsClass: 'danger'
-  }
-};
-
 // Use middleware to modify locals object (makes available to view engine!)
 // https://stackoverflow.com/questions/12550067/expressjs-3-0-how-to-pass-res-locals-to-a-jade-view
 app.use((req, res, next) => {
   res.locals.pageInfo = pageInfo;
-  res.locals.userInfo = userInfo;
   next();
 });
 

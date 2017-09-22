@@ -38,8 +38,8 @@ block content
     .control
       button.button.is-small.is-info.is-pulled-left.update-entry(data-date=todayPretty)
         | Get Today
-      span.tag(style='margin-left: 1em;', class='is-' + userInfo.sam.pointsClass)
-        | #{periodPoints}
+      span.tag(style='margin-left: 1em;', class='is-danger')
+        | #{pointTally.sam.toFixed(1)}
   br
 
 block data
@@ -57,7 +57,7 @@ block data
         p.image.is-48x48
           span.is-pulled-right #{weekDay}
           br
-          span.is-pulled-right #{entry.points}
+          span.is-pulled-right #{entry.points.toFixed(1)}
 
         //- p.image.is-64x64
         //-   img(src='http://bulma.io/images/placeholders/128x128.png')
