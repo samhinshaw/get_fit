@@ -40,8 +40,6 @@ block content
     .control
       button.button.is-small.is-info.is-pulled-left.update-entry(data-date=todayPretty) Get Today
   br
-
-block data
   each entry, i in entries
     //- - const entryDate = moment.utc(entry.date);
     - const entryDate = moment.tz(entry.date, 'US/Pacific');

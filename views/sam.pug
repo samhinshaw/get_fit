@@ -41,8 +41,6 @@ block content
       span.tag(style='margin-left: 1em;', class='is-danger')
         | #{pointTally.sam.toFixed(1)}
   br
-
-block data
   each entry, i in entries
     //- - const entryDate = moment.utc(entry.date);
     - const entryDate = moment.tz(entry.date, 'US/Pacific');

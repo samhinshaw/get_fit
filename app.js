@@ -41,7 +41,7 @@ const app = express();
 
 // Include document Schemas
 // const Purchase = require('./models/purchase');
-const Period = require('./models/period');
+// const Period = require('./models/period');
 const Sam = require('./models/sam');
 const Amelia = require('./models/amelia');
 

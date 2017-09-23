@@ -5,6 +5,7 @@ const _ = require('lodash');
 // datetime functions
 // const moment = require('moment');
 const moment = require('moment-timezone');
+const mongoMiddleware = require('../middlewares/mongoMiddleware');
 
 // Initialize Moment & Today Object
 moment().format(); // required by package entirely
@@ -16,6 +17,7 @@ const router = express.Router();
 
 // Bring in user model
 const Sam = require('../models/sam');
+const Amelia = require('../models/amelia');
 
 // Print in the page info we're using to style the page with Bulma
 const pageInfo = {
@@ -109,12 +111,47 @@ router.post('/:date', (req, res) => {
       pyError = err;
       res.send('Failure');
     } else {
-      // console.log('Success');
+      console.log('Success updating user data from MFP');
       res.send('Success');
     }
 
     req.flash('danger', JSON.stringify(pyError));
   });
+
+  // ///////////////////////////////
+  // RECALCULATE ALL POINT PERIODS
+  // ///////////////////////////////
+
+  // async function updatePeriods() {
+  //   const samWeekPeriods = await mongoMiddleware.queryWeeksFromMongo(Sam);
+  //   const samCustomPeriods = await mongoMiddleware.queryCustomPeriodsFromMongo(Sam);
+  //   const ameliaWeekPeriods = await mongoMiddleware.queryWeeksFromMongo(Amelia);
+  //   const ameliaCustomPeriods = await mongoMiddleware.queryCustomPeriodsFromMongo(Amelia);
+
+  //   const pointTotals = {
+  //     sam: {
+  //       weekTotals: samWeekPeriods,
+  //       customTotals: samCustomPeriods
+  //     },
+  //     amelia: {
+  //       weekTotals: ameliaWeekPeriods,
+  //       customTotals: ameliaCustomPeriods
+  //     }
+  //   };
+  //   res.locals.pointTotals = pointTotals;
+
+  //   // make the most important entries available at the top level
+  //   // if more specific ones needed, we can get those within the views template
+  //   const samPointTally = samCustomPeriods.find(element => element.key === 'sinceStart');
+  //   const ameliaPointTally = ameliaCustomPeriods.find(element => element.key === 'sinceStart');
+
+  //   const pointTally = {
+  //     sam: parseFloat(samPointTally.points),
+  //     amelia: parseFloat(ameliaPointTally.points)
+  //   };
+
+  //   res.locals.pointTally = pointTally;
+  // }
 });
 
 module.exports = router;
