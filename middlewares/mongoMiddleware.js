@@ -145,8 +145,6 @@ async function queryCustomPeriodsFromMongo(user) {
     return customPeriodResult;
   }, []);
 
-  await console.log(customPeriods);
-
   return customPeriods;
 }
 
