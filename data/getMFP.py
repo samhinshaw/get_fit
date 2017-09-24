@@ -8,6 +8,7 @@ from __future__ import division
 import sys  # for system operations such as exit status codes
 import re  # regex library
 import json  # for parsing json
+# import pickle  # for saving
 # import os
 # import feather
 # import pandas as pd
@@ -23,37 +24,42 @@ import myfitnesspal  # myfitnesspal API!
 # - Later on I may wish to pull calorie goals straight from MFP
 # MFPcals.goals['calories']
 
-############
-# receive new date-string
-try:
+now = arrow.now('US/Pacific')
+
+if len(sys.argv) == 3:
+    inputDate = sys.argv[1]
+    user = sys.argv[2]
+    inputDate = arrow.get(inputDate, 'YYYY-MM-DD', tzinfo='US/Pacific')
+    startDate = inputDate
+    endDate = inputDate
+elif len(sys.argv) == 4:
     firstDate = sys.argv[1]
     secondDate = sys.argv[2]
     user = sys.argv[3]
-except:
-    sys.exit("""
-    This script requires 3 arguments:
-    1. The date you wish to query FROM (earlier in time). 
-    2. The date you wish to query TO (later in time). 
-    3. The user whose data you wish to query. 
-    """)
+    firstDate = arrow.get(firstDate, 'YYYY-MM-DD', tzinfo='US/Pacific')
+    secondDate = arrow.get(secondDate, 'YYYY-MM-DD', tzinfo='US/Pacific')
+    if firstDate < secondDate:
+        startDate = firstDate
+        endDate = secondDate
+    elif firstDate > secondDate:
+        startDate = secondDate
+        endDate = firstDate
+    elif firstDate == secondDate:
+        sys.exit('You supplied the same date twice!')
+    else:
+        sys.exit('Error parsing the dates you provided.')
+else:
+    sys.exit(
+        'You must provide a date and a user or a start date, end date, and user.'
+    )
+
+############
+# receive new date-string
+
 # date = arrow.get(inputDate, 'YYYY-MM-DD', tzinfo=tzutc())
 # now = arrow.utcnow()
-firstDate = arrow.get(firstDate, 'YYYY-MM-DD', tzinfo='US/Pacific')
-secondDate = arrow.get(secondDate, 'YYYY-MM-DD', tzinfo='US/Pacific')
-# now = arrow.now('US/Pacific')
+# date = arrow.get(inputDate, 'YYYY-MM-DD', tzinfo='US/Pacific')
 # dateObj = {'year': date.year, 'month': date.month, 'day': date.day}
-
-# make sure args passed in proper order
-if firstDate < secondDate:
-    startDate = firstDate
-    endDate = secondDate
-elif firstDate > secondDate:
-    startDate = secondDate
-    endDate = firstDate
-elif firstDate == secondDate:
-    sys.exit('You supplied the same date twice!')
-else:
-    sys.exit('Error parsing the dates you provided.')
 
 ############
 
@@ -82,18 +88,22 @@ exerciseDict = json.loads(parsedDict)['exercises']
 iconDict = json.loads(parsedDict)['icons']
 exerTypeDict = json.loads(parsedDict)['exerciseTypes']
 
+## Define Logic to Save Authenticated Session ###
+# def save_object(obj, filename):
+#     with open(filename, 'wb') as output:
+#         pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
+
 print 'Connecting to MongoDB database...'
 client = MongoClient('mongodb://localhost:27025/')
 db = client.get_fit
+entries = db.entries
 
-print 'Pulling in MyFitnessPal information for ' + user + '...'
+print 'Pulling in MyFitnessPal information for ' + user.capitalize() + '...'
 
 # Assign database collection and MFP connection
 if user == 'sam':
-    collection = db.sam
     MFPclient = myfitnesspal.Client('jetknife')
 elif user == 'amelia':
-    collection = db.amelia
     MFPclient = myfitnesspal.Client('ameliaho')
 else:
     sys.exit('Could not find user "' + user + '" in the database.')
@@ -110,12 +120,9 @@ else:
 #   - cardio = 1pt/30min
 #   - XT     = 1pt/15min
 
-# queryDates = []
 for date in arrow.Arrow.range(
         frame='day', start=startDate, end=endDate, tz='US/Pacific'):
     print 'Loading data from ' + date.format('MMMM DD, YYYY')
-    # queryDates.extend(date)
-
     # Try/Except is mostly for if the API fails
     try:
         MFPcals = MFPclient.get_date(date.year, date.month, date.day)
@@ -247,8 +254,9 @@ for date in arrow.Arrow.range(
         'netCals': netCals,
         'exercise': exercises,
         'isEmpty': isEmpty,
-        'points': totalDaysPoints
-        # 'lastUpdated': now.datetime
+        'points': totalDaysPoints,
+        'user': user,
+        'lastUpdated': now.datetime
     }
 
     print 'Writing data to MongoDB...'
@@ -259,12 +267,14 @@ for date in arrow.Arrow.range(
     # NOT matter
     # {'date.year': 2017, 'date.month': 9, 'date.day': 15}
 
-    if collection.find_one({'date': date.datetime}):
+    if entries.find_one({'date': date.datetime, 'user': user}):
         print 'Found existing data for date, overwriting...'
-        collection.update_one(
+        entries.update_one(
             {
-                'date': date.datetime
-            }, {'$set': MFPdata}, upsert=False)
+                'date': date.datetime,
+                'user': user
+            }, {'$set': MFPdata},
+            upsert=False)
     else:
         print 'No data found yet for this date, creating record...'
-        collection.insert_one(MFPdata)
+        entries.insert_one(MFPdata)
