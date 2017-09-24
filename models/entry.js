@@ -8,31 +8,43 @@ const Schema = mongoose.Schema;
 
 // Date Schema
 
-const periodSchema = new Schema(
+const entrySchema = new Schema(
   {
-    key: {
-      type: String,
-      required: true
-    },
-    startDate: {
+    date: {
       type: Date,
       required: true
     },
-    endDate: {
-      type: Date,
+    totalCals: {
+      type: Number,
+      required: true
+    },
+    goalCals: {
+      type: Number,
+      required: true
+    },
+    netCals: {
+      type: Number,
+      required: true
+    },
+    exercise: {
+      type: Schema.Types.Mixed,
+      required: false
+    },
+    isEmpty: {
+      type: Boolean,
       required: true
     },
     points: {
       type: Number,
-      required: false
+      required: true
     },
     user: {
       type: String,
       required: true
     }
   },
-  { collection: 'periods' }
+  { collection: 'entries' }
 );
 
-const Period = mongoose.model('period', periodSchema);
-module.exports = Period;
+const Entry = mongoose.model('entry', entrySchema);
+module.exports = Entry;

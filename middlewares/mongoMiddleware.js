@@ -10,23 +10,6 @@ const moment = MomentRange.extendMoment(Moment);
 // Initialize Moment & Today Object
 moment().format(); // required by package entirely
 
-mongoose.connect('mongodb://localhost:27025/get_fit');
-const db = mongoose.connection;
-
-// Check connection
-db.once('open', () => {
-  console.log('Connected to MongoDB');
-});
-// Check for DB errors
-db.on('error', (err) => {
-  console.log(err);
-});
-
-// const Purchase = require('../models/purchase');
-// const Period = require('../models/period');
-// const Sam = require('../models/sam');
-// const Amelia = require('../models/amelia');
-
 // ///// Fudge Data /////////
 
 // Instantiate some dates
@@ -52,10 +35,13 @@ const customRanges = [
   }
 ];
 
+// Bring in user models
+const Entry = require('../models/entry');
+
 async function queryWeeksFromMongo(user) {
   // First get all db entries for that user
 
-  const entries = await user.find({}, (err, ents) => {
+  const entries = await Entry.find({ user }, (err, ents) => {
     if (err) {
       console.log(err);
     } else {
@@ -107,7 +93,8 @@ async function queryWeeksFromMongo(user) {
       key: `Week ${index + 1}`,
       startDate: monday,
       endDate: sunday,
-      points: weekPoints.toFixed(1)
+      points: weekPoints.toFixed(1),
+      user
     });
 
     return weekPeriodResult;
@@ -118,7 +105,7 @@ async function queryWeeksFromMongo(user) {
 
 async function queryCustomPeriodsFromMongo(user) {
   // First get all db entries for that user
-  const entries = await user.find({}, (err, ents) => {
+  const entries = await Entry.find({ user }, (err, ents) => {
     if (err) {
       console.log(err);
     } else {
@@ -139,7 +126,8 @@ async function queryCustomPeriodsFromMongo(user) {
       key: customPeriod.key,
       startDate: customPeriod.startDate,
       endDate: customPeriod.endDate,
-      points: customPeriodPoints.toFixed(1)
+      points: customPeriodPoints.toFixed(1),
+      user
     });
 
     return customPeriodResult;

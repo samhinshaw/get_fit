@@ -16,8 +16,7 @@ const today = now.clone().startOf('day');
 const router = express.Router();
 
 // Bring in user model
-const Sam = require('../models/sam');
-const Amelia = require('../models/amelia');
+const Entry = require('../models/entry');
 
 // Print in the page info we're using to style the page with Bulma
 const pageInfo = {
@@ -54,7 +53,7 @@ router.get('/', (req, res) => {
   //   day = day.clone().add(1, 'd');
   // }
 
-  Sam.find(
+  Entry.find(
     {
       // date: {
       //   $in: queryDates
@@ -62,7 +61,8 @@ router.get('/', (req, res) => {
       date: {
         $gte: twoWeeksAgo.toDate(),
         $lte: today.toDate()
-      }
+      },
+      user: 'sam'
     },
     (err, entries) => {
       if (err) {
@@ -105,7 +105,7 @@ router.post('/:date', (req, res) => {
   let pyError;
 
   // Run python script
-  PythonShell.run('get_single_day.py', options, (err) => {
+  PythonShell.run('getMFP.py', options, (err) => {
     if (err) {
       console.log(JSON.stringify(err));
       pyError = err;

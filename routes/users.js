@@ -40,8 +40,9 @@ router.get('/login', (req, res) => {
 
 // Handle Registration POSTS
 router.post('/register', (req, res) => {
-  const name = req.body.name;
+  const name = req.body.name.toLowerCase();
   const email = req.body.email;
+  const calGoal = req.body.calGoal;
   const username = req.body.username;
   const password = req.body.password;
   const passwordConfirm = req.body.passwordConfirm;
@@ -49,6 +50,7 @@ router.post('/register', (req, res) => {
   req.checkBody('name', 'Name is required').notEmpty();
   req.checkBody('email', 'Email is required').notEmpty();
   req.checkBody('email', 'Email is not value').isEmail();
+  req.checkBody('calGoal', 'Calorie goal is required').notEmpty();
   req.checkBody('username', 'Username is required').notEmpty();
   req.checkBody('password', 'Password is required').notEmpty();
   req.checkBody('passwordConfirm', 'Passwords do not match').equals(req.body.password);
@@ -72,7 +74,9 @@ router.post('/register', (req, res) => {
       name,
       email,
       username,
-      password
+      password,
+      calGoal,
+      currentPoints: 0
     });
 
     bcrypt.genSalt(10, (saltErr, salt) => {

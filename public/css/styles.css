@@ -82,6 +82,23 @@
   border-bottom-color: #363636;
 }
 
+#users-subnav .navbar-item.is-tab {
+  color: ##23d160;
+}
+
+#users-subnav .navbar-item.is-tab.is-active {
+  /* background-color: #292929; */
+  font-weight: 600;
+  border-bottom-color: ##23d160;
+  color: ##23d160;
+}
+
+#users-subnav .navbar-item.is-tab:hover,
+#users-subnav .navbar-item.is-tab:focus {
+  /* background-color: #e8e8e8; */
+  border-bottom-color: ##23d160;
+}
+
 /* Remove padding on exercise media elements */
 .media.exercise.level:not(:last-child) {
   margin-bottom: 1rem;
@@ -109,6 +126,9 @@
 }
 .card-wrapper.is-warning {
   background-color: hsl(48, 100%, 67%);
+}
+.card-wrapper.is-success {
+  background-color: hsl(141, 71%, 48%);
 }
 
 /* styling for sticky footer! */

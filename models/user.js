@@ -20,6 +20,14 @@ const userSchema = new Schema({
   password: {
     type: String,
     required: true
+  },
+  calGoal: {
+    type: Number,
+    required: true
+  },
+  currentPoints: {
+    type: Number,
+    required: true
   }
 });
 
