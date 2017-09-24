@@ -1,6 +1,35 @@
 extends partials/layout
 
 block header
-  h1.title Login
+  p.title
+    | Users
+  p.subtitle
+    | Login, register, 
+    strong  manage your account
+    |  🤓
+
+block subnav
+  nav.navbar.has-shadow.is-light(id=pageInfo.user+'-subnav')
+    .container
+      .navbar-tabs
+        a.navbar-item.is-tab(href='/users')
+          | Overview
+        a.navbar-item.is-tab.is-active(href='/users/login')
+          | Login
+        a.navbar-item.is-tab(href='/users/register')
+          | Register
+
+
 block content
-  p Hello
+  h3.is-size-3 Login
+  br
+  form(method='POST', action='/users/login')
+    .field
+      label.label Username:
+      .control
+        input.input(name='username', type='text')
+    .field
+      label.label Password:
+      .control
+        input.input(name='password', type='password')
+    input.button.is-primary(type='submit', value='Submit')

@@ -1,6 +1,52 @@
 extends partials/layout
 
 block header
-  h1.title Register
+  p.title
+    | Users
+  p.subtitle
+    | Login, register, 
+    strong  manage your account
+    |  🤓
+
+block subnav
+  nav.navbar.has-shadow.is-light(id=pageInfo.user+'-subnav')
+    .container
+      .navbar-tabs
+        a.navbar-item.is-tab(href='/users')
+          | Overview
+        a.navbar-item.is-tab(href='/users/login')
+          | Login
+        a.navbar-item.is-tab.is-active(href='/users/register')
+          | Register
+
+//- block content-header
+
+
 block content
-  p Hello
+  h3.is-size-3 Register
+  br
+  form(method='POST', action='/users/register')
+    .field
+      label.label Name:
+      .control
+        input.input(name='name', type='text')
+    .field
+      label.label Email:
+      .control.has-icons-left
+        input.input(name='email', type='text')
+        span.icon.is-small.is-left
+          i.mdi.mdi-check.mdi-dark
+    .field
+      label.label Username:
+      .control
+        input.input(name='username', type='text')
+    .field
+      label.label Password:
+      .control
+        input.input(name='password', type='password')
+    .field
+      label.label Confirm Password:
+      .control
+        input.input(name='passwordConfirm', type='password')
+    input.button.is-primary(type='submit', value='Submit')
+

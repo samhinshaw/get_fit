@@ -52,9 +52,14 @@ html
                       | Amelia
                       span.tag(style='margin-left: 1em;', class='is-danger')   
                         | #{pointTally.amelia.toFixed(1)}
+                  li(class=(pageInfo.route === "/users" ? 'is-active' : false))
+                    a(href="/users")
+                      | My Account
         block subnav
 
         != messages('includes/message', locals)
+        //- section.section.is-fluid.content-header
+          block content-header
         section.section.is-fluid.flex-body-content
           //- .content
           block content

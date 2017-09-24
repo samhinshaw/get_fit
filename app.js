@@ -4,12 +4,36 @@ const path = require('path'); // core module included with Node.js
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const session = require('express-session');
+const Moment = require('moment-timezone');
+const MomentRange = require('moment-range');
 const expressValidator = require('express-validator');
 const flash = require('connect-flash');
+const passport = require('passport');
+const config = require('./config/database');
 
-// set prefs
-const port = 8005;
-
+const moment = MomentRange.extendMoment(Moment);
+moment().format(); // required by package entirely
+const now = moment().tz('US/Pacific');
+const today = now.clone().startOf('day');
+const startofTracking = moment('09-18-2017', 'MM-DD-YYYY')
+  .tz('US/Pacific')
+  .startOf('day');
+const twoWeeksAgo = today.clone().subtract(14, 'days');
+// .startOf('week')    = Sunday
+// .startOf('isoweek') = Monday
+const customRanges = [
+  {
+    // We started Monday, Sept 18th
+    key: 'sinceStart',
+    startDate: startofTracking,
+    endDate: today
+  },
+  {
+    key: 'pastTwoWeeks',
+    startDate: twoWeeksAgo,
+    endDate: today
+  }
+];
 // Define Async middleware wrapper to avoid try-catch
 const asyncMiddleware = fn => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch(next);
@@ -24,7 +48,7 @@ const asyncMiddleware = fn => (req, res, next) => {
 // const promise = mongoose.connect('mongodb://localhost/myapp', {
 //   useMongoClient: true,
 // });
-mongoose.connect('mongodb://localhost:27025/get_fit');
+mongoose.connect(config.database);
 const db = mongoose.connection;
 
 // Check connection
@@ -91,6 +115,12 @@ app.use(expressValidator({
     };
   }
 }));
+
+// Passport Config Middleware
+require('./config/passport')(passport);
+// Passport Middleware
+app.use(passport.initialize());
+app.use(passport.session());
 
 // Include custom middleware
 const mongoMiddleware = require('./middlewares/mongoMiddleware');
@@ -170,6 +200,6 @@ app.use('/sam', sam);
 app.use('/amelia', amelia);
 
 // Start Server
-app.listen(port, () => {
-  console.log(`Server started on port ${port}`);
+app.listen(config.serverPort, () => {
+  console.log(`Server started on port ${config.serverPort}`);
 });

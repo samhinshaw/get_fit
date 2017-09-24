@@ -1,0 +1,24 @@
+extends partials/layout
+
+block header
+  p.title
+    | Users
+  p.subtitle
+    | Login, register, 
+    strong  manage your account
+    |  🤓
+
+block subnav
+  nav.navbar.has-shadow.is-light(id=pageInfo.user+'-subnav')
+    .container
+      .navbar-tabs
+        a.navbar-item.is-tab.is-active(href='/users')
+          | Overview
+        a.navbar-item.is-tab(href='/users/login')
+          | Login
+        a.navbar-item.is-tab(href='/users/register')
+          | Register
+
+
+block content
+  p Hello
