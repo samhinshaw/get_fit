@@ -6,6 +6,27 @@
 ## Features to Implement
 
 Back End  
+- ~~Redo models~~: 
+    + ~~User~~
+        + ~~Name~~
+        + ~~Username~~
+        + ~~Email~~
+        + ~~Password~~
+        + ~~Calorie Goal (calGoal)~~
+        + ~~Current Points (currentPoints)~~
+    + ~~Entries~~
+        + ~~netCals~~
+        + ~~totalCals~~
+        + ~~points~~
+        + ~~isEmpty~~
+        + ~~goalCals~~
+        + ~~date~~
+        + ~~exercise~~
+    + ~~Period~~
+        + ~~startDate~~
+        + ~~endDate~~
+        + ~~points~~
+        + ~~user~~
 - ~~Calculate points earned~~  
     + ~~By day, in total, and in the past two weeks~~
 - Store points in database for retrieval
@@ -25,3 +46,5 @@ Front End
     + abrupt transition between similar looking tabs is jarring
 - Theme body in the same color as the hero
     + shrink the main containers so the app has a card view (on desktop only)
+- Cache middleware
+- Change view engine to pull period database?

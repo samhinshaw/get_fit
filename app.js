@@ -10,6 +10,7 @@ const expressValidator = require('express-validator');
 const flash = require('connect-flash');
 const passport = require('passport');
 const config = require('./config/database');
+const _ = require('lodash');
 
 const moment = MomentRange.extendMoment(Moment);
 moment().format(); // required by package entirely
@@ -66,8 +67,8 @@ const app = express();
 // Include document Schemas
 // const Purchase = require('./models/purchase');
 // const Period = require('./models/period');
-const Sam = require('./models/sam');
-const Amelia = require('./models/amelia');
+const Period = require('./models/period');
+const User = require('./models/user');
 
 // Load View Engine
 app.set('views', path.join(__dirname, 'views'));
@@ -131,34 +132,81 @@ const mongoMiddleware = require('./middlewares/mongoMiddleware');
 app.use(asyncMiddleware(async (req, res, next) => {
   // Don't need try, catch anymore since asyncMiddleware (see top of app.js) is
   // handling async errors
-  const samWeekPeriods = await mongoMiddleware.queryWeeksFromMongo(Sam);
-  const samCustomPeriods = await mongoMiddleware.queryCustomPeriodsFromMongo(Sam);
-  const ameliaWeekPeriods = await mongoMiddleware.queryWeeksFromMongo(Amelia);
-  const ameliaCustomPeriods = await mongoMiddleware.queryCustomPeriodsFromMongo(Amelia);
 
-  const pointTotals = {
-    sam: {
-      weekTotals: samWeekPeriods,
-      customTotals: samCustomPeriods
-    },
-    amelia: {
-      weekTotals: ameliaWeekPeriods,
-      customTotals: ameliaCustomPeriods
-    }
-  };
-  res.locals.pointTotals = pointTotals;
+  // Get and concat all point tallies
+  const samWeeks = await mongoMiddleware.queryWeeksFromMongo('sam');
+  const samCustom = await mongoMiddleware.queryCustomPeriodsFromMongo('sam');
+  const ameliaWeeks = await mongoMiddleware.queryWeeksFromMongo('amelia');
+  const ameliaCustom = await mongoMiddleware.queryCustomPeriodsFromMongo('amelia');
 
-  // make the most important entries available at the top level
-  // if more specific ones needed, we can get those within the views template
-  const samPointTally = samCustomPeriods.find(element => element.key === 'sinceStart');
-  const ameliaPointTally = ameliaCustomPeriods.find(element => element.key === 'sinceStart');
+  const periods = _.union(samWeeks, samCustom, ameliaWeeks, ameliaCustom);
+
+  // make the points array available to the view engine
+  res.locals.pointTotals = periods;
+
+  // Save to periods collection
+
+  periods.forEach((entry) => {
+    const period = {
+      key: entry.key,
+      startDate: entry.startDate,
+      endDate: entry.endDate,
+      points: entry.points,
+      user: entry.user
+    };
+      // resave points
+    Period.findOneAndUpdate(
+      {
+        key: period.key,
+        user: period.user
+      },
+      { $set: period },
+      { upsert: true },
+      (saveErr) => {
+        if (saveErr) {
+          console.log(saveErr);
+        }
+      }
+    );
+  });
+
+  // make the current running total easily accessible. if more specific ones
+  // needed, we can get those within the views template
+  // Array.filter to find ALL (returns array even if only one match)
+  const pointTallies = periods.filter(period => period.key === 'sinceStart');
+
+  // Array.find to find the FIRST match. returns the item (not an array), but
+  // will only ever find one
+  const samPointTally = pointTallies.find(period => period.user === 'sam');
+  const ameliaPointTally = pointTallies.find(period => period.user === 'amelia');
 
   const pointTally = {
     sam: parseFloat(samPointTally.points),
     amelia: parseFloat(ameliaPointTally.points)
   };
 
+    // make the point tallies array available to the view engine
   res.locals.pointTally = pointTally;
+
+  pointTallies.forEach((period) => {
+    User.update(
+      {
+        name: period.user
+      },
+      {
+        $set: {
+          currentPoints: period.points
+        }
+      },
+      { upsert: true },
+      (saveErr) => {
+        if (saveErr) {
+          console.log(saveErr);
+        }
+      }
+    );
+  });
+
   next();
 }));
 
