@@ -6,6 +6,11 @@ const _ = require('lodash');
 // const moment = require('moment');
 const moment = require('moment-timezone');
 
+// Define Async middleware wrapper to avoid try-catch
+const asyncMiddleware = fn => (req, res, next) => {
+  Promise.resolve(fn(req, res, next)).catch(next);
+};
+
 // Initialize Moment & Today Object
 moment().format(); // required by package entirely
 // const now = moment.utc();
@@ -17,6 +22,9 @@ const router = express.Router();
 
 // Bring in Date model
 const Entry = require('../models/entry');
+
+const Reward = require('../models/reward');
+const Purchase = require('../models/purchase');
 
 // Print in the page info we're using to style the page with Bulma
 const pageInfo = {
@@ -60,6 +68,62 @@ router.get('/', (req, res) => {
     }
   );
 });
+
+router.get('/spend', (req, res) => {
+  Reward.find({ for: 'amelia' }, (err, rewards) => {
+    if (err) {
+      console.log(err);
+    }
+    const sortedRewards = _.orderBy(rewards, 'cost', 'asc');
+    res.render('amelia_spend', {
+      rewards: sortedRewards
+    });
+  });
+});
+
+router.post(
+  '/spend',
+  asyncMiddleware(async (req, res, next) => {
+    const rewardKey = req.body.reward;
+
+    const query = {
+      key: rewardKey
+    };
+    // Pull up reward entry in DB
+    const rewardEntry = await Reward.findOne(query, (err, reward) => {
+      if (err) {
+        console.log(err);
+      }
+      return reward;
+    });
+
+    if (rewardEntry.cost > res.locals.pointTally.sam) {
+      req.flash('danger', 'Not enough points!');
+      res.redirect('/amelia/spend');
+      return;
+    }
+
+    const newPurchase = new Purchase({
+      reward: rewardKey,
+      displayName: rewardEntry.displayName,
+      pointCost: rewardEntry.cost,
+      requester: 'sam',
+      timeRequested: moment()
+        .tz('US/Pacific')
+        .toDate(),
+      approved: false
+    });
+
+    newPurchase.save((saveErr) => {
+      if (saveErr) {
+        console.log(saveErr);
+      } else {
+        req.flash('success', 'Request sent! Points deducted from your account.');
+        res.redirect('/amelia/spend');
+      }
+    });
+  })
+);
 
 router.post('/:date', (req, res) => {
   // parse date that was POSTed as string

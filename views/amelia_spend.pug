@@ -34,21 +34,28 @@ block content
   - const todayPretty = today.format('YYYY-MM-DD');
 
 
-  //- h3.is-size-3 Spend Points
-  //- br
-  form(method="POST", action="/sam/spend")
-    .field
-      label.label Choose Reward
-      .control
-        .select
-          select(name='reward')
-            option( selected, disabled ) Reward
-            option 10pts - 30min massage
-            option 10pts - Make me dinner!
-    .field
-      label.label Message
-      .control
-        textarea.textarea(name='message', placeholder='Any specific requests?')
-    .field.is-grouped
-      .control
-        button.button Send Request
+    //- h3.is-size-3 Spend Points
+    //- br
+  form(method="POST", action="/amelia/spend")
+      .field
+        label.label Choose Reward
+        .control
+          .select
+            select(name='reward')
+              option(selected, disabled) Reward
+              each reward, i in rewards
+                - const disabled = reward.cost > pointTally.amelia
+                option(value=reward.key, disabled=disabled)= reward.displayName
+                
+      .field
+        label.label Message
+        .control
+          textarea.textarea(name='message', placeholder='Any specific requests?')
+      //- Currently no Bulma styling for a date-picker, so let's just skip this for now
+      //- .field
+      //-   label.label Date
+      //-   .control
+      //-     input(type='date', name='dateRequest')
+      .field.is-grouped
+        .control
+          button.button Send Request

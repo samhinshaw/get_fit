@@ -89,7 +89,15 @@ router.get('/', (req, res) => {
 });
 
 router.get('/spend', (req, res) => {
-  res.render('sam_spend', {});
+  Reward.find({ for: 'sam' }, (err, rewards) => {
+    if (err) {
+      console.log(err);
+    }
+    const sortedRewards = _.orderBy(rewards, 'cost', 'asc');
+    res.render('sam_spend', {
+      rewards: sortedRewards
+    });
+  });
 });
 
 router.post(
