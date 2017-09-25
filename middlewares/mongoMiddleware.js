@@ -38,6 +38,8 @@ const customRanges = [
 // Bring in user models
 const Entry = require('../models/entry');
 
+const Purchase = require('../models/purchase');
+
 async function queryWeeksFromMongo(user) {
   // First get all db entries for that user
 
@@ -112,6 +114,15 @@ async function queryCustomPeriodsFromMongo(user) {
       return ents;
     }
   });
+
+  const purchases = await Purchase.find({ requester: user }, (err, ents) => {
+    if (err) {
+      console.log(err);
+    } else {
+      return ents;
+    }
+  });
+
   const customPeriods = await customRanges.reduce((customPeriodResult, customPeriod) => {
     // For each date that exists in this period, sum the points
     const customPeriodPoints = entries.reduce((points, entry) => {
@@ -122,11 +133,29 @@ async function queryCustomPeriodsFromMongo(user) {
       return points;
     }, 0);
 
+    let totalForPeriod;
+
+    // IF we're counting from the start, subtract purchases, since that's our running TOTAL.
+    // Otherwise, we just want to know the number of points EARNED in that period.
+    if (customPeriod.key === 'sinceStart') {
+      const customPeriodPurchases = purchases.reduce((points, purchase) => {
+        const date = moment(purchase.date).tz('US/Pacific');
+        if (date.isBetween(customPeriod.startDate, customPeriod.endDate, 'day', '[]')) {
+          return points + purchase.pointCost;
+        }
+        return points;
+      }, 0);
+
+      totalForPeriod = customPeriodPoints - customPeriodPurchases;
+    } else {
+      totalForPeriod = customPeriodPoints;
+    }
+
     customPeriodResult.push({
       key: customPeriod.key,
       startDate: customPeriod.startDate,
       endDate: customPeriod.endDate,
-      points: customPeriodPoints.toFixed(1),
+      points: totalForPeriod.toFixed(1),
       user
     });
 

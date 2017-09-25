@@ -14,30 +14,38 @@ const purchaseSchema = new Schema(
       type: String,
       required: true
     },
+    displayName: {
+      type: String,
+      required: true
+    },
     pointCost: {
       type: Number,
       required: true
     },
-    dateRequested: {
+    requester: {
+      type: String,
+      required: true
+    },
+    timeRequested: {
       type: Date,
       required: true
     },
-    dateRequestedFor: {
-      type: Date,
-      required: false
-    },
+    // dateRequestedFor: {
+    //   type: Date,
+    //   required: false
+    // },
     approved: {
       type: Boolean,
       required: true
     },
-    dateApproved: {
-      type: Date,
-      required: true
-    },
-    dateScheduledFor: {
+    timeApproved: {
       type: Date,
       required: false
     }
+    // dateScheduled: {
+    //   type: Date,
+    //   required: false
+    // }
     // object: {
     //   type: Schema.Types.Mixed,
     //   required: false

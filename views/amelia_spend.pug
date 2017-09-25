@@ -1,0 +1,54 @@
+extends partials/layout
+
+block header
+  p.title
+    | Amelia
+  p.subtitle
+    | Working towards that 
+    strong tight round booty
+    |  🍑 
+
+//- This could be an include, but leaving it here will
+//- allow us to work with the 'is-active' logic better
+block subnav
+  nav.navbar.has-shadow.is-white(id=pageInfo.user+'-subnav')
+    .container
+      .navbar-tabs
+        a.navbar-item.is-tab(href='/amelia')
+          | Overview
+        a.navbar-item.is-tab(href='#')
+          | Weight
+        a.navbar-item.is-tab.is-active(href='/amelia/spend')
+          | Spend Points
+
+block content
+  //- Set up date information here. 
+  //- Unfortunately this can't be done at the top level of an extending template
+  //- - const moment = require('moment');
+  - const moment = require('moment-timezone');
+  - moment().format();
+
+  //- - const now = moment.utc();
+  - const now = moment.tz('US/Pacific');
+  - const today = now.clone().startOf('day');
+  - const todayPretty = today.format('YYYY-MM-DD');
+
+
+  //- h3.is-size-3 Spend Points
+  //- br
+  form(method="POST", action="/sam/spend")
+    .field
+      label.label Choose Reward
+      .control
+        .select
+          select(name='reward')
+            option( selected, disabled ) Reward
+            option 10pts - 30min massage
+            option 10pts - Make me dinner!
+    .field
+      label.label Message
+      .control
+        textarea.textarea(name='message', placeholder='Any specific requests?')
+    .field.is-grouped
+      .control
+        button.button Send Request
