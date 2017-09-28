@@ -2,14 +2,11 @@ const handlers = {
   // Function 1 to listen for: hamburger menu
   toggleNavBarBurger: () => {
     // Get all "navbar-burger" elements
-    const navbarBurgers = Array.prototype.slice.call(
-      document.querySelectorAll('.navbar-burger'),
-      0
-    );
+    const navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
     // Check if there are any nav burgers
     if (navbarBurgers.length > 0) {
       // Add a click event on each of them
-      navbarBurgers.forEach((element) => {
+      navbarBurgers.forEach(element => {
         element.addEventListener('click', () => {
           // Get the target from the "data-target" attribute
           let target = element.dataset.target;
@@ -23,24 +20,24 @@ const handlers = {
     }
   },
   deleteArticle: () => {
-    $('.delete-article').on('click', (event) => {
+    $('.delete-article').on('click', event => {
       $target = $(event.target);
       const id = $target.attr('data-id');
       $.ajax({
         type: 'DELETE',
         url: `/data/${id}`,
-        success: (res) => {
+        success: res => {
           alert('Deleting Article');
           window.location.href = '/';
         },
-        error: (err) => {
+        error: err => {
           console.log(err);
         }
       });
     });
   },
   updateEntry: () => {
-    $('.update-entry').on('click', (event) => {
+    $('.update-entry').on('click', event => {
       // Get the Dates
       // const id = $(event.target).attr('data-id');
       const date = $(event.currentTarget).attr('data-date');
@@ -56,11 +53,11 @@ const handlers = {
         type: 'POST',
         url: `${route}/${date}`,
         // handle successes!
-        success: (res) => {
+        success: res => {
           window.location.reload();
         },
         // handle errors
-        error: (err) => {
+        error: err => {
           console.log(err);
           window.location.reload();
         }
@@ -68,7 +65,7 @@ const handlers = {
     });
   },
   dismissNotification: () => {
-    $('.messages').on('click', (event) => {
+    $('.messages').on('click', event => {
       // before we delete anything, check to see if this is the last alert
       if (
         $(event.target)

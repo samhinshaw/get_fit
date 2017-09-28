@@ -43,12 +43,25 @@ module.exports = function(grunt) {
     //   }
     // }
     // uglify: {
-    //   options: {
-    //     banner: '<%= banner %>'
+    //   dev: {
+    //     options: {
+    //       sourceMap: true,
+    //       compress: false,
+    //       mangle: false
+    //     },
+    //     files: {
+    //       'public/js/bundle.min.js': ['public/js/client.js']
+    //     }
     //   },
     //   dist: {
-    //     src: '<%= concat.dist.dest %>',
-    //     dest: 'dist/<%= pkg.name %>.min.js'
+    //     options: {
+    //       sourceMap: false,
+    //       compress: true,
+    //       mangle: true
+    //     },
+    //     files: {
+    //       'public/js/bundle.min.js': ['public/js/client.js']
+    //     }
     //   }
     // }
   });

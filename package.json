@@ -4,7 +4,8 @@
   "description": "Fitness Tracker for Sam & Am",
   "main": "app.js",
   "scripts": {
-    "start": "grunt dev && nodemon app.js"
+    "start": "grunt dev && nodemon app.js",
+    "uglifyClient": "uglifyjs public/js/client.js --compress --mangle --source-map --output public/js/bundle.min.js"
   },
   "repository": {
     "type": "git",
@@ -36,7 +37,8 @@
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
     "pug": "^2.0.0-rc.4",
-    "python-shell": "^0.4.0"
+    "python-shell": "^0.4.0",
+    "request": "^2.83.0"
   },
   "devDependencies": {
     "eslint": "^4.7.0",
@@ -45,6 +47,8 @@
     "grunt": "^1.0.1",
     "grunt-contrib-concat": "^1.0.1",
     "grunt-contrib-sass": "^1.0.0",
-    "grunt-contrib-watch": "^1.0.0"
+    "grunt-contrib-uglify": "^3.1.0",
+    "grunt-contrib-watch": "^1.0.0",
+    "uglify-es": "^3.1.2"
   }
 }
