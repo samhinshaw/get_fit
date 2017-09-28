@@ -2,6 +2,8 @@
 const PythonShell = require('python-shell');
 const express = require('express');
 const _ = require('lodash');
+const request = require('request');
+
 // datetime functions
 // const moment = require('moment');
 const moment = require('moment-timezone');
@@ -114,12 +116,39 @@ router.post(
       approved: false
     });
 
-    newPurchase.save((saveErr) => {
+    newPurchase.save(saveErr => {
       if (saveErr) {
         console.log(saveErr);
       } else {
         req.flash('success', 'Request sent! Points deducted from your account.');
         res.redirect('/amelia/spend');
+      }
+    });
+
+    // Finally send a message to IFTTT telling
+
+    // Set the headers
+    var headers = {
+      // 'User-Agent': 'Super Agent/0.0.1',
+      'Content-Type': 'application/x-www-form-urlencoded'
+    };
+
+    // Configure the request
+    var options = {
+      url: 'https://maker.ifttt.com/trigger/purchase_request/with/key/JCavOg5Om_uGsh0R6McOC',
+      method: 'POST',
+      headers: headers,
+      form: { value1: 'Sam' }
+    };
+
+    // Start the request
+    request(options, function(error, response, body) {
+      if (error) {
+        console.log('ERROR:');
+        console.log(error);
+      } else if (!error && response.statusCode == 200) {
+        // Print out the response body
+        console.log(body);
       }
     });
   })
@@ -129,12 +158,17 @@ router.post('/:date', (req, res) => {
   // parse date that was POSTed as string
   // const postedDate = moment.utc(req.params.date, 'YYYY-MM-DD');
 
-  // construct query to pass to python script
-  const args = {
-    // _id: req.params.id
-    date: req.params.date,
-    user: pageInfo.user
-  };
+  let startDate;
+  let endDate;
+
+  if (/^\d{4}-\d{2}-\d{2}$/.test(req.params.date)) {
+    startDate = req.params.date;
+    endDate = req.params.date;
+  } else if (/^\d{4}-\d{2}-\d{2} \d{4}-\d{2}-\d{2}$/.test(req.params.date)) {
+    const date = req.params.date.split(' ');
+    startDate = date[0];
+    endDate = date[1];
+  }
 
   // Python script options
   const options = {
@@ -142,13 +176,13 @@ router.post('/:date', (req, res) => {
     // pythonPath: '/Users/samhinshaw/.miniconda2/bin/python',
     // pythonOptions: ['-u'],
     scriptPath: './data',
-    args: [args.date, args.user]
+    args: [startDate, endDate, pageInfo.user]
   };
 
   let pyError;
 
   // Run python script
-  PythonShell.run('getMFP.py', options, (err) => {
+  PythonShell.run('getMFP.py', options, err => {
     if (err) {
       console.log(JSON.stringify(err));
       pyError = err;

@@ -2,6 +2,8 @@
 const PythonShell = require('python-shell');
 const express = require('express');
 const _ = require('lodash');
+var request = require('request');
+
 // datetime functions
 // const moment = require('moment');
 const moment = require('moment-timezone');
@@ -139,6 +141,33 @@ router.post(
       } else {
         req.flash('success', 'Request sent! Points deducted from your account.');
         res.redirect('/sam/spend');
+      }
+    });
+
+    // Finally send a message to IFTTT telling
+
+    // Set the headers
+    var headers = {
+      // 'User-Agent': 'Super Agent/0.0.1',
+      'Content-Type': 'application/x-www-form-urlencoded'
+    };
+
+    // Configure the request
+    var options = {
+      url: 'https://maker.ifttt.com/trigger/purchase_request/with/key/JCavOg5Om_uGsh0R6McOC',
+      method: 'POST',
+      headers: headers,
+      form: { value1: 'Sam' }
+    };
+
+    // Start the request
+    request(options, function(error, response, body) {
+      if (error) {
+        console.log('ERROR:');
+        console.log(error);
+      } else if (!error && response.statusCode == 200) {
+        // Print out the response body
+        console.log(body);
       }
     });
   })
