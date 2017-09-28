@@ -5,3 +5,4 @@ samGStoken.rds
 .Rproj.user
 .vscode
 *.pkl
+.sass-cache
