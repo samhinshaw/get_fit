@@ -1,8 +1,10 @@
 module.exports = {
-  extends: 'airbnb-base',
+  extends: ['airbnb-base', 'airbnb', 'prettier'],
+  plugins: ['prettier'],
   env: {
     browser: true,
-    node: true
+    node: true,
+    es6: true
     // jasmine: true
   },
   rules: {
