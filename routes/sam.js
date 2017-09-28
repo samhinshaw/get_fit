@@ -133,7 +133,7 @@ router.post(
       approved: false
     });
 
-    newPurchase.save((saveErr) => {
+    newPurchase.save(saveErr => {
       if (saveErr) {
         console.log(saveErr);
       } else {
@@ -148,13 +148,17 @@ router.post('/:date', (req, res) => {
   // parse date that was POSTed as string
   // Wait, we're passing the string directly to python, so is this even necessary?
   // const postedDate = moment.utc(req.params.date, 'YYYY-MM-DD');
+  let startDate;
+  let endDate;
 
-  // construct query to pass to python script
-  const args = {
-    // _id: req.params.id
-    date: req.params.date,
-    user: pageInfo.user
-  };
+  if (/^\d{4}-\d{2}-\d{2}$/.test(req.params.date)) {
+    startDate = req.params.date;
+    endDate = req.params.date;
+  } else if (/^\d{4}-\d{2}-\d{2} \d{4}-\d{2}-\d{2}$/.test(req.params.date)) {
+    const date = req.params.date.split(' ');
+    startDate = date[0];
+    endDate = date[1];
+  }
 
   // Python script options
   const options = {
@@ -162,13 +166,13 @@ router.post('/:date', (req, res) => {
     // pythonPath: '/Users/samhinshaw/.miniconda2/bin/python',
     // pythonOptions: ['-u'],
     scriptPath: './data',
-    args: [args.date, args.user]
+    args: [startDate, endDate, pageInfo.user]
   };
 
   let pyError;
 
   // Run python script
-  PythonShell.run('getMFP.py', options, (err) => {
+  PythonShell.run('getMFP.py', options, err => {
     if (err) {
       console.log(JSON.stringify(err));
       pyError = err;

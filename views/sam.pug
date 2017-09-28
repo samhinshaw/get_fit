@@ -30,6 +30,8 @@ block content
   - const now = moment.tz('US/Pacific');
   - const today = now.clone().startOf('day');
   - const todayPretty = today.format('YYYY-MM-DD');
+  - const twoWeeksAgo = today.clone().subtract(14, 'days');
+  - const twoWeeksAgoPretty = twoWeeksAgo.format('YYYY-MM-DD');
 
   //- - const tomorrow = today.clone().add(1, 'day');
   //- - const tomorrowPretty = tomorrow.format('YYYY-MM-DD');
@@ -37,7 +39,11 @@ block content
   .field.is-grouped
     .control
       button.button.is-small.is-info.is-pulled-left.update-entry(data-date=todayPretty)
-        | Get Today
+        | Update Today
+    .control
+      button.button.tooltip.is-tooltip-top.is-small.is-info.is-pulled-left.update-entry(data-date=`${twoWeeksAgoPretty} ${todayPretty}`, data-tooltip="This may take a while to update.")
+        | Update Past Two Weeks
+    //- .control
       span.tag(style='margin-left: 1em;', class='is-danger')
         | #{pointTally.sam.toFixed(1)}
   br
