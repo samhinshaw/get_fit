@@ -40,8 +40,13 @@ block content
     .control
       button.button.is-small.is-info.is-pulled-left.update-entry(data-date=todayPretty)
         | Update Today
-    .control
-      button.button.tooltip.is-tooltip-top.is-small.is-info.is-pulled-left.update-entry(data-date=`${twoWeeksAgoPretty} ${todayPretty}`, data-tooltip="This may take a while to update.")
+    //- Note, if we place the tooltip directly onto the button, the behavior of
+    //-  the tooltop (which utilizes ::before and ::after pseudo-elements) will
+    //-  interfere with the loading spinner, which uses the ::after element on
+    //-  click! Therefore we must attach the tooltip to the parent .control div
+    //-  of the button. 
+    .control.tooltip.is-tooltip-top(data-tooltip="This may take a while to update.")
+      button.button.is-small.is-info.is-pulled-left.update-entry(data-date=`${twoWeeksAgoPretty} ${todayPretty}`)
         | Update Past Two Weeks
     //- .control
       span.tag(style='margin-left: 1em;', class='is-danger')

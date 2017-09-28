@@ -32,13 +32,24 @@ block content
   - const now = moment.tz('US/Pacific');
   - const today = now.clone().startOf('day');
   - const todayPretty = today.format('YYYY-MM-DD');
+  - const twoWeeksAgo = today.clone().subtract(14, 'days');
+  - const twoWeeksAgoPretty = twoWeeksAgo.format('YYYY-MM-DD');
 
   //- - const tomorrow = today.clone().add(1, 'day');
   //- - const tomorrowPretty = tomorrow.format('YYYY-MM-DD');
 
   .field.is-grouped
     .control
-      button.button.is-small.is-info.is-pulled-left.update-entry(data-date=todayPretty) Get Today
+      button.button.is-small.is-info.is-pulled-left.update-entry(data-date=todayPretty)
+        | Update Today
+    //- Note, if we place the tooltip directly onto the button, the behavior of
+    //-  the tooltop (which utilizes ::before and ::after pseudo-elements) will
+    //-  interfere with the loading spinner, which uses the ::after element on
+    //-  click! Therefore we must attach the tooltip to the parent .control div
+    //-  of the button. 
+    .control.tooltip.is-tooltip-top(data-tooltip="This may take a while to update.")
+      button.button.is-small.is-info.is-pulled-left.update-entry(data-date=`${twoWeeksAgoPretty} ${todayPretty}`)
+        | Update Past Two Weeks
   br
   each entry, i in entries
     //- - const entryDate = moment.utc(entry.date);
