@@ -2,6 +2,7 @@
 const PythonShell = require('python-shell');
 const express = require('express');
 const _ = require('lodash');
+const nodemailer = require('nodemailer');
 // const request = require('request');
 // const text = require('textbelt');
 
@@ -14,6 +15,42 @@ const moment = require('moment-timezone');
 const asyncMiddleware = fn => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch(next);
 };
+
+// Setup Nodemailer options
+const transporter = nodemailer.createTransport(
+  {
+    sendmail: true,
+    newline: 'unix',
+    path: 'sendmail'
+  },
+  {
+    debug: true,
+    service: 'Gmail',
+    auth: {
+      user: 'samuel.hinshaw@gmail.com',
+      pass: 'ZhNx2qEN9mZXp524'
+    }
+  }
+);
+
+// verify connection configuration
+// transporter.verify((error, success) => {
+//   if (error) {
+//     console.log(error);
+//   } else if (success) {
+//     console.log('Server is ready to take our messages');
+//   } else {
+//     console.log('Unspecified error.');
+//   }
+// });
+
+// const transporter = nodemailer.createTransport('SMTP', {
+//   service: 'Gmail',
+//   auth: {
+//     user: 'samuel.hinshaw@gmail.com',
+//     pass: 'ZhNx2qEN9mZXp524'
+//   }
+// });
 
 // Initialize Moment & Today Object
 moment().format(); // required by package entirely
@@ -137,15 +174,45 @@ router.post(
       approved: false
     });
 
-    newPurchase.save(saveErr => {
-      if (saveErr) {
-        console.log(saveErr);
-      } else {
-        req.flash('success', 'Request sent! Points deducted from your account.');
-        res.redirect('/sam/spend');
-      }
-    });
+    // newPurchase.save(saveErr => {
+    //   if (saveErr) {
+    //     console.log(saveErr);
+    //   } else {
+    //     req.flash('success', 'Request sent! Points deducted from your account.');
+    //     res.redirect('/sam/spend');
+    //   }
+    // });
 
+    // Send mail!
+    // transporter.sendMail(
+    //   {
+    //     from: 'samuel.hinshaw@gmail.com',
+    //     to: 'dblh227@gmail.com',
+    //     subject: 'Message',
+    //     // text: 'I hope this message gets delivered!'
+    //     html: '<b>Hello world 🐴</b>' // html body
+    //   },
+    //   (err, info) => {
+    //     console.log(info.envelope);
+    //     console.log(info.messageId);
+    //   }
+    // );
+
+    // const mailOptions = {
+    //   from: 'samuel.hinshaw@gmail.com',
+    //   to: 'dblh227@gmail.com',
+    //   subject: 'Message',
+    //   // text: 'I hope this message gets delivered!'
+    //   html: '<b>Hello world 🐴</b>' // html body
+    // };
+
+    // transporter.sendMail(mailOptions, (error, info) => {
+    //   if (error) {
+    //     console.log(`Error: ${error}`);
+    //   } else {
+    //     console.log(`Message sent: ${info.response}`);
+    //   }
+    // });
     // Send text notifying of request
 
     // request.post(
