@@ -2,9 +2,7 @@
 const PythonShell = require('python-shell');
 const express = require('express');
 const _ = require('lodash');
-const nodemailer = require('nodemailer');
-// const request = require('request');
-// const text = require('textbelt');
+const request = require('request');
 
 // datetime functions
 // const moment = require('moment');
@@ -15,6 +13,21 @@ const moment = require('moment-timezone');
 const asyncMiddleware = fn => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch(next);
 };
+
+// IFTTT Configuration
+
+function configureIFTTT(user, requestType) {
+  const configOptions = {
+    url: `https://maker.ifttt.com/trigger/${requestType}/with/key/JCavOg5Om_uGsh0R6McOC`,
+    method: 'POST',
+    headers: {
+      // 'User-Agent': 'Super Agent/0.0.1',
+      'Content-Type': 'application/x-www-form-urlencoded'
+    },
+    form: { value1: user }
+  };
+  return configOptions;
+}
 
 // Initialize Moment & Today Object
 moment().format(); // required by package entirely
@@ -33,7 +46,8 @@ const Purchase = require('../models/purchase');
 const pageInfo = {
   heroType: 'warning',
   route: '/sam',
-  user: 'sam'
+  user: 'sam',
+  User: 'Sam'
 };
 
 // Use middleware to modify locals object (makes available to view engine!)
@@ -142,35 +156,23 @@ router.post(
       if (saveErr) {
         console.log(saveErr);
       } else {
-        req.flash('success', 'Request sent! Points deducted from your account.');
-        res.redirect('/sam/spend');
-      }
-    });
-
-    // Finally send a message to IFTTT
-
-    // Set the headers
-    const headers = {
-      // 'User-Agent': 'Super Agent/0.0.1',
-      'Content-Type': 'application/x-www-form-urlencoded'
-    };
-
-    // Configure the request
-    const options = {
-      url: 'https://maker.ifttt.com/trigger/purchase_request/with/key/JCavOg5Om_uGsh0R6McOC',
-      method: 'POST',
-      headers,
-      form: { value1: 'Sam' }
-    };
-
-    // Start the request
-    request(options, (error, response, body) => {
-      if (error) {
-        console.log('ERROR:');
-        console.log(error);
-      } else if (!error && response.statusCode == 200) {
-        // Print out the response body
-        console.log(body);
+        // If saved, send request via IFTTT
+        request(
+          // this function will return our configuration object with
+          configureIFTTT(pageInfo.User, 'purchase_request'),
+          (error, response) => {
+            // (error, response, body)
+            if (error) {
+              console.log('ERROR:');
+              console.log(error);
+            } else if (!error && response.statusCode === 200) {
+              // Print out the response body
+              // console.log(body);
+              req.flash('success', 'Request sent! Points deducted from your account.');
+              res.redirect('/sam/spend');
+            }
+          }
+        );
       }
     });
   })
@@ -201,20 +203,16 @@ router.post('/:date', (req, res) => {
     args: [startDate, endDate, pageInfo.user]
   };
 
-  let pyError;
-
   // Run python script
   PythonShell.run('getMFP.py', options, err => {
     if (err) {
       console.log(JSON.stringify(err));
-      pyError = err;
-      res.send('Failure');
+      req.flash('danger', JSON.stringify(err));
+      res.redirect('/sam');
     } else {
       console.log('Success updating user data from MFP');
       res.send('Success');
     }
-
-    req.flash('danger', JSON.stringify(pyError));
   });
 
   // ///////////////////////////////

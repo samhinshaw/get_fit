@@ -38,14 +38,12 @@ elif len(sys.argv) == 4:
     user = sys.argv[3]
     firstDate = arrow.get(firstDate, 'YYYY-MM-DD', tzinfo='US/Pacific')
     secondDate = arrow.get(secondDate, 'YYYY-MM-DD', tzinfo='US/Pacific')
-    if firstDate < secondDate:
+    if firstDate <= secondDate:
         startDate = firstDate
         endDate = secondDate
     elif firstDate > secondDate:
         startDate = secondDate
         endDate = firstDate
-    elif firstDate == secondDate:
-        sys.exit('You supplied the same date twice!')
     else:
         sys.exit('Error parsing the dates you provided.')
 else:
