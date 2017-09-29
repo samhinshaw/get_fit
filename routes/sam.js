@@ -2,12 +2,13 @@
 const PythonShell = require('python-shell');
 const express = require('express');
 const _ = require('lodash');
-var request = require('request');
+// const request = require('request');
+// const text = require('textbelt');
 
 // datetime functions
 // const moment = require('moment');
 const moment = require('moment-timezone');
-const mongoMiddleware = require('../middlewares/mongoMiddleware');
+// const mongoMiddleware = require('../middlewares/mongoMiddleware');
 
 // Define Async middleware wrapper to avoid try-catch
 const asyncMiddleware = fn => (req, res, next) => {
@@ -104,7 +105,8 @@ router.get('/spend', (req, res) => {
 
 router.post(
   '/spend',
-  asyncMiddleware(async (req, res, next) => {
+  asyncMiddleware(async (req, res) => {
+    // (req, res, next)
     const rewardKey = req.body.reward;
 
     const query = {
@@ -144,32 +146,69 @@ router.post(
       }
     });
 
-    // Finally send a message to IFTTT telling
+    // Send text notifying of request
 
-    // Set the headers
-    var headers = {
-      // 'User-Agent': 'Super Agent/0.0.1',
-      'Content-Type': 'application/x-www-form-urlencoded'
-    };
+    // request.post(
+    //   'https://localhost:9090/canada',
+    //   {
+    //     form: {
+    //       phone: '6047008693',
+    //       message: 'Hello world'
+    //       // key: 'textbelt'
+    //     }
+    //   },
+    //   (err, httpResponse, body) => {
+    //     if (err) {
+    //       console.error('Error:', err);
+    //       return;
+    //     }
+    //     console.log(JSON.parse(body));
+    //   }
+    // );
 
-    // Configure the request
-    var options = {
-      url: 'https://maker.ifttt.com/trigger/purchase_request/with/key/JCavOg5Om_uGsh0R6McOC',
-      method: 'POST',
-      headers: headers,
-      form: { value1: 'Sam' }
-    };
+    // text.sendText(
+    //   '6047008693',
+    //   'Hello!',
+    //   {
+    //     fromAddr: 'sam@samhinshaw.com',
+    //     fromName: 'Get Fit',
+    //     region: 'canada',
+    //     provider: '%s@pcs.rogers.com'
+    //     // subject:  'something'
+    //   },
+    //   err => {
+    //     if (err) {
+    //       console.error('Error:', err);
+    //     }
+    //   }
+    // );
 
-    // Start the request
-    request(options, function(error, response, body) {
-      if (error) {
-        console.log('ERROR:');
-        console.log(error);
-      } else if (!error && response.statusCode == 200) {
-        // Print out the response body
-        console.log(body);
-      }
-    });
+    //   // Finally send a message to IFTTT telling
+
+    //   // Set the headers
+    //   var headers = {
+    //     // 'User-Agent': 'Super Agent/0.0.1',
+    //     'Content-Type': 'application/x-www-form-urlencoded'
+    //   };
+
+    //   // Configure the request
+    //   var options = {
+    //     url: 'https://maker.ifttt.com/trigger/purchase_request/with/key/JCavOg5Om_uGsh0R6McOC',
+    //     method: 'POST',
+    //     headers: headers,
+    //     form: { value1: 'Sam' }
+    //   };
+
+    //   // Start the request
+    //   request(options, function(error, response, body) {
+    //     if (error) {
+    //       console.log('ERROR:');
+    //       console.log(error);
+    //     } else if (!error && response.statusCode == 200) {
+    //       // Print out the response body
+    //       console.log(body);
+    //     }
+    //   });
   })
 );
 

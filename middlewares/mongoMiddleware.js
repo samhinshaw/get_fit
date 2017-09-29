@@ -1,9 +1,9 @@
 // Script to calculate the number of points our user has!
 // Calculate and bring in our points of interest!
-const mongoose = require('mongoose');
+// const mongoose = require('mongoose');
 const Moment = require('moment-timezone');
 const MomentRange = require('moment-range');
-const async = require('async');
+// const async = require('async');
 
 const moment = MomentRange.extendMoment(Moment);
 
@@ -46,9 +46,8 @@ async function queryWeeksFromMongo(user) {
   const entries = await Entry.find({ user }, (err, ents) => {
     if (err) {
       console.log(err);
-    } else {
-      return ents;
     }
+    return ents;
   });
 
   // or remove redundancies in-line
@@ -110,17 +109,15 @@ async function queryCustomPeriodsFromMongo(user) {
   const entries = await Entry.find({ user }, (err, ents) => {
     if (err) {
       console.log(err);
-    } else {
-      return ents;
     }
+    return ents;
   });
 
   const purchases = await Purchase.find({ requester: user }, (err, ents) => {
     if (err) {
       console.log(err);
-    } else {
-      return ents;
     }
+    return ents;
   });
 
   const customPeriods = await customRanges.reduce((customPeriodResult, customPeriod) => {
