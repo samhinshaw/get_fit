@@ -16,42 +16,6 @@ const asyncMiddleware = fn => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch(next);
 };
 
-// Setup Nodemailer options
-const transporter = nodemailer.createTransport(
-  {
-    sendmail: true,
-    newline: 'unix',
-    path: 'sendmail'
-  },
-  {
-    debug: true,
-    service: 'Gmail',
-    auth: {
-      user: 'samuel.hinshaw@gmail.com',
-      pass: 'ZhNx2qEN9mZXp524'
-    }
-  }
-);
-
-// verify connection configuration
-// transporter.verify((error, success) => {
-//   if (error) {
-//     console.log(error);
-//   } else if (success) {
-//     console.log('Server is ready to take our messages');
-//   } else {
-//     console.log('Unspecified error.');
-//   }
-// });
-
-// const transporter = nodemailer.createTransport('SMTP', {
-//   service: 'Gmail',
-//   auth: {
-//     user: 'samuel.hinshaw@gmail.com',
-//     pass: 'ZhNx2qEN9mZXp524'
-//   }
-// });
-
 // Initialize Moment & Today Object
 moment().format(); // required by package entirely
 // const now = moment.utc();
@@ -174,108 +138,41 @@ router.post(
       approved: false
     });
 
-    // newPurchase.save(saveErr => {
-    //   if (saveErr) {
-    //     console.log(saveErr);
-    //   } else {
-    //     req.flash('success', 'Request sent! Points deducted from your account.');
-    //     res.redirect('/sam/spend');
-    //   }
-    // });
+    newPurchase.save(saveErr => {
+      if (saveErr) {
+        console.log(saveErr);
+      } else {
+        req.flash('success', 'Request sent! Points deducted from your account.');
+        res.redirect('/sam/spend');
+      }
+    });
 
-    // Send mail!
-    // transporter.sendMail(
-    //   {
-    //     from: 'samuel.hinshaw@gmail.com',
-    //     to: 'dblh227@gmail.com',
-    //     subject: 'Message',
-    //     // text: 'I hope this message gets delivered!'
-    //     html: '<b>Hello world 🐴</b>' // html body
-    //   },
-    //   (err, info) => {
-    //     console.log(info.envelope);
-    //     console.log(info.messageId);
-    //   }
-    // );
+    // Finally send a message to IFTTT
 
-    // const mailOptions = {
-    //   from: 'samuel.hinshaw@gmail.com',
-    //   to: 'dblh227@gmail.com',
-    //   subject: 'Message',
-    //   // text: 'I hope this message gets delivered!'
-    //   html: '<b>Hello world 🐴</b>' // html body
-    // };
+    // Set the headers
+    const headers = {
+      // 'User-Agent': 'Super Agent/0.0.1',
+      'Content-Type': 'application/x-www-form-urlencoded'
+    };
 
-    // transporter.sendMail(mailOptions, (error, info) => {
-    //   if (error) {
-    //     console.log(`Error: ${error}`);
-    //   } else {
-    //     console.log(`Message sent: ${info.response}`);
-    //   }
-    // });
-    // Send text notifying of request
+    // Configure the request
+    const options = {
+      url: 'https://maker.ifttt.com/trigger/purchase_request/with/key/JCavOg5Om_uGsh0R6McOC',
+      method: 'POST',
+      headers,
+      form: { value1: 'Sam' }
+    };
 
-    // request.post(
-    //   'https://localhost:9090/canada',
-    //   {
-    //     form: {
-    //       phone: '6047008693',
-    //       message: 'Hello world'
-    //       // key: 'textbelt'
-    //     }
-    //   },
-    //   (err, httpResponse, body) => {
-    //     if (err) {
-    //       console.error('Error:', err);
-    //       return;
-    //     }
-    //     console.log(JSON.parse(body));
-    //   }
-    // );
-
-    // text.sendText(
-    //   '6047008693',
-    //   'Hello!',
-    //   {
-    //     fromAddr: 'sam@samhinshaw.com',
-    //     fromName: 'Get Fit',
-    //     region: 'canada',
-    //     provider: '%s@pcs.rogers.com'
-    //     // subject:  'something'
-    //   },
-    //   err => {
-    //     if (err) {
-    //       console.error('Error:', err);
-    //     }
-    //   }
-    // );
-
-    //   // Finally send a message to IFTTT telling
-
-    //   // Set the headers
-    //   var headers = {
-    //     // 'User-Agent': 'Super Agent/0.0.1',
-    //     'Content-Type': 'application/x-www-form-urlencoded'
-    //   };
-
-    //   // Configure the request
-    //   var options = {
-    //     url: 'https://maker.ifttt.com/trigger/purchase_request/with/key/JCavOg5Om_uGsh0R6McOC',
-    //     method: 'POST',
-    //     headers: headers,
-    //     form: { value1: 'Sam' }
-    //   };
-
-    //   // Start the request
-    //   request(options, function(error, response, body) {
-    //     if (error) {
-    //       console.log('ERROR:');
-    //       console.log(error);
-    //     } else if (!error && response.statusCode == 200) {
-    //       // Print out the response body
-    //       console.log(body);
-    //     }
-    //   });
+    // Start the request
+    request(options, (error, response, body) => {
+      if (error) {
+        console.log('ERROR:');
+        console.log(error);
+      } else if (!error && response.statusCode == 200) {
+        // Print out the response body
+        console.log(body);
+      }
+    });
   })
 );
 
