@@ -7,34 +7,37 @@ const session = require('express-session');
 const Moment = require('moment-timezone');
 const MomentRange = require('moment-range');
 const expressValidator = require('express-validator');
-const flash = require('connect-flash');
+// const flash = require('connect-flash');
+const expMessages = require('express-messages');
 const passport = require('passport');
 const config = require('./config/database');
 const _ = require('lodash');
+
+const auth = require('./config/auth.js');
 
 const moment = MomentRange.extendMoment(Moment);
 moment().format(); // required by package entirely
 const now = moment().tz('US/Pacific');
 const today = now.clone().startOf('day');
-const startofTracking = moment('09-18-2017', 'MM-DD-YYYY')
-  .tz('US/Pacific')
-  .startOf('day');
+// const startofTracking = moment('09-18-2017', 'MM-DD-YYYY')
+//   .tz('US/Pacific')
+//   .startOf('day');
 const twoWeeksAgo = today.clone().subtract(14, 'days');
 // .startOf('week')    = Sunday
 // .startOf('isoweek') = Monday
-const customRanges = [
-  {
-    // We started Monday, Sept 18th
-    key: 'sinceStart',
-    startDate: startofTracking,
-    endDate: today
-  },
-  {
-    key: 'pastTwoWeeks',
-    startDate: twoWeeksAgo,
-    endDate: today
-  }
-];
+// const customRanges = [
+//   {
+//     // We started Monday, Sept 18th
+//     key: 'sinceStart',
+//     startDate: startofTracking,
+//     endDate: today
+//   },
+//   {
+//     key: 'pastTwoWeeks',
+//     startDate: twoWeeksAgo,
+//     endDate: today
+//   }
+// ];
 // Define Async middleware wrapper to avoid try-catch
 const asyncMiddleware = fn => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch(next);
@@ -69,6 +72,7 @@ const app = express();
 // const Period = require('./models/period');
 const Period = require('./models/period');
 const User = require('./models/user');
+const Entry = require('./models/entry');
 
 // Load View Engine
 app.set('views', path.join(__dirname, 'views'));
@@ -97,7 +101,7 @@ app.use(
 app.use(require('connect-flash')());
 
 app.use((req, res, next) => {
-  res.locals.messages = require('express-messages')(req, res);
+  res.locals.messages = expMessages(req, res);
   next();
 });
 
@@ -129,9 +133,15 @@ app.use(passport.session());
 
 // Init global user variable for all routes
 // Shouldn't this be app.use?
-app.get('*', (req, res, next) => {
+app.use((req, res, next) => {
   // This '||' will assign to NULL if req.user does not exist
   res.locals.user = req.user || null;
+  // also store 'logged-in' status
+  if (req.user) {
+    res.locals.loggedIn = true;
+  } else {
+    res.locals.loggedIn = false;
+  }
   next();
 });
 
@@ -139,7 +149,7 @@ app.get('*', (req, res, next) => {
 const mongoMiddleware = require('./middlewares/mongoMiddleware');
 
 // ////////////////////////////////////////////////////////////////
-// /////////.///// MIDDLEWARE TO CALCULATE POINTS /////////////////
+// /////////////// MIDDLEWARE TO CALCULATE POINTS /////////////////
 // ////////////////////////////////////////////////////////////////
 app.use(
   asyncMiddleware(async (req, res, next) => {
@@ -238,26 +248,75 @@ const pageInfo = {
 // Use middleware to modify locals object (makes available to view engine!)
 // https://stackoverflow.com/questions/12550067/expressjs-3-0-how-to-pass-res-locals-to-a-jade-view
 app.use((req, res, next) => {
+  res.locals.today = today; // do we want to pass an object instead?
   res.locals.pageInfo = pageInfo;
+  res.locals.require = require;
   next();
 });
 
-// Home Route
 app.get('/', (req, res) => {
-  res.render('index', {
-    // Object to send data along with response
-    title: 'Get Fit!'
-  });
+  res.render('landing_page');
 });
+
+// Bring in User Data!
+app.get('/overview', auth.ensureAuthenticated, (req, res) => {
+  // If not logged in, show login page
+  if (!res.locals.loggedIn) {
+    res.render('account_login');
+  } else {
+    // Otherwise, query DB for entries to display!
+    const user = res.locals.user.username;
+    const partner = res.locals.user.partner;
+    Entry.find(
+      {
+        date: {
+          $gte: twoWeeksAgo.toDate(),
+          $lte: today.toDate()
+        }
+      },
+      (err, entries) => {
+        if (err) {
+          console.log(err);
+        }
+        // If we get the results back, split by user
+        const userEntries = entries.filter(entry => entry.user === user);
+        const partnerEntries = entries.filter(entry => entry.user === partner);
+
+        // ...and order by date
+        const sortedUserEntries = _.orderBy(userEntries, 'date', 'desc');
+        const sortedPartnerEntries = _.orderBy(partnerEntries, 'date', 'desc');
+
+        res.render('overview', {
+          userEntries: sortedUserEntries,
+          partnerEntries: sortedPartnerEntries
+        });
+      }
+    );
+  }
+});
+
+// Why doesn't this async version work?
+// app.get('/', async (req, res) => {
+//   if (!res.locals.loggedIn) {
+//     res.render('account_login');
+//   } else {
+//     const userEntries = await mongoMiddleware.getSortedEntries(res.locals.user.username);
+//     const partnerEntries = await mongoMiddleware.getSortedEntries(res.locals.user.partner);
+//     res.render('overview', {
+//       userEntries: await userEntries,
+//       partnerEntries: await partnerEntries
+//     });
+//   }
+// });
 
 // Bring in route files
 const data = require('./routes/data');
-const users = require('./routes/users');
+const account = require('./routes/account');
 const sam = require('./routes/sam');
 const amelia = require('./routes/amelia');
 
 app.use('/data', data);
-app.use('/users', users);
+app.use('/account', account);
 app.use('/sam', sam);
 app.use('/amelia', amelia);
 

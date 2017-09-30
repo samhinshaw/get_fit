@@ -3,6 +3,7 @@ const PythonShell = require('python-shell');
 const express = require('express');
 const _ = require('lodash');
 const request = require('request');
+const auth = require('../config/auth.js');
 
 // datetime functions
 // const moment = require('moment');
@@ -45,7 +46,7 @@ router.use((req, res, next) => {
 });
 
 // Route to Amelia's Data
-router.get('/', (req, res) => {
+router.get('/', auth.ensureAuthenticated, (req, res) => {
   Entry.find(
     {
       date: {
@@ -71,7 +72,7 @@ router.get('/', (req, res) => {
   );
 });
 
-router.get('/spend', (req, res) => {
+router.get('/spend', auth.ensureAuthenticated, (req, res) => {
   Reward.find({ for: 'amelia' }, (err, rewards) => {
     if (err) {
       console.log(err);
@@ -85,7 +86,8 @@ router.get('/spend', (req, res) => {
 
 router.post(
   '/spend',
-  asyncMiddleware(async (req, res, next) => {
+  auth.ensureAuthenticated,
+  asyncMiddleware(async (req, res) => {
     const rewardKey = req.body.reward;
 
     const query = {
@@ -128,33 +130,34 @@ router.post(
     // Finally send a message to IFTTT telling
 
     // Set the headers
-    var headers = {
+    const headers = {
       // 'User-Agent': 'Super Agent/0.0.1',
       'Content-Type': 'application/x-www-form-urlencoded'
     };
 
     // Configure the request
-    var options = {
+    const options = {
       url: 'https://maker.ifttt.com/trigger/purchase_request/with/key/JCavOg5Om_uGsh0R6McOC',
       method: 'POST',
-      headers: headers,
+      headers,
       form: { value1: 'Sam' }
     };
 
     // Start the request
-    request(options, function(error, response, body) {
+    request(options, (error, response) => {
+      //            (error, response, body)
       if (error) {
         console.log('ERROR:');
         console.log(error);
-      } else if (!error && response.statusCode == 200) {
+      } else if (!error && response.statusCode === 200) {
         // Print out the response body
-        console.log(body);
+        // console.log(body);
       }
     });
   })
 );
 
-router.post('/:date', (req, res) => {
+router.post('/:date', auth.ensureAuthenticated, (req, res) => {
   // parse date that was POSTed as string
   // const postedDate = moment.utc(req.params.date, 'YYYY-MM-DD');
 

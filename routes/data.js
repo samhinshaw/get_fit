@@ -1,6 +1,7 @@
 // This will contain all '/data/' routes
 
 const express = require('express');
+const auth = require('../config/auth.js');
 
 const router = express.Router();
 
@@ -42,7 +43,7 @@ router.get('/submit', (req, res) => {
 });
 
 // Add route for individual articles
-router.get('/:id', (req, res) => {
+router.get('/:id', auth.ensureAuthentication, (req, res) => {
   Article.findById(req.params.id, (err, article) => {
     res.render('data', {
       article
@@ -53,6 +54,10 @@ router.get('/:id', (req, res) => {
 // Add route for editing articles
 router.get('/edit/:id', (req, res) => {
   Article.findById(req.params.id, (err, article) => {
+    if (article.author !== req.user._id) {
+      req.flash('danger', 'Not authorized');
+      res.redirect('/');
+    }
     res.render('data_edit', {
       title: 'Edit Article',
       article
@@ -69,7 +74,7 @@ router.post('/edit/:id', (req, res) => {
 
   const query = { _id: req.params.id };
 
-  Article.update(query, article, (err) => {
+  Article.update(query, article, err => {
     if (err) {
       console.log(err);
     } else {
@@ -96,7 +101,7 @@ router.post('/submit', (req, res) => {
     // });
     // Or maybe instead flash a message rather than re-render?
     // using forEach instead of map because map is designed to return a new array!
-    errors.forEach((error) => {
+    errors.forEach(error => {
       req.flash('danger', error.msg);
     });
 
@@ -108,7 +113,7 @@ router.post('/submit', (req, res) => {
     article.author = req.body.author;
     article.body = req.body.body;
 
-    article.save((err) => {
+    article.save(err => {
       if (err) {
         console.log(err);
       } else {
@@ -128,7 +133,7 @@ router.post('/submit', (req, res) => {
 router.delete('/:id', (req, res) => {
   const query = { _id: req.params.id };
 
-  Article.remove(query, (err) => {
+  Article.remove(query, err => {
     if (err) {
       console.log(err);
     }

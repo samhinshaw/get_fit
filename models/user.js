@@ -28,6 +28,10 @@ const userSchema = new Schema({
   currentPoints: {
     type: Number,
     required: true
+  },
+  partner: {
+    type: String,
+    required: true
   }
 });
 

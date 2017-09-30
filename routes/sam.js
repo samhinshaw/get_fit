@@ -3,6 +3,7 @@ const PythonShell = require('python-shell');
 const express = require('express');
 const _ = require('lodash');
 const request = require('request');
+const auth = require('../config/auth.js');
 
 // datetime functions
 // const moment = require('moment');
@@ -44,9 +45,9 @@ const Purchase = require('../models/purchase');
 
 // Print in the page info we're using to style the page with Bulma
 const pageInfo = {
-  heroType: 'warning',
+  heroType: 'warning', // note, should update this to color, not warning
   route: '/sam',
-  user: 'sam',
+  user: 'sam', // replace with session
   User: 'Sam'
 };
 
@@ -60,7 +61,7 @@ router.use((req, res, next) => {
 });
 
 // Route to Sam's Data
-router.get('/', (req, res) => {
+router.get('/', auth.ensureAuthenticated, (req, res) => {
   // Construct an array of dates to query. Let's get the past two weeks
   // First our start and end points:
   const twoWeeksAgo = today.clone().subtract(14, 'days');
@@ -106,7 +107,7 @@ router.get('/', (req, res) => {
   );
 });
 
-router.get('/spend', (req, res) => {
+router.get('/spend', auth.ensureAuthenticated, (req, res) => {
   Reward.find({ for: 'sam' }, (err, rewards) => {
     if (err) {
       console.log(err);
@@ -120,7 +121,13 @@ router.get('/spend', (req, res) => {
 
 router.post(
   '/spend',
+  auth.ensureAuthenticated,
   asyncMiddleware(async (req, res) => {
+    // if NOT logged in, exit now!
+    if (!res.locals.loggedIn) {
+      req.flash('danger', 'You must log in to make requests!');
+      res.redirect('/sam/spend');
+    }
     // (req, res, next)
     const rewardKey = req.body.reward;
 
@@ -145,7 +152,7 @@ router.post(
       reward: rewardKey,
       displayName: rewardEntry.displayName,
       pointCost: rewardEntry.cost,
-      requester: 'sam',
+      requester: res.locals.user.username, // replace with session
       timeRequested: moment()
         .tz('US/Pacific')
         .toDate(),
@@ -178,7 +185,7 @@ router.post(
   })
 );
 
-router.post('/:date', (req, res) => {
+router.post('/:date', auth.ensureAuthenticated, (req, res) => {
   // parse date that was POSTed as string
   // Wait, we're passing the string directly to python, so is this even necessary?
   // const postedDate = moment.utc(req.params.date, 'YYYY-MM-DD');
