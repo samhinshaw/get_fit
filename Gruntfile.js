@@ -1,5 +1,5 @@
-/*global module:false*/
-module.exports = function(grunt) {
+/* global module:false */
+module.exports = grunt => {
   // Project configuration.
   grunt.initConfig({
     // Metadata.
@@ -14,7 +14,7 @@ module.exports = function(grunt) {
     sass: {
       dist: {
         files: {
-          'public/css/bulma.css': 'node_modules/bulma/bulma.sass'
+          'public/css/bulma.css': 'sass/custom_bulma.sass'
         }
       }
     },
