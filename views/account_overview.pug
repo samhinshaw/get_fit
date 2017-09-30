@@ -4,22 +4,20 @@ block header
   p.title
     | Users
   p.subtitle
-    | Login, register, 
-    strong  manage your account
-    |  🤓
+    | Login, register, manage your account 🤓
 
 block subnav
   nav.navbar.has-shadow.is-light(id=pageInfo.user+'-subnav')
     .container
       .navbar-tabs
-        a.navbar-item.is-tab.is-active(href='/users')
+        a.navbar-item.is-tab.is-active(href='/account')
           | Overview
         if user
-          a.navbar-item.is-tab(href='/users/logout') Logout
+          a.navbar-item.is-tab(href='/account/logout') Logout
         else 
-          a.navbar-item.is-tab(href='/users/login')
+          a.navbar-item.is-tab(href='/account/login')
             | Login
-          a.navbar-item.is-tab(href='/users/register')
+          a.navbar-item.is-tab(href='/account/register')
             | Register
 
 

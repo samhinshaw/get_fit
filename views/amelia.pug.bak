@@ -2,21 +2,23 @@ extends partials/layout
 
 block header
   p.title
-    | Sam
+    | Amelia
   p.subtitle
-    | Working towards those
-    strong  washboard abs 
-    | 💪🏻
+    | Working towards that 
+    strong tight round booty
+    |  🍑 
 
+//- This could be an include, but leaving it here will
+//- allow us to work with the 'is-active' logic better
 block subnav
-  nav.navbar.has-shadow.is-dark(id=pageInfo.user+'-subnav')
+  nav.navbar.has-shadow.is-white(id=pageInfo.user+'-subnav')
     .container
       .navbar-tabs
-        a.navbar-item.is-tab.is-active(href='/sam')
+        a.navbar-item.is-tab.is-active(href='/amelia')
           | Overview
         a.navbar-item.is-tab(href='#')
           | Weight
-        a.navbar-item.is-tab(href='/sam/spend')
+        a.navbar-item.is-tab(href='/amelia/spend')
           | Spend Points
 
 block content
@@ -48,9 +50,6 @@ block content
     .control.tooltip.is-tooltip-top(data-tooltip="This may take a while to update.")
       button.button.is-small.is-info.is-pulled-left.update-entry(data-date=`${twoWeeksAgoPretty} ${todayPretty}`)
         | Update Past Two Weeks
-    //- .control
-      span.tag(style='margin-left: 1em;', class='is-danger')
-        | #{pointTally.sam.toFixed(1)}
   br
   each entry, i in entries
     //- - const entryDate = moment.utc(entry.date);
@@ -58,9 +57,6 @@ block content
     - const datePretty = entryDate.format('YYYY-MM-DD');
     - const dateHuman = entryDate.format('MM-DD-YYYY');
     - const weekDay = entryDate.format('ddd');
-    //- Break up into weeks and we'll come back to this for a weekly point total
-    if weekDay === 'Sun'
-      hr.thick
     article.media
       figure.media-left
         p.image.is-48x48
@@ -80,24 +76,13 @@ block content
               span No data yet!
             //- Then, if left over calories, report remaining!
             else if entry.netCals > 0
-              span #{entry.netCals} 
-              case entry.netCals
-                when -1
-                when 1
-                  | cal remaining
-                default 
-                  | cals remaining
+              span #{entry.netCals} cals remaining
             else if entry.netCals < 0
               if entry.netCals < -300
-                span.is-danger #{-entry.netCals} 
+                span.tag.is-danger #{-entry.netCals} 
               else 
-                span.is-warning #{-entry.netCals} 
-              case entry.netCals
-                when -1
-                when 1
-                  span cal over
-                default 
-                  span cals over
+                span.tag.is-warning #{-entry.netCals} 
+              span  cals over
             else if entry.netCals === 0
               span you hit your goal EXACTLY
             //- Could also check datePretty vs todayPretty

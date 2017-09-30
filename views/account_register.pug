@@ -12,11 +12,11 @@ block subnav
   nav.navbar.has-shadow.is-light(id=pageInfo.user+'-subnav')
     .container
       .navbar-tabs
-        a.navbar-item.is-tab(href='/users')
+        a.navbar-item.is-tab(href='/account')
           | Overview
-        a.navbar-item.is-tab(href='/users/login')
+        a.navbar-item.is-tab(href='/account/login')
           | Login
-        a.navbar-item.is-tab.is-active(href='/users/register')
+        a.navbar-item.is-tab.is-active(href='/account/register')
           | Register
 
 //- block content-header
@@ -25,7 +25,7 @@ block subnav
 block content
   h3.is-size-3 Register
   br
-  form(method='POST', action='/users/register')
+  form(method='POST', action='/account/register')
     .field
       label.label Name:
       .control
@@ -44,6 +44,10 @@ block content
       label.label Username:
       .control
         input.input(name='username', type='text')
+    .field
+      label.label Partner:
+      .control
+        input.input(name='partner', type='text')
     .field
       label.label Password:
       .control

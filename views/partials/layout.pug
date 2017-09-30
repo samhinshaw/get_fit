@@ -15,59 +15,47 @@ html
     //- link(rel='stylesheet', href='/bower_components/font-awesome/css/font-awesome.min.css')
     link(rel='stylesheet', href='/css/styles.css')
 
-  body.flex-body
-    .columns.card-wrapper(class='is-'+pageInfo.heroType)
-      .column.is-8.is-offset-2.site-card
-        //- include includes/navbar
-        section.card-wrapper.hero.is-small(class='is-'+pageInfo.heroType)
-          .hero-body
-            .container
-              .columns.is-vcentered
-                .column
-                  block header
-                    p.title
-                      | Home
-                    p.subtitle
-                      | Welcome to 
-                      strong the fit zone
-                      //- |  with Bulma
-          .hero-foot
-            .container
-              nav.tabs.is-boxed
-                ul
-                  //- attributes based on IN-LINE conditionals!!!
-                  //- Setup T/F statements for is-active routing highlighting
-                  //- https://github.com/pugjs/pug/issues/240
-                  li(class=(pageInfo.route === "/"  ? 'is-active' : false))
-                    a(href="/") Home
-                  //- li(class=(pageInfo.route === "/data" ? 'is-active' : false))
-                  //-   a(href="/data/submit") Submit
-                  li(class=(pageInfo.route === "/sam" ? 'is-active' : false))
-                    a(href="/sam") 
-                      | Sam
-                      span.tag(style='margin-left: 1em;', class='is-danger')
-                        | #{pointTally.sam.toFixed(1)}
-                  li(class=(pageInfo.route === "/amelia" ? 'is-active' : false))
-                    a(href="/amelia")
-                      | Amelia
-                      span.tag(style='margin-left: 1em;', class='is-danger')   
-                        | #{pointTally.amelia.toFixed(1)}
-                  li(class=(pageInfo.route === "/users" ? 'is-active' : false))
-                    a(href="/users")
-                      | My Account
+  body
+    section.hero.is-small(class='is-'+pageInfo.heroType)
+      .hero-body
+        .container
+          .columns.is-vcentered
+            .column
+              block header
+                p.title
+                  | Home
+                p.subtitle
+                  | Welcome to 
+                  strong the fit zone
+                  //- |  with Bulma
+      .hero-foot
+        .container
+          nav.tabs.is-boxed
+            ul
+              //- attributes based on IN-LINE conditionals!!!
+              //- Setup T/F statements for is-active routing highlighting
+              //- https://github.com/pugjs/pug/issues/240
+              li(class=(pageInfo.route === "/"  ? 'is-active' : false))
+                a(href="/") Home
+              //- li(class=(pageInfo.route === "/data" ? 'is-active' : false))
+              //-   a(href="/data/submit") Submit
+              li(class=(pageInfo.route === "/sam" ? 'is-active' : false))
+                a(href="/sam") 
+                  | Sam
+                  span.tag(style='margin-left: 1em;', class='is-danger')
+                    | #{pointTally.sam.toFixed(1)}
+              li(class=(pageInfo.route === "/amelia" ? 'is-active' : false))
+                a(href="/amelia")
+                  | Amelia
+                  span.tag(style='margin-left: 1em;', class='is-danger')   
+                    | #{pointTally.amelia.toFixed(1)}
+              li(class=(pageInfo.route === "/account" ? 'is-active' : false))
+                a(href="/account")
+                  | My Account
         block subnav
-
-        != messages('includes/message', locals)
-        //- section.section.is-fluid.content-header
-          block content-header
-        section.section.is-fluid.flex-body-content
-          //- .content
-          block content
-    .card-wrapper.card-footer(class='is-'+pageInfo.heroType)
-      //- footer.footer
-        .container.is-desktop
-          span.is-pulled-right
-            p Copyright &copy; 2017
+    != messages('includes/message', locals)
+    section.section
+      block content
     script(type='text/javascript', src='/bower_components/jquery/dist/jquery.min.js')
     script(type='text/javascript', src='/bower_components/moment/min/moment.min.js')
     script.
