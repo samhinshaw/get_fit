@@ -7,6 +7,10 @@ module.exports = {
     es6: true
     // jasmine: true
   },
+  globals: {
+    jQuery: true,
+    $: true
+  },
   rules: {
     // never prefer destructuring... not ready for that yet, I like object.attribut
     'prefer-destructuring': ['error', { object: false, array: false }],

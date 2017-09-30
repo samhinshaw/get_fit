@@ -177,3 +177,12 @@
   border: 1px solid #ffffff;
   color: #ffffff;
 }
+
+/* Make footer notifications match style more */
+.footer-notification {
+  border-radius: 0;
+}
+
+.footer-notification > button.delete {
+  left: 0;
+}

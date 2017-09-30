@@ -26,23 +26,31 @@ html
           span
       .navbar-menu(id='navMenu')
         .navbar-start
-          a.navbar-item.is-tab
+          a.navbar-item(href='/overview', class=(pageInfo.route === "/overview"  ? 'is-active' : false))
             | Overview
-          a.navbar-item.is-tab
+          a.navbar-item
             | Users
-          a.navbar-item.is-tab
+          a.navbar-item
             | Account
-          a.navbar-item.is-tab
+          a.navbar-item
             | Help
         .navbar-end
           span.navbar-item
             .field.is-grouped
-              .control
-                a.button(href="/account/login")
-                  | Log in
-              .control
-                a.button(href="/account/register")
-                  | Sign up
+              if user
+                .control
+                  a.button(href='/account')
+                    | #{user.username.charAt(0).toUpperCase() + user.username.slice(1).toLowerCase()}
+                .control
+                  a.button(href="/account/logout")
+                    | Log out
+              else
+                .control
+                  a.button(href="/account/login")
+                    | Log in
+                .control
+                  a.button(href="/account/register")
+                    | Sign up
     section.hero.is-default.is-bold.flex-content
       //- .hero-head
         .container
@@ -60,12 +68,8 @@ html
             else 
               a.button.is-large.is-transparent(href='/account/login')
                 | Log in
-      //- .hero-foot
-        .container
-          .tabs.is-centered
-            ul
-              li
-                a And this at the bottom
+      .hero-foot
+        != messages('includes/footer-notification', locals)
     script(type='text/javascript', src='/bower_components/jquery/dist/jquery.min.js')
     //- script(async='', type='text/javascript', src='/bower_components/moment/min/moment.min.js')
     //- script.

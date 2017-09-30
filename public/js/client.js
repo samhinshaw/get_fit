@@ -19,23 +19,22 @@ const handlers = {
       });
     }
   },
-  deleteArticle: () => {
-    $('.delete-article').on('click', event => {
-      $target = $(event.target);
-      const id = $target.attr('data-id');
-      $.ajax({
-        type: 'DELETE',
-        url: `/data/${id}`,
-        success: res => {
-          alert('Deleting Article');
-          window.location.href = '/';
-        },
-        error: err => {
-          console.log(err);
-        }
-      });
-    });
-  },
+  // deleteArticle: () => {
+  //   $('.delete-article').on('click', event => {
+  //     const id = $(event.target).attr('data-id');
+  //     $.ajax({
+  //       type: 'DELETE',
+  //       url: `/data/${id}`,
+  //       success: res => {
+  //         alert('Deleting Article');
+  //         window.location.href = '/';
+  //       },
+  //       error: err => {
+  //         console.log(err);
+  //       }
+  //     });
+  //   });
+  // },
   updateEntry: () => {
     $('.update-entry').on('click', event => {
       // Get the Dates
@@ -64,7 +63,7 @@ const handlers = {
       });
     });
   },
-  dismissNotification: () => {
+  dismissMessagesNotification: () => {
     $('.messages').on('click', event => {
       // before we delete anything, check to see if this is the last alert
       if (
@@ -83,13 +82,22 @@ const handlers = {
           .remove();
       }
     });
+  },
+  dismissNotification: () => {
+    $('.footer-notification').on('click', event => {
+      // before we delete anything, check to see if this is the last alert
+      $(event.currentTarget)
+        .addClass('is-hidden')
+        .remove();
+    });
   }
 };
 
 // Process all actions after DOM content has loaded
 document.addEventListener('DOMContentLoaded', () => {
   handlers.toggleNavBarBurger();
-  handlers.deleteArticle();
+  // handlers.deleteArticle();
+  handlers.dismissMessagesNotification();
   handlers.dismissNotification();
   handlers.updateEntry();
 });

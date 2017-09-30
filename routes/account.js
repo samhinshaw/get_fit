@@ -25,13 +25,9 @@ router.use((req, res, next) => {
 });
 
 // Get Started Handling
-// If not logged in, redirect to login
-router.get('/get-started', auth.ensureAuthenticated, (req, res) => {
-  res.redirect('/');
-});
 
 router.get('/', auth.ensureAuthenticated, (req, res) => {
-  res.render('landing_page');
+  res.render('account_overview');
 });
 
 // Register Form Route
@@ -57,7 +53,7 @@ router.post('/login', (req, res, next) => {
 router.get('/logout', (req, res) => {
   req.logout();
   req.flash('info', 'Logged out');
-  res.redirect('/account/login');
+  res.redirect('/');
 });
 
 // Handle Registration POSTS

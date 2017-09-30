@@ -14,8 +14,43 @@ html
     link(rel='stylesheet', href='/bower_components/mdi/css/materialdesignicons.min.css')
     //- link(rel='stylesheet', href='/bower_components/font-awesome/css/font-awesome.min.css')
     link(rel='stylesheet', href='/css/styles.css')
-
-  body
+    link(href="https://fonts.googleapis.com/css?family=Cormorant+Garamond:600", rel="stylesheet")
+  body.flex-body
+    nav.navbar.has-shadow.is-light
+      .navbar-brand
+        a.navbar-item(href='/')
+          img(src='/images/gym-near.svg', alt='Description', height=28, width=28)
+        .navbar-burger(data-target="navMenu")
+          span
+          span
+          span
+      .navbar-menu(id='navMenu')
+        .navbar-start
+          a.navbar-item(href='/overview', class=(pageInfo.route === "/overview"  ? 'is-active' : false))
+            | Overview
+          a.navbar-item(href='/overview', class=(["/sam", "/amelia"].includes(pageInfo.route)  ? 'is-active' : false))
+            | Users
+          a.navbar-item(href='/overview', class=(pageInfo.route === "/account"  ? 'is-active' : false))
+            | Account
+          a.navbar-item(href='/overview', class=(pageInfo.route === "/help"  ? 'is-active' : false))
+            | Help
+        .navbar-end
+          span.navbar-item
+            .field.is-grouped
+              if user
+                .control
+                  a.button(href='/account')
+                    | #{user.username.charAt(0).toUpperCase() + user.username.slice(1).toLowerCase()}
+                .control
+                  a.button(href="/account/logout")
+                    | Log out
+              else
+                .control
+                  a.button(href="/account/login")
+                    | Log in
+                .control
+                  a.button(href="/account/register")
+                    | Sign up
     section.hero.is-small(class='is-'+pageInfo.heroType)
       .hero-body
         .container
@@ -27,7 +62,6 @@ html
                 p.subtitle
                   | Welcome to 
                   strong the fit zone
-                  //- |  with Bulma
       .hero-foot
         .container
           nav.tabs.is-boxed
@@ -53,9 +87,11 @@ html
                 a(href="/account")
                   | My Account
         block subnav
-    != messages('includes/message', locals)
+    != messages('includes/notification', locals)
     section.section
-      block content
+      .columns
+        .column.is-8.is-offset-2
+          block content
     script(type='text/javascript', src='/bower_components/jquery/dist/jquery.min.js')
     script(type='text/javascript', src='/bower_components/moment/min/moment.min.js')
     script.

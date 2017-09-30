@@ -55,9 +55,9 @@ module.exports = grunt => {
     //   },
     //   dist: {
     //     options: {
-    //       sourceMap: false,
-    //       compress: true,
-    //       mangle: true
+    //       sourceMap: false
+    //       // compress: true
+    //       // mangle: true
     //     },
     //     files: {
     //       'public/js/bundle.min.js': ['public/js/client.js']

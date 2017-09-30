@@ -235,64 +235,62 @@ app.use(
 );
 
 // ////////////////////////////////////////////////////////////////
-// /////////.///// MIDDLEWARE TO CALCULATE POINTS /////////////////
+// /////////////// MIDDLEWARE TO CALCULATE POINTS /////////////////
 // ////////////////////////////////////////////////////////////////
-
-// Print in the page info we're using to style the page with Bulma
-const pageInfo = {
-  heroType: 'dark',
-  route: '/',
-  user: 'main'
-};
 
 // Use middleware to modify locals object (makes available to view engine!)
 // https://stackoverflow.com/questions/12550067/expressjs-3-0-how-to-pass-res-locals-to-a-jade-view
 app.use((req, res, next) => {
   res.locals.today = today; // do we want to pass an object instead?
-  res.locals.pageInfo = pageInfo;
   res.locals.require = require;
   next();
 });
 
 app.get('/', (req, res) => {
-  res.render('landing_page');
+  res.render('landing_page', {
+    pageInfo: {
+      heroType: 'dark',
+      route: '/',
+      user: 'main'
+    }
+  });
 });
 
 // Bring in User Data!
 app.get('/overview', auth.ensureAuthenticated, (req, res) => {
-  // If not logged in, show login page
-  if (!res.locals.loggedIn) {
-    res.render('account_login');
-  } else {
-    // Otherwise, query DB for entries to display!
-    const user = res.locals.user.username;
-    const partner = res.locals.user.partner;
-    Entry.find(
-      {
-        date: {
-          $gte: twoWeeksAgo.toDate(),
-          $lte: today.toDate()
-        }
-      },
-      (err, entries) => {
-        if (err) {
-          console.log(err);
-        }
-        // If we get the results back, split by user
-        const userEntries = entries.filter(entry => entry.user === user);
-        const partnerEntries = entries.filter(entry => entry.user === partner);
-
-        // ...and order by date
-        const sortedUserEntries = _.orderBy(userEntries, 'date', 'desc');
-        const sortedPartnerEntries = _.orderBy(partnerEntries, 'date', 'desc');
-
-        res.render('overview', {
-          userEntries: sortedUserEntries,
-          partnerEntries: sortedPartnerEntries
-        });
+  // Otherwise, query DB for entries to display!
+  const user = res.locals.user.username;
+  const partner = res.locals.user.partner;
+  Entry.find(
+    {
+      date: {
+        $gte: twoWeeksAgo.toDate(),
+        $lte: today.toDate()
       }
-    );
-  }
+    },
+    (err, entries) => {
+      if (err) {
+        console.log(err);
+      }
+      // If we get the results back, split by user
+      const userEntries = entries.filter(entry => entry.user === user);
+      const partnerEntries = entries.filter(entry => entry.user === partner);
+
+      // ...and order by date
+      const sortedUserEntries = _.orderBy(userEntries, 'date', 'desc');
+      const sortedPartnerEntries = _.orderBy(partnerEntries, 'date', 'desc');
+
+      res.render('overview', {
+        userEntries: sortedUserEntries,
+        partnerEntries: sortedPartnerEntries,
+        pageInfo: {
+          heroType: 'dark',
+          route: '/overview',
+          user: 'main'
+        }
+      });
+    }
+  );
 });
 
 // Why doesn't this async version work?
@@ -310,12 +308,12 @@ app.get('/overview', auth.ensureAuthenticated, (req, res) => {
 // });
 
 // Bring in route files
-const data = require('./routes/data');
+// const data = require('./routes/data');
 const account = require('./routes/account');
 const sam = require('./routes/sam');
 const amelia = require('./routes/amelia');
 
-app.use('/data', data);
+// app.use('/data', data);
 app.use('/account', account);
 app.use('/sam', sam);
 app.use('/amelia', amelia);

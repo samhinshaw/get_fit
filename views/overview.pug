@@ -1,10 +1,12 @@
 extends partials/layout
 
 block header
+  - const userName = user.username.charAt(0).toUpperCase() + user.username.slice(1).toLowerCase()
+  - const partnerName = user.partner.charAt(0).toUpperCase() + user.partner.slice(1).toLowerCase()
   p.title
     | Get Fit!
   p.subtitle
-    | Sam & Amelia are gonna be 
+    | #{userName} & #{partnerName} are gonna be 
     strong sexy 
     | next summer! 👙 🏖
 
@@ -14,11 +16,10 @@ block subnav
       .navbar-tabs
         a.navbar-item.is-tab.is-active(href='#')
           | Summary
-        a.navbar-item.is-tab(href=`/k
-        ${user.username}`)
-          | #{user.username.charAt(0).toUpperCase() + user.username.slice(1).toLowerCase()}
+        a.navbar-item.is-tab(href=`/${user.username}`)
+          | #{userName}
         a.navbar-item.is-tab(href=`/${user.partner}`)
-          | #{user.partner.charAt(0).toUpperCase() + user.partner.slice(1).toLowerCase()}
+          | #{partnerName}
 
 block content
 

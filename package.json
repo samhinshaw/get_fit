@@ -4,7 +4,8 @@
   "description": "Fitness Tracker for Sam & Am",
   "main": "app.js",
   "scripts": {
-    "start": "grunt dev && nodemon app.js",
+    "start":
+      "uglifyjs public/js/client.js --compress --mangle --source-map --output public/js/bundle.min.js && grunt dev && nodemon app.js",
     "uglifyClient": "uglifyjs public/js/client.js --compress --mangle --source-map --output public/js/bundle.min.js",
     "format": "prettier --list-different --single-quote --print-width=120 \"public/js/**/*.js\"",
     "lint": "eslint **/*.js --quiet"
@@ -20,6 +21,7 @@
   },
   "homepage": "https://github.com/samhinshaw/get_fit#readme",
   "dependencies": {
+    "ajv-keywords": "^2.1.0",
     "async": "^2.5.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.18.1",
@@ -52,6 +54,7 @@
     "grunt-contrib-sass": "^1.0.0",
     "grunt-contrib-uglify": "^3.1.0",
     "grunt-contrib-watch": "^1.0.0",
+    "prettier": "^1.7.3",
     "uglify-es": "^3.1.2"
   }
 }
