@@ -4,6 +4,7 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
 const User = require('../models/user');
+const auth = require('../config/auth.js');
 
 const router = express.Router();
 
@@ -12,7 +13,7 @@ const router = express.Router();
 // Print in the page info we're using to style the page with Bulma
 const pageInfo = {
   heroType: 'success',
-  route: '/users'
+  route: '/account'
   // user: ''
 };
 
@@ -23,25 +24,31 @@ router.use((req, res, next) => {
   next();
 });
 
-// Register Form Route
-router.get('/', (req, res) => {
-  res.render('users');
+// Get Started Handling
+// If not logged in, redirect to login
+router.get('/get-started', auth.ensureAuthenticated, (req, res) => {
+  res.redirect('/');
 });
 
+router.get('/', auth.ensureAuthenticated, (req, res) => {
+  res.render('landing_page');
+});
+
+// Register Form Route
 router.get('/register', (req, res) => {
-  res.render('users_register');
+  res.render('account_register');
 });
 
 // Login Form
 router.get('/login', (req, res) => {
-  res.render('users_login');
+  res.render('account_login');
 });
 
 // Login Process
 router.post('/login', (req, res, next) => {
   passport.authenticate('local', {
     successRedirect: '/',
-    failureRedirect: '/users/login',
+    failureRedirect: '/account/login',
     failureFlash: true
   })(req, res, next);
 });
@@ -50,7 +57,7 @@ router.post('/login', (req, res, next) => {
 router.get('/logout', (req, res) => {
   req.logout();
   req.flash('info', 'Logged out');
-  res.redirect('/users/login');
+  res.redirect('/account/login');
 });
 
 // Handle Registration POSTS
@@ -59,6 +66,7 @@ router.post('/register', (req, res) => {
   const email = req.body.email;
   const calGoal = req.body.calGoal;
   const username = req.body.username;
+  const partner = req.body.partner;
   const password = req.body.password;
   const passwordConfirm = req.body.passwordConfirm;
 
@@ -67,6 +75,7 @@ router.post('/register', (req, res) => {
   req.checkBody('email', 'Email is not value').isEmail();
   req.checkBody('calGoal', 'Calorie goal is required').notEmpty();
   req.checkBody('username', 'Username is required').notEmpty();
+  req.checkBody('partner', 'Partner is required').notEmpty();
   req.checkBody('password', 'Password is required').notEmpty();
   req.checkBody('passwordConfirm', 'Passwords do not match').equals(req.body.password);
 
@@ -91,6 +100,7 @@ router.post('/register', (req, res) => {
       username,
       password,
       calGoal,
+      partner,
       currentPoints: 0
     });
 
@@ -108,7 +118,7 @@ router.post('/register', (req, res) => {
             console.log(saveErr);
           } else {
             req.flash('success', 'You are now registered!');
-            res.redirect('/users/login');
+            res.redirect('/account/login');
           }
         });
       });

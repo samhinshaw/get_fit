@@ -3,6 +3,7 @@
 // const mongoose = require('mongoose');
 const Moment = require('moment-timezone');
 const MomentRange = require('moment-range');
+const _ = require('lodash');
 // const async = require('async');
 
 const moment = MomentRange.extendMoment(Moment);
@@ -162,7 +163,28 @@ async function queryCustomPeriodsFromMongo(user) {
   return customPeriods;
 }
 
+async function getSortedEntries(user) {
+  Entry.find(
+    {
+      user,
+      date: {
+        $gte: twoWeeksAgo.toDate(),
+        $lte: today.toDate()
+      }
+    },
+    (err, entries) => {
+      if (err) {
+        console.log(err);
+      }
+      // If we get the results back, reorder the dates
+      const sortedEntries = _.orderBy(entries, 'date', 'desc');
+      return sortedEntries;
+    }
+  );
+}
+
 module.exports = {
   queryWeeksFromMongo,
-  queryCustomPeriodsFromMongo
+  queryCustomPeriodsFromMongo,
+  getSortedEntries
 };
