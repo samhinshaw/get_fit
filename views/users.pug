@@ -14,10 +14,13 @@ block subnav
       .navbar-tabs
         a.navbar-item.is-tab.is-active(href='/users')
           | Overview
-        a.navbar-item.is-tab(href='/users/login')
-          | Login
-        a.navbar-item.is-tab(href='/users/register')
-          | Register
+        if user
+          a.navbar-item.is-tab(href='/users/logout') Logout
+        else 
+          a.navbar-item.is-tab(href='/users/login')
+            | Login
+          a.navbar-item.is-tab(href='/users/register')
+            | Register
 
 
 block content

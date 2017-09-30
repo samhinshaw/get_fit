@@ -2,6 +2,7 @@
 
 const express = require('express');
 const bcrypt = require('bcryptjs');
+const passport = require('passport');
 const User = require('../models/user');
 
 const router = express.Router();
@@ -28,15 +29,29 @@ router.get('/', (req, res) => {
 });
 
 router.get('/register', (req, res) => {
-  res.render('register');
+  res.render('users_register');
 });
 
 // Login Form
 router.get('/login', (req, res) => {
-  res.render('login');
+  res.render('users_login');
 });
 
 // Login Process
+router.post('/login', (req, res, next) => {
+  passport.authenticate('local', {
+    successRedirect: '/',
+    failureRedirect: '/users/login',
+    failureFlash: true
+  })(req, res, next);
+});
+
+// Loogout option
+router.get('/logout', (req, res) => {
+  req.logout();
+  req.flash('info', 'Logged out');
+  res.redirect('/users/login');
+});
 
 // Handle Registration POSTS
 router.post('/register', (req, res) => {
@@ -64,7 +79,7 @@ router.post('/register', (req, res) => {
     // });
 
     // Or handle errors with flash
-    errors.forEach((error) => {
+    errors.forEach(error => {
       req.flash('danger', error.msg);
     });
 
@@ -88,7 +103,7 @@ router.post('/register', (req, res) => {
           console.log(hashErr);
         }
         newUser.password = hash;
-        newUser.save((saveErr) => {
+        newUser.save(saveErr => {
           if (saveErr) {
             console.log(saveErr);
           } else {

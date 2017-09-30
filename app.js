@@ -57,7 +57,7 @@ db.once('open', () => {
   console.log('Connected to MongoDB');
 });
 // Check for DB errors
-db.on('error', (err) => {
+db.on('error', err => {
   console.log(err);
 });
 
@@ -84,12 +84,14 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Middleware for Lesson 8, Messaging & Validation
 // Session Handling Middleware
-app.use(session({
-  secret: 'little chessie',
-  resave: true,
-  saveUninitialized: true
-  // cookie: { secure: true }
-}));
+app.use(
+  session({
+    secret: 'little chessie',
+    resave: true,
+    saveUninitialized: true
+    // cookie: { secure: true }
+  })
+);
 
 // Messages Middleware (pretty client messaging)
 app.use(require('connect-flash')());
@@ -100,22 +102,24 @@ app.use((req, res, next) => {
 });
 
 // Form Validation Middleware
-app.use(expressValidator({
-  errorFormatter: (param, msg, value) => {
-    const namespace = param.split('.');
-    const root = namespace.shift();
-    let formParam = root;
+app.use(
+  expressValidator({
+    errorFormatter: (param, msg, value) => {
+      const namespace = param.split('.');
+      const root = namespace.shift();
+      let formParam = root;
 
-    while (namespace.length) {
-      formParam += `[${namespace.shift()}]`;
+      while (namespace.length) {
+        formParam += `[${namespace.shift()}]`;
+      }
+      return {
+        param: formParam,
+        msg,
+        value
+      };
     }
-    return {
-      param: formParam,
-      msg,
-      value
-    };
-  }
-}));
+  })
+);
 
 // Passport Config Middleware
 require('./config/passport')(passport);
@@ -123,92 +127,102 @@ require('./config/passport')(passport);
 app.use(passport.initialize());
 app.use(passport.session());
 
+// Init global user variable for all routes
+// Shouldn't this be app.use?
+app.get('*', (req, res, next) => {
+  // This '||' will assign to NULL if req.user does not exist
+  res.locals.user = req.user || null;
+  next();
+});
+
 // Include custom middleware
 const mongoMiddleware = require('./middlewares/mongoMiddleware');
 
 // ////////////////////////////////////////////////////////////////
 // /////////.///// MIDDLEWARE TO CALCULATE POINTS /////////////////
 // ////////////////////////////////////////////////////////////////
-app.use(asyncMiddleware(async (req, res, next) => {
-  // Don't need try, catch anymore since asyncMiddleware (see top of app.js) is
-  // handling async errors
+app.use(
+  asyncMiddleware(async (req, res, next) => {
+    // Don't need try, catch anymore since asyncMiddleware (see top of app.js) is
+    // handling async errors
 
-  // Get and concat all point tallies
-  const samWeeks = await mongoMiddleware.queryWeeksFromMongo('sam');
-  const samCustom = await mongoMiddleware.queryCustomPeriodsFromMongo('sam');
-  const ameliaWeeks = await mongoMiddleware.queryWeeksFromMongo('amelia');
-  const ameliaCustom = await mongoMiddleware.queryCustomPeriodsFromMongo('amelia');
+    // Get and concat all point tallies
+    const samWeeks = await mongoMiddleware.queryWeeksFromMongo('sam');
+    const samCustom = await mongoMiddleware.queryCustomPeriodsFromMongo('sam');
+    const ameliaWeeks = await mongoMiddleware.queryWeeksFromMongo('amelia');
+    const ameliaCustom = await mongoMiddleware.queryCustomPeriodsFromMongo('amelia');
 
-  const periods = _.union(samWeeks, samCustom, ameliaWeeks, ameliaCustom);
+    const periods = _.union(samWeeks, samCustom, ameliaWeeks, ameliaCustom);
 
-  // make the points array available to the view engine
-  res.locals.pointTotals = periods;
+    // make the points array available to the view engine
+    res.locals.pointTotals = periods;
 
-  // Save to periods collection
+    // Save to periods collection
 
-  periods.forEach((entry) => {
-    const period = {
-      key: entry.key,
-      startDate: entry.startDate,
-      endDate: entry.endDate,
-      points: entry.points,
-      user: entry.user
-    };
+    periods.forEach(entry => {
+      const period = {
+        key: entry.key,
+        startDate: entry.startDate,
+        endDate: entry.endDate,
+        points: entry.points,
+        user: entry.user
+      };
       // resave points
-    Period.findOneAndUpdate(
-      {
-        key: period.key,
-        user: period.user
-      },
-      { $set: period },
-      { upsert: true },
-      (saveErr) => {
-        if (saveErr) {
-          console.log(saveErr);
+      Period.findOneAndUpdate(
+        {
+          key: period.key,
+          user: period.user
+        },
+        { $set: period },
+        { upsert: true },
+        saveErr => {
+          if (saveErr) {
+            console.log(saveErr);
+          }
         }
-      }
-    );
-  });
+      );
+    });
 
-  // make the current running total easily accessible. if more specific ones
-  // needed, we can get those within the views template
-  // Array.filter to find ALL (returns array even if only one match)
-  const pointTallies = periods.filter(period => period.key === 'sinceStart');
+    // make the current running total easily accessible. if more specific ones
+    // needed, we can get those within the views template
+    // Array.filter to find ALL (returns array even if only one match)
+    const pointTallies = periods.filter(period => period.key === 'sinceStart');
 
-  // Array.find to find the FIRST match. returns the item (not an array), but
-  // will only ever find one
-  const samPointTally = pointTallies.find(period => period.user === 'sam');
-  const ameliaPointTally = pointTallies.find(period => period.user === 'amelia');
+    // Array.find to find the FIRST match. returns the item (not an array), but
+    // will only ever find one
+    const samPointTally = pointTallies.find(period => period.user === 'sam');
+    const ameliaPointTally = pointTallies.find(period => period.user === 'amelia');
 
-  const pointTally = {
-    sam: parseFloat(samPointTally.points),
-    amelia: parseFloat(ameliaPointTally.points)
-  };
+    const pointTally = {
+      sam: parseFloat(samPointTally.points),
+      amelia: parseFloat(ameliaPointTally.points)
+    };
 
     // make the point tallies array available to the view engine
-  res.locals.pointTally = pointTally;
+    res.locals.pointTally = pointTally;
 
-  pointTallies.forEach((period) => {
-    User.update(
-      {
-        name: period.user
-      },
-      {
-        $set: {
-          currentPoints: period.points
+    pointTallies.forEach(period => {
+      User.update(
+        {
+          name: period.user
+        },
+        {
+          $set: {
+            currentPoints: period.points
+          }
+        },
+        { upsert: true },
+        saveErr => {
+          if (saveErr) {
+            console.log(saveErr);
+          }
         }
-      },
-      { upsert: true },
-      (saveErr) => {
-        if (saveErr) {
-          console.log(saveErr);
-        }
-      }
-    );
-  });
+      );
+    });
 
-  next();
-}));
+    next();
+  })
+);
 
 // ////////////////////////////////////////////////////////////////
 // /////////.///// MIDDLEWARE TO CALCULATE POINTS /////////////////
