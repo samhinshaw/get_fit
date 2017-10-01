@@ -151,20 +151,15 @@
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
-}
-
-/* Using poor hack until I understand flexbox better */
-/* 1. Use the proper flexbox solution where we don't need columns to space the form */
-#landing-page {
+  /* V & H-Center items that appear in this landing page  */
   display: flex;
   align-items: center;
   justify-content: center;
-  /* flex: 1 100%; */
 }
 
-/* 2. Simply add padding to move the form down a bit */
-.login-page .container {
-  padding-top: 12.5vmax;
+/* Specify width of the landing page boxes */
+.landing-page .box {
+  width: 25rem;
 }
 
 .landing-page .title,

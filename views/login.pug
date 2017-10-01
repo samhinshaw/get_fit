@@ -4,21 +4,18 @@ block page
     //- .hero-head
       .container
     .hero-body
-      .container
-        .columns.is-tablet
-          .column.is-6.is-offset-3
-            .box.center-box
-              h3.is-size-3 Login
-              br
-              form(method='POST', action='/login')
-                .field
-                  label.label Username:
-                  .control
-                    input.input(name='username', type='text' autofocus)
-                .field
-                  label.label Password:
-                  .control
-                    input.input(name='password', type='password')
-                input.button(type='submit', value='Submit')
+      .box
+        h3.is-size-3 Login
+        br
+        form(method='POST', action='/login')
+          .field
+            label.label Username:
+            .control
+              input.input(name='username', type='text' autofocus)
+          .field
+            label.label Password:
+            .control
+              input.input(name='password', type='password')
+          input.button(type='submit', value='Submit')
     .hero-foot
       != messages('includes/footer-notification', locals)

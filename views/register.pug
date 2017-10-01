@@ -4,43 +4,40 @@ block page
     //- .hero-head
       .container
     .hero-body
-      .container
-        .columns.is-tablet
-          .column.is-6.is-offset-3
-            .box
-              h4.is-size-4 Register
-              br
-              form(method='POST', action='/register')
-                .field
-                  label.label.is-small Name:
-                  .control
-                    input.input.is-small(name='name', type='text')
-                .field
-                  label.label.is-small Username:
-                  .control
-                    input.input.is-small(name='username', type='text')
-                .field
-                  label.label.is-small Email:
-                  .control
-                    input.input.is-small(name='email', type='text')
-                hr
-                .field
-                  label.label.is-small Partner:
-                  .control
-                    input.input.is-small(name='partner', type='text')
-                .field
-                  label.label.is-small Calorie Goal:
-                  .control
-                    input.input.is-small(name='calGoal', type='number')
-                hr
-                .field
-                  label.label.is-small Password:
-                  .control
-                    input.input.is-small(name='password', type='password')
-                .field
-                  label.label.is-small Confirm Password:
-                  .control
-                    input.input.is-small(name='passwordConfirm', type='password')
-                input.button(type='submit', value='Submit')
+      .box
+        h3.is-size-3 Register
+        br
+        form(method='POST', action='/register')
+          .field
+            label.label Name:
+            .control
+              input.input(name='name', type='text')
+          .field
+            label.label Username:
+            .control
+              input.input(name='username', type='text')
+          .field
+            label.label Email:
+            .control
+              input.input(name='email', type='text')
+          hr
+          .field
+            label.label Partner:
+            .control
+              input.input(name='partner', type='text')
+          .field
+            label.label Calorie Goal:
+            .control
+              input.input(name='calGoal', type='number')
+          hr
+          .field
+            label.label Password:
+            .control
+              input.input(name='password', type='password')
+          .field
+            label.label Confirm Password:
+            .control
+              input.input(name='passwordConfirm', type='password')
+          input.button(type='submit', value='Submit')
     .hero-foot
       != messages('includes/footer-notification', locals)
