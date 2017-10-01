@@ -143,7 +143,7 @@
 }
 
 /* Background Image for Landing Page */
-.landing-page .hero-body {
+.landing-page.hero-body {
   background-color: #485a28;
   background-image: url(/images/get-fit-cropped.jpg);
   display: flex;

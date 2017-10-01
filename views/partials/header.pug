@@ -1,0 +1,61 @@
+doctype html
+html
+  head
+    title Get Fit
+    link(rel="apple-touch-icon", sizes="180x180", href="/apple-touch-icon.png")
+    link(rel="icon", type="image/png", sizes="32x32", href="/favicon-32x32.png")
+    link(rel="icon", type="image/png", sizes="16x16", href="/favicon-16x16.png")
+    link(rel="manifest", href="/manifest.json")
+    link(rel="mask-icon", href="/safari-pinned-tab.svg", color="#5bbad5")
+    meta(name="apple-mobile-web-app-title", content="Get Fit")
+    meta(name="application-name", content="Get Fit")
+    meta(name="theme-color", content="#f0f0f0")
+    link(rel='stylesheet', href='/css/bulma.css')
+    link(rel='stylesheet', href='/bower_components/mdi/css/materialdesignicons.min.css')
+    //- link(rel='stylesheet', href='/bower_components/font-awesome/css/font-awesome.min.css')
+    link(rel='stylesheet', href='/css/styles.css')
+    link(href="https://fonts.googleapis.com/css?family=Cormorant+Garamond:600", rel="stylesheet")
+  body.flex-body
+    nav.navbar.has-shadow.is-light
+      .navbar-brand
+        a.navbar-item(href='/')
+          img(src='/images/gym-near.svg', alt='Description', height=28, width=28)
+        .navbar-burger(data-target="navMenu")
+          span
+          span
+          span
+      .navbar-menu(id='navMenu')
+        .navbar-start
+          a.navbar-item(href='/overview', class=(pageInfo.route === "/overview"  ? 'is-active' : false))
+            | Overview
+          a.navbar-item(href=(user ? `/${user.username}` : '/sam'), class=(["/sam", "/amelia"].includes(pageInfo.route) ? 'is-active' : false))
+            | Users
+          a.navbar-item(href='/overview', class=(pageInfo.route === "/account"  ? 'is-active' : false))
+            | Account
+          a.navbar-item(href='/overview', class=(pageInfo.route === "/help"  ? 'is-active' : false))
+            | Help
+        .navbar-end
+          span.navbar-item
+            .field.is-grouped.has-addons
+              if user
+                .control
+                  a.button(href='/account')
+                    span.icon.is-small
+                      img(src=`/images/${user.username}_avatar.png`, alt=user.username, height='18px', width='18px')
+                    span #{user.username.charAt(0).toUpperCase() + user.username.slice(1).toLowerCase()}
+                .control
+                  a.button(href="/account/logout")
+                    | Log out
+              else
+                .control
+                  a.button(href="/account/login")
+                    | Log in
+                .control
+                  a.button(href="/account/register")
+                    | Sign up
+    block page
+    script(type='text/javascript', src='/bower_components/jquery/dist/jquery.min.js')
+    script(type='text/javascript', src='/bower_components/moment/min/moment.min.js')
+    script.
+      moment().format();
+    script(type='text/javascript', src='/js/bundle.min.js')

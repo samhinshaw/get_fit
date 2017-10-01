@@ -1,99 +1,44 @@
-doctype html
-html
-  head
-    title Get Fit!
-    link(rel="apple-touch-icon", sizes="180x180", href="/apple-touch-icon.png")
-    link(rel="icon", type="image/png", sizes="32x32", href="/favicon-32x32.png")
-    link(rel="icon", type="image/png", sizes="16x16", href="/favicon-16x16.png")
-    link(rel="manifest", href="/manifest.json")
-    link(rel="mask-icon", href="/safari-pinned-tab.svg", color="#5bbad5")
-    meta(name="apple-mobile-web-app-title", content="Get Fit")
-    meta(name="application-name", content="Get Fit")
-    meta(name="theme-color", content="#f0f0f0")
-    link(rel='stylesheet', href='/css/bulma.css')
-    link(rel='stylesheet', href='/bower_components/mdi/css/materialdesignicons.min.css')
-    //- link(rel='stylesheet', href='/bower_components/font-awesome/css/font-awesome.min.css')
-    link(rel='stylesheet', href='/css/styles.css')
-    link(href="https://fonts.googleapis.com/css?family=Cormorant+Garamond:600", rel="stylesheet")
-  body.flex-body
-    nav.navbar.has-shadow.is-light
-      .navbar-brand
-        a.navbar-item(href='/')
-          img(src='/images/gym-near.svg', alt='Description', height=28, width=28)
-        .navbar-burger(data-target="navMenu")
-          span
-          span
-          span
-      .navbar-menu(id='navMenu')
-        .navbar-start
-          a.navbar-item(href='/overview', class=(pageInfo.route === "/overview"  ? 'is-active' : false))
-            | Overview
-          a.navbar-item(href='/overview', class=(["/sam", "/amelia"].includes(pageInfo.route)  ? 'is-active' : false))
-            | Users
-          a.navbar-item(href='/overview', class=(pageInfo.route === "/account"  ? 'is-active' : false))
-            | Account
-          a.navbar-item(href='/overview', class=(pageInfo.route === "/help"  ? 'is-active' : false))
-            | Help
-        .navbar-end
-          span.navbar-item
-            .field.is-grouped
-              if user
-                .control
-                  a.button(href='/account')
-                    | #{user.username.charAt(0).toUpperCase() + user.username.slice(1).toLowerCase()}
-                .control
-                  a.button(href="/account/logout")
-                    | Log out
-              else
-                .control
-                  a.button(href="/account/login")
-                    | Log in
-                .control
-                  a.button(href="/account/register")
-                    | Sign up
-    section.hero.is-small(class='is-'+pageInfo.heroType)
-      .hero-body
-        .container
-          .columns.is-vcentered
-            .column
-              block header
-                p.title
-                  | Home
-                p.subtitle
-                  | Welcome to 
-                  strong the fit zone
-      .hero-foot
-        .container
-          nav.tabs.is-boxed
-            ul
-              //- attributes based on IN-LINE conditionals!!!
-              //- Setup T/F statements for is-active routing highlighting
-              //- https://github.com/pugjs/pug/issues/240
-              li(class=(pageInfo.route === "/"  ? 'is-active' : false))
-                a(href="/") Home
-              //- li(class=(pageInfo.route === "/data" ? 'is-active' : false))
-              //-   a(href="/data/submit") Submit
-              li(class=(pageInfo.route === "/sam" ? 'is-active' : false))
-                a(href="/sam") 
-                  | Sam
-                  span.tag(style='margin-left: 1em;', class='is-danger')
-                    | #{pointTally.sam.toFixed(1)}
-              li(class=(pageInfo.route === "/amelia" ? 'is-active' : false))
-                a(href="/amelia")
-                  | Amelia
-                  span.tag(style='margin-left: 1em;', class='is-danger')   
-                    | #{pointTally.amelia.toFixed(1)}
-              li(class=(pageInfo.route === "/account" ? 'is-active' : false))
-                a(href="/account")
-                  | My Account
-        block subnav
-    != messages('includes/notification', locals)
-    section.section
-      .columns
-        .column.is-8.is-offset-2
-          block content
-    script(type='text/javascript', src='/bower_components/jquery/dist/jquery.min.js')
-    script(type='text/javascript', src='/bower_components/moment/min/moment.min.js')
-    script.
-      moment().format();
-    script(type='text/javascript', src='/js/bundle.min.js')
+extends header
+
+block page
+  section.hero.is-small(class='is-'+pageInfo.heroType)
+    .hero-body
+      .container
+        .columns.is-vcentered
+          .column
+            block header
+              p.title
+                | Home
+              p.subtitle
+                | Welcome to 
+                strong the fit zone
+    .hero-foot
+      .container
+        nav.tabs.is-boxed
+          ul
+            //- attributes based on IN-LINE conditionals!!!
+            //- Setup T/F statements for is-active routing highlighting
+            //- https://github.com/pugjs/pug/issues/240
+            li(class=(pageInfo.route === "/"  ? 'is-active' : false))
+              a(href="/") Home
+            //- li(class=(pageInfo.route === "/data" ? 'is-active' : false))
+            //-   a(href="/data/submit") Submit
+            li(class=(pageInfo.route === "/sam" ? 'is-active' : false))
+              a(href="/sam") 
+                | Sam
+                span.tag(style='margin-left: 1em;', class='is-danger')
+                  | #{pointTally.sam.toFixed(1)}
+            li(class=(pageInfo.route === "/amelia" ? 'is-active' : false))
+              a(href="/amelia")
+                | Amelia
+                span.tag(style='margin-left: 1em;', class='is-danger')   
+                  | #{pointTally.amelia.toFixed(1)}
+            li(class=(pageInfo.route === "/account" ? 'is-active' : false))
+              a(href="/account")
+                | My Account
+      block subnav
+  != messages('includes/notification', locals)
+  section.section
+    .columns
+      .column.is-8.is-offset-2
+        block content

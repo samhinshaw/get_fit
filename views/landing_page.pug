@@ -1,77 +1,21 @@
-doctype html
-html
-  head
-    title Get Fit!
-    link(rel="apple-touch-icon", sizes="180x180", href="/apple-touch-icon.png")
-    link(rel="icon", type="image/png", sizes="32x32", href="/favicon-32x32.png")
-    link(rel="icon", type="image/png", sizes="16x16", href="/favicon-16x16.png")
-    link(rel="manifest", href="/manifest.json")
-    link(rel="mask-icon", href="/safari-pinned-tab.svg", color="#5bbad5")
-    meta(name="apple-mobile-web-app-title", content="Get Fit")
-    meta(name="application-name", content="Get Fit")
-    meta(name="theme-color", content="#f0f0f0")
-    link(rel='stylesheet', href='/css/bulma.css')
-    link(rel='stylesheet', href='/bower_components/mdi/css/materialdesignicons.min.css')
-    //- link(rel='stylesheet', href='/bower_components/font-awesome/css/font-awesome.min.css')
-    link(rel='stylesheet', href='/css/styles.css')
-    link(href="https://fonts.googleapis.com/css?family=Cormorant+Garamond:600", rel="stylesheet")
-  body.flex-body.landing-page
-    nav.navbar.has-shadow
-      .navbar-brand
-        a.navbar-item(href='/')
-          img(src='/images/gym-near.svg', alt='Description', height=28, width=28)
-        .navbar-burger(data-target="navMenu")
-          span
-          span
-          span
-      .navbar-menu(id='navMenu')
-        .navbar-start
-          a.navbar-item(href='/overview', class=(pageInfo.route === "/overview"  ? 'is-active' : false))
-            | Overview
-          a.navbar-item
-            | Users
-          a.navbar-item
-            | Account
-          a.navbar-item
-            | Help
-        .navbar-end
-          span.navbar-item
-            .field.is-grouped
-              if user
-                .control
-                  a.button(href='/account')
-                    | #{user.username.charAt(0).toUpperCase() + user.username.slice(1).toLowerCase()}
-                .control
-                  a.button(href="/account/logout")
-                    | Log out
-              else
-                .control
-                  a.button(href="/account/login")
-                    | Log in
-                .control
-                  a.button(href="/account/register")
-                    | Sign up
-    section.hero.is-default.is-bold.flex-content
-      //- .hero-head
-        .container
-      .hero-body
-        .container.has-text-centered
-          h1.title.is-huge
-            | Get Fit
-          //- h2.subtitle.is-huge
-            | Set Yourself up for Success
-          br
-          p.has-text-centered
-            if user
-              a.button.is-large.is-transparent(href='/overview')
-                | Get Started
-            else 
-              a.button.is-large.is-transparent(href='/account/login')
-                | Log in
-      .hero-foot
-        != messages('includes/footer-notification', locals)
-    script(type='text/javascript', src='/bower_components/jquery/dist/jquery.min.js')
-    //- script(async='', type='text/javascript', src='/bower_components/moment/min/moment.min.js')
-    //- script.
-    //-   moment().format();
-    script(type='text/javascript', src='/js/bundle.min.js')
+extends partials/header
+block page
+  section.hero.is-default.is-bold.flex-content
+    //- .hero-head
+      .container
+    .hero-body.landing-page
+      .container.has-text-centered
+        h1.title.is-huge
+          | Get Fit
+        //- h2.subtitle.is-huge
+          | Set Yourself up for Success
+        br
+        p.has-text-centered
+          if user
+            a.button.is-large.is-transparent(href='/overview')
+              | Get Started
+          else 
+            a.button.is-large.is-transparent(href='/account/login')
+              | Log in
+    .hero-foot
+      != messages('includes/footer-notification', locals)
