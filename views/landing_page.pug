@@ -1,16 +1,16 @@
 extends partials/header
 block page
-  section.hero.is-default.is-bold.flex-content
+  section.hero.is-default.is-bold.flex-content.landing-page
     //- .hero-head
       .container
-    .hero-body.landing-page
-      .container.has-text-centered
+    .hero-body#landing-page
+      .container.is-fluid.has-text-centered.center-box
         h1.title.is-huge
           | Get Fit
         //- h2.subtitle.is-huge
           | Set Yourself up for Success
         br
-        p.has-text-centered
+        .has-text-centered
           if user
             a.button.is-large.is-transparent(href='/overview')
               | Get Started

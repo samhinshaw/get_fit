@@ -8,7 +8,7 @@
 
 /* Give titles some more room to breathe! */
 .title {
-  font-size: 10vmin;
+  font-size: 10vmax;
   /* fixed with proper section usage */
   /* margin: 0.67em 0; */
 }
@@ -144,13 +144,27 @@
 }
 
 /* Background Image for Landing Page */
-.landing-page.hero-body {
-  background-color: #485a28;
-  background-image: url(/images/get-fit-cropped.jpg);
+.landing-page .hero-body {
+  background-color: #363636;
+  background: url(/images/get-fit-cropped.jpg) no-repeat center center fixed;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+  background-size: cover;
+}
+
+/* Using poor hack until I understand flexbox better */
+/* 1. Use the proper flexbox solution where we don't need columns to space the form */
+#landing-page {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-size: cover;
+  /* flex: 1 100%; */
+}
+
+/* 2. Simply add padding to move the form down a bit */
+.login-page .container {
+  padding-top: 12.5vmax;
 }
 
 .landing-page .title,
@@ -161,11 +175,11 @@
 }
 
 .title.is-huge {
-  font-size: 20vmin;
+  font-size: 20vmax;
 }
 
 .subtitle.is-huge {
-  font-size: 7vmin;
+  font-size: 7vmax;
 }
 
 .is-transparent {
