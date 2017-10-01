@@ -44,11 +44,11 @@ const Purchase = require('../models/purchase');
 async function queryWeeksFromMongo(user) {
   // First get all db entries for that user
 
-  const entries = await Entry.find({ user }, (err, ents) => {
+  const entries = await Entry.find({ user }, (err, res) => {
     if (err) {
       console.log(err);
     }
-    return ents;
+    return res;
   });
 
   // or remove redundancies in-line
@@ -107,18 +107,18 @@ async function queryWeeksFromMongo(user) {
 
 async function queryCustomPeriodsFromMongo(user) {
   // First get all db entries for that user
-  const entries = await Entry.find({ user }, (err, ents) => {
+  const entries = await Entry.find({ user }, (err, res) => {
     if (err) {
       console.log(err);
     }
-    return ents;
+    return res;
   });
 
-  const purchases = await Purchase.find({ requester: user }, (err, ents) => {
+  const purchases = await Purchase.find({ requester: user }, (err, res) => {
     if (err) {
       console.log(err);
     }
-    return ents;
+    return res;
   });
 
   const customPeriods = await customRanges.reduce((customPeriodResult, customPeriod) => {
@@ -164,7 +164,7 @@ async function queryCustomPeriodsFromMongo(user) {
 }
 
 async function getSortedEntries(user) {
-  Entry.find(
+  const sortedEntries = await Entry.find(
     {
       user,
       date: {
@@ -172,19 +172,38 @@ async function getSortedEntries(user) {
         $lte: today.toDate()
       }
     },
-    (err, entries) => {
+    (err, res) => {
       if (err) {
         console.log(err);
       }
       // If we get the results back, reorder the dates
-      const sortedEntries = _.orderBy(entries, 'date', 'desc');
-      return sortedEntries;
+      const sortedRes = _.orderBy(res, 'date', 'desc');
+      return sortedRes;
     }
   );
+  return sortedEntries;
+}
+
+async function getPendingPurchases(partner) {
+  const purchases = await Purchase.find(
+    {
+      requester: partner,
+      approved: false
+    },
+    (err, res) => {
+      if (err) {
+        console.log(err);
+      }
+      // If we get the results back, reorder the dates
+      return res;
+    }
+  );
+  return purchases;
 }
 
 module.exports = {
   queryWeeksFromMongo,
   queryCustomPeriodsFromMongo,
-  getSortedEntries
+  getSortedEntries,
+  getPendingPurchases
 };

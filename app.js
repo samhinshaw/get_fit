@@ -148,9 +148,9 @@ app.use((req, res, next) => {
 // Include custom middleware
 const mongoMiddleware = require('./middlewares/mongoMiddleware');
 
-// ////////////////////////////////////////////////////////////////
-// /////////////// MIDDLEWARE TO CALCULATE POINTS /////////////////
-// ////////////////////////////////////////////////////////////////
+// /////////////////////////////////////////////////////////////////////////////
+// /////////////// MIDDLEWARE TO CALCULATE POINTS & PURCHASES /////////////////
+// /////////////////////////////////////////////////////////////////////////////
 app.use(
   asyncMiddleware(async (req, res, next) => {
     // Don't need try, catch anymore since asyncMiddleware (see top of app.js) is
@@ -234,9 +234,26 @@ app.use(
   })
 );
 
-// ////////////////////////////////////////////////////////////////
-// /////////////// MIDDLEWARE TO CALCULATE POINTS /////////////////
-// ////////////////////////////////////////////////////////////////
+app.use(
+  asyncMiddleware(async (req, res, next) => {
+    // only look for the pending purchases if user is logged in
+    if (req.user) {
+      // Don't need try, catch anymore since asyncMiddleware (see top of app.js) is
+      // handling async errors
+
+      // Get pending purchases -- we want to find the ones our PARTNER has
+      // requested, because we only have a field in the document for requester,
+      // not requestee. So we want to see what we have yet to approve
+      const pendingRequests = await mongoMiddleware.getPendingPurchases(res.locals.user.partner);
+      res.locals.pendingRequests = pendingRequests;
+    }
+    next();
+  })
+);
+
+// /////////////////////////////////////////////////////////////////////////////
+// /////////////// MIDDLEWARE TO CALCULATE POINTS & PURCHASES /////////////////
+// /////////////////////////////////////////////////////////////////////////////
 
 // Use middleware to modify locals object (makes available to view engine!)
 // https://stackoverflow.com/questions/12550067/expressjs-3-0-how-to-pass-res-locals-to-a-jade-view
@@ -310,10 +327,12 @@ app.get('/overview', auth.ensureAuthenticated, (req, res) => {
 // Bring in route files
 // const data = require('./routes/data');
 const account = require('./routes/account');
+const landing = require('./routes/landing');
 const sam = require('./routes/sam');
 const amelia = require('./routes/amelia');
 
 // app.use('/data', data);
+app.use('/', landing);
 app.use('/account', account);
 app.use('/sam', sam);
 app.use('/amelia', amelia);

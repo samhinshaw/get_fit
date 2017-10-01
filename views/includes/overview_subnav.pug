@@ -1,0 +1,9 @@
+nav.tabs.is-boxed
+  .container
+    .navbar-tabs
+      a.navbar-item.is-tab.is-active(href='#')
+        | Summary
+      a.navbar-item.is-tab(href=`/${user.username}`)
+        | #{userName}
+      a.navbar-item.is-tab(href=`/${user.partner}`)
+        | #{partnerName}

@@ -4,17 +4,16 @@ block page
   section.hero.is-small(class='is-'+pageInfo.heroType)
     .hero-body
       .container
-        .columns.is-vcentered
-          .column
-            block header
-              p.title
-                | Home
-              p.subtitle
-                | Welcome to 
-                strong the fit zone
+        block header
+          p.title
+            | Home
+          p.subtitle
+            | Welcome to 
+            strong the fit zone
     .hero-foot
       .container
-        nav.tabs.is-boxed
+        block subnav
+        //- nav.tabs.is-boxed
           ul
             //- attributes based on IN-LINE conditionals!!!
             //- Setup T/F statements for is-active routing highlighting
@@ -36,9 +35,6 @@ block page
             li(class=(pageInfo.route === "/account" ? 'is-active' : false))
               a(href="/account")
                 | My Account
-      block subnav
   != messages('includes/notification', locals)
   section.section
-    .columns
-      .column.is-8.is-offset-2
-        block content
+    block content

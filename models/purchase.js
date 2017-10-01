@@ -30,6 +30,10 @@ const purchaseSchema = new Schema(
       type: Date,
       required: true
     },
+    message: {
+      type: String,
+      required: false
+    },
     // dateRequestedFor: {
     //   type: Date,
     //   required: false

@@ -8,7 +8,7 @@ const ensureAuthenticated = (req, res, next) => {
   }
   // otherwise, redirect to landing page!
   req.flash('danger', 'Please login.');
-  res.redirect('/account/login');
+  res.redirect('/login');
   return true;
 };
 

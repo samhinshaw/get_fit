@@ -63,7 +63,7 @@ router.get('/', auth.ensureAuthenticated, (req, res) => {
         const sortedEntries = _.orderBy(entries, 'date', 'desc');
 
         // render page
-        res.render('amelia', {
+        res.render('amelia/index', {
           // Object to send data along with response
           entries: sortedEntries
         });
@@ -78,7 +78,7 @@ router.get('/spend', auth.ensureAuthenticated, (req, res) => {
       console.log(err);
     }
     const sortedRewards = _.orderBy(rewards, 'cost', 'asc');
-    res.render('amelia_spend', {
+    res.render('amelia/spend', {
       rewards: sortedRewards
     });
   });
@@ -111,7 +111,8 @@ router.post(
       reward: rewardKey,
       displayName: rewardEntry.displayName,
       pointCost: rewardEntry.cost,
-      requester: 'sam',
+      requester: res.locals.user.username,
+      message: req.body.message,
       timeRequested: moment()
         .tz('US/Pacific')
         .toDate(),

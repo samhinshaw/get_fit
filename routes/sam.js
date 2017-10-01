@@ -98,7 +98,7 @@ router.get('/', auth.ensureAuthenticated, (req, res) => {
         const sortedEntries = _.orderBy(entries, 'date', 'desc');
 
         // render page
-        res.render('sam', {
+        res.render('sam/index', {
           // Object to send data along with response
           entries: sortedEntries
         });
@@ -113,7 +113,7 @@ router.get('/spend', auth.ensureAuthenticated, (req, res) => {
       console.log(err);
     }
     const sortedRewards = _.orderBy(rewards, 'cost', 'asc');
-    res.render('sam_spend', {
+    res.render('sam/spend', {
       rewards: sortedRewards
     });
   });
@@ -153,6 +153,7 @@ router.post(
       displayName: rewardEntry.displayName,
       pointCost: rewardEntry.cost,
       requester: res.locals.user.username, // replace with session
+      message: req.body.message,
       timeRequested: moment()
         .tz('US/Pacific')
         .toDate(),

@@ -9,15 +9,7 @@ block header
     |  🤓
 
 block subnav
-  nav.navbar.has-shadow.is-light(id=pageInfo.user+'-subnav')
-    .container
-      .navbar-tabs
-        a.navbar-item.is-tab(href='/account')
-          | Overview
-        a.navbar-item.is-tab(href='/account/login')
-          | Login
-        a.navbar-item.is-tab.is-active(href='/account/register')
-          | Register
+  include includes/account_subnav
 
 //- block content-header
 
@@ -25,7 +17,7 @@ block subnav
 block content
   h3.is-size-3 Register
   br
-  form(method='POST', action='/account/register')
+  form(method='POST', action='/register')
     .field
       label.label Name:
       .control

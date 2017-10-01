@@ -1,0 +1,37 @@
+extends ../partials/layout
+
+block header
+  p.title
+    | Your Account
+  p.subtitle
+    | Edit your goals, respond to requests
+
+block subnav
+  include ../includes/account_subnav
+
+block content
+  .columns.is-tablet
+    .column.is-offset-3.is-6
+      if pendingRequests.length === 0
+        h3.is-size-3 You have no pending requests!
+      else
+       each request, i in pendingRequests
+        .card
+          header.card-header
+            p.card-header-title
+              | #{request.displayName}
+            a.card-header-icon(href='#', aria-label='more options')
+              span.icon
+                i.mdi.mdi-chevron-down(aria-hidden='true')
+          .card-content
+            .content
+              h5.is-size-5 
+                u Message: 
+              p #{request.message}
+              //- FORMAT THIS MOMENT
+              p
+                em Sent at: 
+                time #{request.timeRequested}
+          footer.card-footer
+            a.card-footer-item.approve(href='#') Approve
+            a.card-footer-item.reject(href='#') Reject

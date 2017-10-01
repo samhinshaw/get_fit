@@ -1,0 +1,16 @@
+extends ../partials/layout
+
+block header
+  p.title
+    | Your Account
+  p.subtitle
+    | Edit your goals, respond to requests
+
+block subnav
+  include ../includes/account_subnav
+
+block content
+  .columns
+    .column.is-offset-2.is-8
+      .avatar-container.has-text-centered
+        img(src=`/images/${user.username}_avatar.png`, alt=user.username)

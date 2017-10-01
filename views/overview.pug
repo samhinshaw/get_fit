@@ -11,15 +11,7 @@ block header
     | next summer! 👙 🏖
 
 block subnav
-  nav.navbar.has-shadow.is-light(id=pageInfo.user+'-subnav')
-    .container
-      .navbar-tabs
-        a.navbar-item.is-tab.is-active(href='#')
-          | Summary
-        a.navbar-item.is-tab(href=`/${user.username}`)
-          | #{userName}
-        a.navbar-item.is-tab(href=`/${user.partner}`)
-          | #{partnerName}
+  include includes/overview_subnav
 
 block content
 

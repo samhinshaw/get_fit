@@ -1,0 +1,24 @@
+extends partials/header
+block page
+  section.hero.is-default.is-bold.flex-content
+    //- .hero-head
+      .container
+    .hero-body.landing-page
+      .container
+        .columns.is-vcentered.is-tablet
+          .column.is-4.is-offset-4
+            .box
+              h3.is-size-3 Login
+              br
+              form(method='POST', action='/login')
+                .field
+                  label.label Username:
+                  .control
+                    input.input(name='username', type='text' autofocus)
+                .field
+                  label.label Password:
+                  .control
+                    input.input(name='password', type='password')
+                input.button(type='submit', value='Submit')
+    .hero-foot
+      != messages('includes/footer-notification', locals)

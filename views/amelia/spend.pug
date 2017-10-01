@@ -1,4 +1,4 @@
-extends partials/layout
+extends ../partials/layout
 
 block header
   p.title
@@ -11,15 +11,7 @@ block header
 //- This could be an include, but leaving it here will
 //- allow us to work with the 'is-active' logic better
 block subnav
-  nav.navbar.has-shadow.is-white(id=pageInfo.user+'-subnav')
-    .container
-      .navbar-tabs
-        a.navbar-item.is-tab(href='/amelia')
-          | Overview
-        a.navbar-item.is-tab(href='#')
-          | Weight
-        a.navbar-item.is-tab.is-active(href='/amelia/spend')
-          | Spend Points
+  include ../includes/user_subnav
 
 block content
   //- Set up date information here. 

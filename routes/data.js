@@ -39,13 +39,13 @@ router.use((req, res, next) => {
 // called instead. Perhaps something to do with it trying to find an artcile
 // with the `:id`/`._id` of 'submit'?
 router.get('/submit', (req, res) => {
-  res.render('data_submit', {});
+  res.render('data/submit', {});
 });
 
 // Add route for individual articles
 router.get('/:id', auth.ensureAuthentication, (req, res) => {
   Article.findById(req.params.id, (err, article) => {
-    res.render('data', {
+    res.render('data/index', {
       article
     });
   });
@@ -58,7 +58,7 @@ router.get('/edit/:id', (req, res) => {
       req.flash('danger', 'Not authorized');
       res.redirect('/');
     }
-    res.render('data_edit', {
+    res.render('data/edit', {
       title: 'Edit Article',
       article
     });
@@ -96,7 +96,7 @@ router.post('/submit', (req, res) => {
 
   if (errors) {
     // If errors, re-render
-    // res.render('data_submit', {
+    // res.render('data/submit', {
     //   errors
     // });
     // Or maybe instead flash a message rather than re-render?
