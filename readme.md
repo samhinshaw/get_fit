@@ -55,3 +55,12 @@ Front End
 - Display two week period rolling points
 - Display week's points on Sunday (on left of 'feed')
 - Redesign app with Bulma Tiles
+
+Update Sept 30th, 2017
+Design
+- Remove `display: flex` from landing-page hero to allow columns to properly resize
+- HOWEVER, need to figure out how to vertically center columns then
+Perhaps update media elements of 'days' to make them cards or tiles instead of media
+
+Change all instances of 'purchases' to 'requests' for better semantics
+Format dates of requests with `moment.format()`
