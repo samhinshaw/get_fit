@@ -1,8 +1,6 @@
 # Get Fit!
 
 
-
-
 ## Features to Implement
 
 Back End  
@@ -29,6 +27,7 @@ Back End
         + ~~user~~
 - ~~Calculate points earned~~  
     + ~~By day, in total, and in the past two weeks~~
+
 - Store points in database for retrieval
     + Right now, points from a given timespan are calculated from daily point earnings **every time** the page renders
     + Cache calculations in front end
@@ -37,7 +36,7 @@ Back End
     + ~~Requests tab for each user?~~
     + Email notification? (Get fit logo + Sam has requested a reward!)
 
-- Implement authentication so we know who is logged in
+- ~~Implement authentication so we know who is logged in~~
 
 - Implement spending points  
     + ~~create entry in db for request.~~  

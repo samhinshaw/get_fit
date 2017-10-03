@@ -201,3 +201,8 @@
 .avatar-container img {
   height: 30vmin;
 }
+
+/* If our update-entry button is in the card footer, make it borderless! */
+.card-footer .update-entry {
+  border: none;
+}

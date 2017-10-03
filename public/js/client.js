@@ -20,8 +20,8 @@ const handlers = {
     }
   },
   // deleteArticle: () => {
-  //   $('.delete-article').on('click', event => {
-  //     const id = $(event.target).attr('data-id');
+  //   $('.delete-article').on('click', e => {
+  //     const id = $(e.target).attr('data-id');
   //     $.ajax({
   //       type: 'DELETE',
   //       url: `/data/${id}`,
@@ -36,15 +36,21 @@ const handlers = {
   //   });
   // },
   updateEntry: () => {
-    $('.update-entry').on('click', event => {
+    $('.update-entry').on('click', e => {
+      // First stop the click from enacting its default behavior. If this is a
+      // link, it will stop navigation. If this is a link to nowhere (href='#'),
+      // it will stop the browser from going to the top of the page. This isn't
+      // working for me though... why? Instead I've linked to href='#!', a
+      // nonexistent element on the page (id='!'). This works.
+      // e.preventDefault();
       // Get the Dates
-      // const id = $(event.target).attr('data-id');
-      const date = $(event.currentTarget).attr('data-date');
+      // const id = $(e.target).attr('data-id');
+      const date = $(e.currentTarget).attr('data-date');
       // set current subroute based on location. So we'll post to sam if we're on /sam
       const route = window.location.pathname;
       // Add the loading class
-      $(event.currentTarget).addClass('is-loading');
-      // $(event.currentTarget)
+      $(e.currentTarget).addClass('is-loading');
+      // $(e.currentTarget)
       //   .find('i')
       //   .addClass('fa-spin');
       // Make the AJAX request to update the entry
@@ -52,7 +58,8 @@ const handlers = {
         type: 'POST',
         url: `${route}/${date}`,
         // handle successes!
-        success: res => {
+        success: () => {
+          //    (res)
           window.location.reload();
         },
         // handle errors
@@ -64,19 +71,19 @@ const handlers = {
     });
   },
   dismissMessagesNotification: () => {
-    $('.messages').on('click', event => {
+    $('.messages').on('click', e => {
       // before we delete anything, check to see if this is the last alert
       if (
-        $(event.target)
+        $(e.target)
           .parent()
           .siblings().length === 0
       ) {
         // if it's the last alert, remove the entire .messages section
-        $(event.currentTarget)
+        $(e.currentTarget)
           .addClass('is-hidden')
           .remove();
       } else {
-        $(event.target)
+        $(e.target)
           .parent()
           .addClass('is-hidden')
           .remove();
@@ -84,9 +91,9 @@ const handlers = {
     });
   },
   dismissNotification: () => {
-    $('.footer-notification').on('click', event => {
+    $('.footer-notification').on('click', e => {
       // before we delete anything, check to see if this is the last alert
-      $(event.currentTarget)
+      $(e.currentTarget)
         .addClass('is-hidden')
         .remove();
     });
