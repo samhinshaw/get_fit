@@ -97,6 +97,36 @@ const handlers = {
         .addClass('is-hidden')
         .remove();
     });
+  },
+  approveOrReject: () => {
+    $('#request-container').on('click', e => {
+      // currentTarget is where the listener is attached
+      // target is the actual click target
+      const eClicked = $(e.target);
+      // If we clicked a button
+      if (eClicked.hasClass('request-button')) {
+        // Get the first parent with the class 'card'
+        // and find its data-id
+        const reqID = eClicked.closest('.card').attr('data-id');
+        console.log(reqID);
+        // Initiate AJAX request OR pop up a modal!
+
+        // $.ajax({
+        //   type: 'POST',
+        //   url: `${route}/${date}`,
+        //   // handle successes!
+        //   success: () => {
+        //     //    (res)
+        //     window.location.reload();
+        //   },
+        //   // handle errors
+        //   error: err => {
+        //     console.log(err);
+        //     window.location.reload();
+        //   }
+        // });
+      }
+    });
   }
 };
 
@@ -107,4 +137,5 @@ document.addEventListener('DOMContentLoaded', () => {
   handlers.dismissMessagesNotification();
   handlers.dismissNotification();
   handlers.updateEntry();
+  handlers.approveOrReject();
 });

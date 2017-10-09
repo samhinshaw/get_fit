@@ -23,7 +23,7 @@ const router = express.Router();
 router.get('/', auth.ensureAuthenticated, (req, res) => {
   res.render('account/index', {
     routeInfo: {
-      heroType: 'dark',
+      heroType: 'twitter',
       route: '/account',
       user: req.user.username || null,
       userName: req.user.username.charAt(0).toUpperCase() + req.user.username.slice(1) || null,
@@ -35,7 +35,7 @@ router.get('/', auth.ensureAuthenticated, (req, res) => {
 router.get('/requests', auth.ensureAuthenticated, (req, res) => {
   res.render('account/requests', {
     routeInfo: {
-      heroType: 'dark',
+      heroType: 'twitter',
       route: '/account/requests',
       user: req.user.username || null,
       userName: req.user.username.charAt(0).toUpperCase() + req.user.username.slice(1) || null,

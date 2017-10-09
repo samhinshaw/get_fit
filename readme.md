@@ -74,3 +74,5 @@ Then we can fix things.
     + Switch to 'user' and 'partner' instead
 
 Switch from using 'is-danger' (etc) classes to style different pages! Instead we should be specifying the page and then we'll style it differently ourselves.  
+
+- Update update-entry buttons to properly correspond to user/partner 

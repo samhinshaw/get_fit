@@ -1,9 +1,13 @@
-nav.tabs.is-boxed
-  .container
-    .navbar-tabs
-      a.navbar-item.is-tab.is-active(href=`/user`)
-        | Overview
-      //- a.navbar-item.is-tab(href='#')
-        | Weight
-      a.navbar-item.is-tab(href=`/user/spend`)
-        | Spend Points
+.navbar-tabs
+  a.navbar-item.is-tab(href=`/user`, class=(['/user', '/partner'].includes(routeInfo.route) ? 'is-active' : false))
+    span.icon.is-small
+      i.mdi.mdi-view-list 
+    | &nbsp;
+    | Overview
+  //- a.navbar-item.is-tab(href='#')
+    | Weight
+  a.navbar-item.is-tab(href=`/user/spend`, class=(['/user/spend'].includes(routeInfo.route) ? 'is-active' : false))
+    span.icon.is-small
+      i.mdi.mdi-shopping 
+    | &nbsp;
+    | Spend Points

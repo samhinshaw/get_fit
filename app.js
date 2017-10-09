@@ -321,7 +321,7 @@ app.get('/overview', auth.ensureAuthenticated, (req, res) => {
         userEntries: sortedUserEntries,
         partnerEntries: sortedPartnerEntries,
         routeInfo: {
-          heroType: 'overview',
+          heroType: 'dark',
           route: `/overview`,
           user: req.user.username || null,
           userName: req.user.username.charAt(0).toUpperCase() + req.user.username.slice(1) || null,
@@ -330,6 +330,18 @@ app.get('/overview', auth.ensureAuthenticated, (req, res) => {
       });
     }
   );
+});
+
+// Send user data to client side (via cookie) when user is logged in
+app.get('/api/user_data', auth.ensureAuthenticated, (req, res) => {
+  if (req.user === undefined) {
+    // The user is not logged in
+    res.json({});
+  } else {
+    res.json({
+      username: req.user
+    });
+  }
 });
 
 // Why doesn't this async version work?

@@ -11,12 +11,12 @@ block subnav
 
 block content
   .columns.is-tablet
-    .column.is-offset-3.is-6
+    .column.is-offset-3.is-6#request-container
       if pendingRequests.length === 0
         h3.is-size-3 You have no pending requests!
       else
        each request, i in pendingRequests
-        .card
+        .card(data-id=request._id)
           header.card-header
             p.card-header-title
               | #{request.displayName}
@@ -33,5 +33,5 @@ block content
                 em Sent at: 
                 time #{request.timeRequested}
           footer.card-footer
-            a.card-footer-item.approve(href='#') Approve
-            a.card-footer-item.reject(href='#') Reject
+            a.card-footer-item.request-button.approve(href='#!') Approve
+            a.card-footer-item.request-button.deny(href='#!') Deny

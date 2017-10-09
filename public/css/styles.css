@@ -65,15 +65,15 @@
   border-bottom-color: #3273dc;
 }
 
-#main-subnav .navbar-item.is-tab {
-  color: #363636;
+.hero.is-dark .navbar-item.is-tab {
+  color: whitesmoke;
 }
 
-#main-subnav .navbar-item.is-tab.is-active {
+.hero.is-dark .navbar-item.is-tab.is-active {
   /* background-color: #292929; */
   font-weight: 600;
-  border-bottom-color: #363636;
-  color: #363636;
+  border-bottom-color: whitesmoke;
+  color: whitesmoke;
 }
 
 #main-subnav .navbar-item.is-tab:hover,
@@ -118,19 +118,6 @@
 } */
 /* colored parts */
 
-.card-wrapper.is-dark {
-  background-color: hsl(0, 0%, 21%);
-}
-.card-wrapper.is-info {
-  background-color: hsl(217, 71%, 53%);
-}
-.card-wrapper.is-warning {
-  background-color: hsl(48, 100%, 67%);
-}
-.card-wrapper.is-success {
-  background-color: hsl(141, 71%, 48%);
-}
-
 /* styling for sticky footer! */
 
 .flex-body {
@@ -158,8 +145,11 @@
 }
 
 /* Specify width of the landing page boxes */
-.landing-page .box {
+.landing-page .register-box {
   width: 50rem;
+}
+.landing-page .login-box {
+  width: 25rem;
 }
 
 .landing-page .title,
