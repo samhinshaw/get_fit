@@ -39,7 +39,7 @@ const customRanges = [
 // Bring in user models
 const Entry = require('../models/entry');
 
-const Purchase = require('../models/purchase');
+const Request = require('../models/request');
 
 async function queryWeeksFromMongo(user) {
   // First get all db entries for that user
@@ -114,7 +114,7 @@ async function queryCustomPeriodsFromMongo(user) {
     return res;
   });
 
-  const purchases = await Purchase.find({ requester: user }, (err, res) => {
+  const requests = await Request.find({ requester: user }, (err, res) => {
     if (err) {
       console.log(err);
     }
@@ -133,18 +133,18 @@ async function queryCustomPeriodsFromMongo(user) {
 
     let totalForPeriod;
 
-    // IF we're counting from the start, subtract purchases, since that's our running TOTAL.
+    // IF we're counting from the start, subtract requests, since that's our running TOTAL.
     // Otherwise, we just want to know the number of points EARNED in that period.
     if (customPeriod.key === 'sinceStart') {
-      const customPeriodPurchases = purchases.reduce((points, purchase) => {
-        const date = moment(purchase.date).tz('US/Pacific');
+      const customPeriodRequests = requests.reduce((points, request) => {
+        const date = moment(request.date).tz('US/Pacific');
         if (date.isBetween(customPeriod.startDate, customPeriod.endDate, 'day', '[]')) {
-          return points + purchase.pointCost;
+          return points + request.pointCost;
         }
         return points;
       }, 0);
 
-      totalForPeriod = customPeriodPoints - customPeriodPurchases;
+      totalForPeriod = customPeriodPoints - customPeriodRequests;
     } else {
       totalForPeriod = customPeriodPoints;
     }
@@ -184,11 +184,11 @@ async function getSortedEntries(user) {
   return sortedEntries;
 }
 
-async function getPendingPurchases(partner) {
-  const purchases = await Purchase.find(
+async function getPendingRequests(partner) {
+  const requests = await Request.find(
     {
       requester: partner,
-      approved: false
+      status: 'unapproved'
     },
     (err, res) => {
       if (err) {
@@ -198,12 +198,12 @@ async function getPendingPurchases(partner) {
       return res;
     }
   );
-  return purchases;
+  return requests;
 }
 
 module.exports = {
   queryWeeksFromMongo,
   queryCustomPeriodsFromMongo,
   getSortedEntries,
-  getPendingPurchases
+  getPendingRequests
 };

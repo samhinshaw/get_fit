@@ -27,7 +27,7 @@ const router = express.Router();
 const Entry = require('../models/entry');
 
 const Reward = require('../models/reward');
-const Purchase = require('../models/purchase');
+const Request = require('../models/request');
 
 // Print in the page info we're using to style the page with Bulma
 const pageInfo = {
@@ -107,7 +107,7 @@ router.post(
       return;
     }
 
-    const newPurchase = new Purchase({
+    const newRequest = new Request({
       reward: rewardKey,
       displayName: rewardEntry.displayName,
       pointCost: rewardEntry.cost,
@@ -116,10 +116,10 @@ router.post(
       timeRequested: moment()
         .tz('US/Pacific')
         .toDate(),
-      approved: false
+      status: 'unapproved'
     });
 
-    newPurchase.save(saveErr => {
+    newRequest.save(saveErr => {
       if (saveErr) {
         console.log(saveErr);
       } else {
@@ -138,7 +138,7 @@ router.post(
 
     // Configure the request
     const options = {
-      url: 'https://maker.ifttt.com/trigger/purchase_request/with/key/JCavOg5Om_uGsh0R6McOC',
+      url: 'https://maker.ifttt.com/trigger/request_request/with/key/JCavOg5Om_uGsh0R6McOC',
       method: 'POST',
       headers,
       form: { value1: 'Sam' }

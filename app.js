@@ -68,7 +68,7 @@ db.on('error', err => {
 const app = express();
 
 // Include document Schemas
-// const Purchase = require('./models/purchase');
+// const Request = require('./models/request');
 // const Period = require('./models/period');
 const Period = require('./models/period');
 const User = require('./models/user');
@@ -220,7 +220,7 @@ app.use(
     pointTallies.forEach(period => {
       User.update(
         {
-          name: period.user
+          username: period.user
         },
         {
           $set: {
@@ -242,15 +242,15 @@ app.use(
 
 app.use(
   asyncMiddleware(async (req, res, next) => {
-    // only look for the pending purchases if user is logged in
+    // only look for the pending requests if user is logged in
     if (req.user) {
       // Don't need try, catch anymore since asyncMiddleware (see top of app.js) is
       // handling async errors
 
-      // Get pending purchases -- we want to find the ones our PARTNER has
+      // Get pending requests -- we want to find the ones our PARTNER has
       // requested, because we only have a field in the document for requester,
       // not requestee. So we want to see what we have yet to approve
-      const pendingRequests = await mongoMiddleware.getPendingPurchases(res.locals.user.partner);
+      const pendingRequests = await mongoMiddleware.getPendingRequests(res.locals.user.partner);
       res.locals.pendingRequests = pendingRequests;
     }
     next();
@@ -277,7 +277,8 @@ app.get('/', (req, res) => {
         route: `/`,
         user: res.locals.user.username,
         userName: req.user.username.charAt(0).toUpperCase() + req.user.username.slice(1),
-        partnerName: req.user.partner.charAt(0).toUpperCase() + req.user.partner.slice(1).toLowerCase()
+        partnerName:
+          req.user.partner.charAt(0).toUpperCase() + req.user.partner.slice(1).toLowerCase()
       }
     });
   } else {
@@ -325,7 +326,9 @@ app.get('/overview', auth.ensureAuthenticated, (req, res) => {
           route: `/overview`,
           user: req.user.username || null,
           userName: req.user.username.charAt(0).toUpperCase() + req.user.username.slice(1) || null,
-          partnerName: req.user.partner.charAt(0).toUpperCase() + req.user.partner.slice(1).toLowerCase() || null
+          partnerName:
+            req.user.partner.charAt(0).toUpperCase() + req.user.partner.slice(1).toLowerCase() ||
+            null
         }
       });
     }

@@ -10,6 +10,7 @@ block subnav
   include ../includes/account_subnav
 
 block content
+  != messages('includes/notification', locals)
   .columns
     .column.is-offset-2.is-8
       .avatar-container.has-text-centered

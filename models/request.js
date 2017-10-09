@@ -8,7 +8,7 @@ const Schema = mongoose.Schema;
 
 // Date Schema
 
-const purchaseSchema = new Schema(
+const requestSchema = new Schema(
   {
     reward: {
       type: String,
@@ -30,7 +30,11 @@ const purchaseSchema = new Schema(
       type: Date,
       required: true
     },
-    message: {
+    requestMessage: {
+      type: String,
+      required: false
+    },
+    responseMessage: {
       type: String,
       required: false
     },
@@ -38,8 +42,8 @@ const purchaseSchema = new Schema(
     //   type: Date,
     //   required: false
     // },
-    approved: {
-      type: Boolean,
+    status: {
+      type: String,
       required: true
     },
     timeApproved: {
@@ -59,8 +63,8 @@ const purchaseSchema = new Schema(
     //   required: true
     // }
   },
-  { collection: 'purchases' }
+  { collection: 'requests' }
 );
 
-const Purchase = mongoose.model('purchase', purchaseSchema);
-module.exports = Purchase;
+const Request = mongoose.model('request', requestSchema);
+module.exports = Request;

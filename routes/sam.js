@@ -41,7 +41,7 @@ const router = express.Router();
 // Bring in user model
 const Entry = require('../models/entry');
 const Reward = require('../models/reward');
-const Purchase = require('../models/purchase');
+const Request = require('../models/request');
 
 // Print in the page info we're using to style the page with Bulma
 const pageInfo = {
@@ -148,7 +148,7 @@ router.post(
       return;
     }
 
-    const newPurchase = new Purchase({
+    const newRequest = new Request({
       reward: rewardKey,
       displayName: rewardEntry.displayName,
       pointCost: rewardEntry.cost,
@@ -157,17 +157,17 @@ router.post(
       timeRequested: moment()
         .tz('US/Pacific')
         .toDate(),
-      approved: false
+      status: 'unapproved'
     });
 
-    newPurchase.save(saveErr => {
+    newRequest.save(saveErr => {
       if (saveErr) {
         console.log(saveErr);
       } else {
         // If saved, send request via IFTTT
         request(
           // this function will return our configuration object with
-          configureIFTTT(pageInfo.User, 'purchase_request'),
+          configureIFTTT(pageInfo.User, 'request_request'),
           (error, response) => {
             // (error, response, body)
             if (error) {

@@ -2,7 +2,10 @@ const handlers = {
   // Function 1 to listen for: hamburger menu
   toggleNavBarBurger: () => {
     // Get all "navbar-burger" elements
-    const navbarBurgers = Array.prototype.slice.call(document.querySelectorAll('.navbar-burger'), 0);
+    const navbarBurgers = Array.prototype.slice.call(
+      document.querySelectorAll('.navbar-burger'),
+      0
+    );
     // Check if there are any nav burgers
     if (navbarBurgers.length > 0) {
       // Add a click event on each of them
@@ -98,33 +101,87 @@ const handlers = {
         .remove();
     });
   },
-  approveOrReject: () => {
+  replyToRequest: () => {
     $('#request-container').on('click', e => {
       // currentTarget is where the listener is attached
       // target is the actual click target
-      const eClicked = $(e.target);
+      const clickTarget = $(e.target);
       // If we clicked a button
-      if (eClicked.hasClass('request-button')) {
+      if (clickTarget.hasClass('request-button')) {
         // Get the first parent with the class 'card'
         // and find its data-id
-        const reqID = eClicked.closest('.card').attr('data-id');
-        console.log(reqID);
+        const reqID = clickTarget.closest('.card').attr('data-id');
         // Initiate AJAX request OR pop up a modal!
-
-        // $.ajax({
-        //   type: 'POST',
-        //   url: `${route}/${date}`,
-        //   // handle successes!
-        //   success: () => {
-        //     //    (res)
-        //     window.location.reload();
-        //   },
-        //   // handle errors
-        //   error: err => {
-        //     console.log(err);
-        //     window.location.reload();
-        //   }
-        // });
+        // Add an event listener to logo watch for clicks
+        $('#request-modal').toggleClass('is-active');
+        // Set the modal header
+        $('#request-modal .modal-card-title').text(`${clickTarget.text()} Request`);
+        // Change the span text
+        $('#request-modal .response-type').text(`${clickTarget.text().toLowerCase()}`);
+        // Finally, set the data ID of the buttons to the ID from the card, so
+        // we can process the request in a separate event listener.
+        $('#request-modal .response-button').attr('data-id', reqID);
+        // Also set a data attribute on the buttons to make sure we're
+        // corresponding to the correct button originally clicked, approve or
+        // deny
+        $('#request-modal .response-button').attr('data-type', clickTarget.text().toLowerCase());
+        // Depending on which we clicked, hide one of the two control buttons
+        // Default is UNhidden, so we'll hide the one NOT being used
+        // That way we can always removeClass upon modal close
+        // This will stop classes from accumulating accidentally?
+        if (clickTarget.text().toLowerCase() === 'deny') {
+          $('#request-modal #approve-request').addClass('is-hidden');
+        } else if (clickTarget.text().toLowerCase() === 'approve') {
+          $('#request-modal #deny-request').addClass('is-hidden');
+        }
+      }
+    });
+  },
+  watchModal: () => {
+    $('#request-modal').on('click', e => {
+      // If the background, close, or cancel buttons were clicked...
+      if (
+        $(e.target).hasClass('delete') ||
+        $(e.target).hasClass('modal-background') ||
+        $(e.target).hasClass('cancel')
+      ) {
+        // toggle the 'is-active' class from the modal
+        $('#request-modal').toggleClass('is-active');
+        // and unhide both buttons
+        $('#request-modal #approve-request').removeClass('is-hidden');
+        $('#request-modal #deny-request').removeClass('is-hidden');
+      } else if ($(e.target).hasClass('response-button')) {
+        // Add button loading style
+        $(e.target).addClass('is-loading');
+        // Set up boolean value for inline ternary conditional. We want to know
+        // whether request was approved or denied. If the request was approved,
+        // then $(e.target).attr('data-type') === 'approve'; will be TRUE, and
+        // approval will be true. If it is denied, then
+        // $(e.target).attr('data-type') === 'approve'; will be false, and
+        // approval will be false.
+        const approval = $(e.target).attr('data-type') === 'approve';
+        // Send ajax request
+        $.ajax({
+          type: 'POST',
+          url: 'requests/respond',
+          data: {
+            id: $(e.target).attr('data-id'),
+            message: $('#request-modal input[name="message"]').val(),
+            // If approval = true, type will be 'approved'.
+            // If approval = false, type will be 'denied'
+            type: approval ? 'approved' : 'denied'
+          },
+          // handle successes!
+          success: () => {
+            //    (res)
+            window.location.reload();
+          },
+          // handle errors
+          error: err => {
+            console.log(err);
+            // window.location.reload();
+          }
+        });
       }
     });
   }
@@ -137,5 +194,6 @@ document.addEventListener('DOMContentLoaded', () => {
   handlers.dismissMessagesNotification();
   handlers.dismissNotification();
   handlers.updateEntry();
-  handlers.approveOrReject();
+  handlers.replyToRequest();
+  handlers.watchModal();
 });

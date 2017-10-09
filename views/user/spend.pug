@@ -7,6 +7,7 @@ block subnav
   include ../includes/user_subnav
 
 block content
+  != messages('includes/notification', locals)
   .columns.is-desktop
     .column.is-6.is-offset-3
       //- Set up date information here. 
@@ -22,7 +23,7 @@ block content
 
       //- h3.is-size-3 Spend Points
       //- br
-      form(method="POST", action="/sam/spend")
+      form(method="POST", action="/user/spend")
         .field
           label.label Choose Reward
           .control

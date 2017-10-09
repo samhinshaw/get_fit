@@ -17,7 +17,7 @@ const asyncMiddleware = fn => (req, res, next) => {
 
 // IFTTT Configuration
 
-function configureIFTTT(user, requestType) {
+const configureIFTTT = (user, requestType) => {
   const configOptions = {
     url: `https://maker.ifttt.com/trigger/${requestType}/with/key/JCavOg5Om_uGsh0R6McOC`,
     method: 'POST',
@@ -28,7 +28,7 @@ function configureIFTTT(user, requestType) {
     form: { value1: user }
   };
   return configOptions;
-}
+};
 
 // Initialize Moment & Today Object
 moment().format(); // required by package entirely
@@ -41,7 +41,7 @@ const router = express.Router();
 // Bring in user model
 const Entry = require('../models/entry');
 const Reward = require('../models/reward');
-const Purchase = require('../models/purchase');
+const Request = require('../models/request');
 
 // Print in the page info we're using to style the page with Bulma
 // const pageInfo = {
@@ -112,7 +112,8 @@ router.get('/', auth.ensureAuthenticated, (req, res) => {
             route: '/user',
             user: req.user.username,
             userName: req.user.username.charAt(0).toUpperCase() + req.user.username.slice(1),
-            partnerName: req.user.partner.charAt(0).toUpperCase() + req.user.partner.slice(1).toLowerCase()
+            partnerName:
+              req.user.partner.charAt(0).toUpperCase() + req.user.partner.slice(1).toLowerCase()
           }
         });
       }
@@ -133,7 +134,8 @@ router.get('/spend', auth.ensureAuthenticated, (req, res) => {
         route: '/user/spend',
         user: req.user.username,
         userName: req.user.username.charAt(0).toUpperCase() + req.user.username.slice(1),
-        partnerName: req.user.partner.charAt(0).toUpperCase() + req.user.partner.slice(1).toLowerCase()
+        partnerName:
+          req.user.partner.charAt(0).toUpperCase() + req.user.partner.slice(1).toLowerCase()
       }
     });
   });
@@ -168,26 +170,29 @@ router.post(
       return;
     }
 
-    const newPurchase = new Purchase({
+    const newRequest = new Request({
       reward: rewardKey,
       displayName: rewardEntry.displayName,
       pointCost: rewardEntry.cost,
       requester: res.locals.user.username, // replace with session
-      message: req.body.message,
+      requestMessage: req.body.message,
       timeRequested: moment()
         .tz('US/Pacific')
         .toDate(),
-      approved: false
+      status: 'unapproved'
     });
 
-    newPurchase.save(saveErr => {
+    newRequest.save(saveErr => {
       if (saveErr) {
         console.log(saveErr);
       } else {
         // If saved, send request via IFTTT
         request(
           // this function will return our configuration object with
-          configureIFTTT(res.locals.routeInfo.userName, 'purchase_request'),
+          configureIFTTT(
+            req.user.username.charAt(0).toUpperCase() + req.user.username.slice(1),
+            'reward_request'
+          ),
           (error, response) => {
             // (error, response, body)
             if (error) {

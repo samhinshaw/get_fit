@@ -27,7 +27,7 @@ block content
             .content
               h5.is-size-5 
                 u Message: 
-              p #{request.message}
+              p #{request.requestMessage}
               //- FORMAT THIS MOMENT
               p
                 em Sent at: 
@@ -35,3 +35,26 @@ block content
           footer.card-footer
             a.card-footer-item.request-button.approve(href='#!') Approve
             a.card-footer-item.request-button.deny(href='#!') Deny
+        br
+  //- Modal for copyright info. Hidden until JS click event received.
+  .modal#request-modal
+    .modal-background
+    .modal-card
+      header.modal-card-head
+        p.modal-card-title Reply to Request
+        button.delete(aria-label='close')
+      section.modal-card-body
+        .content
+          p 
+            | Are you sure you wish to 
+            span.response-type
+            |  this request?
+          .field
+            label.label Reply
+              span.is-pulled-right.is-faded (optional)
+            .control
+              input.input(name='message', type='text')
+      footer.modal-card-foot
+        button.button.response-button.is-success#approve-request Approve
+        button.button.response-button.is-danger#deny-request Deny
+        button.button.cancel Cancel

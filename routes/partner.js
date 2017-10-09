@@ -41,7 +41,7 @@ const router = express.Router();
 // Bring in user model
 const Entry = require('../models/entry');
 const Reward = require('../models/reward');
-const Purchase = require('../models/purchase');
+const Request = require('../models/request');
 
 // Print in the page info we're using to style the page with Bulma
 // const pageInfo = {
@@ -112,7 +112,8 @@ router.get('/', auth.ensureAuthenticated, (req, res) => {
             route: '/partner',
             user: req.user.username,
             userName: req.user.username.charAt(0).toUpperCase() + req.user.username.slice(1),
-            partnerName: req.user.partner.charAt(0).toUpperCase() + req.user.partner.slice(1).toLowerCase()
+            partnerName:
+              req.user.partner.charAt(0).toUpperCase() + req.user.partner.slice(1).toLowerCase()
           }
         });
       }
