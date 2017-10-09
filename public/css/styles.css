@@ -159,7 +159,7 @@
 
 /* Specify width of the landing page boxes */
 .landing-page .box {
-  width: 25rem;
+  width: 50rem;
 }
 
 .landing-page .title,
@@ -205,4 +205,8 @@
 /* If our update-entry button is in the card footer, make it borderless! */
 .card-footer .update-entry {
   border: none;
+}
+
+.label .is-faded {
+  color: #b5b5b5;
 }

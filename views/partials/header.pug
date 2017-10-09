@@ -31,29 +31,31 @@ html
           .navbar-menu(id='navMenu')
             .navbar-start
               if user
-                a.navbar-item(href='/overview', class=(pageInfo.route === "/overview"  ? 'is-active' : false))
+                //- Make username and partner name sentence case 
+                a.navbar-item(href='/overview', class=(routeInfo.route === "/overview"  ? 'is-active' : false))
                   | Overview
-                a.navbar-item(href=(user ? `/${user.username}` : '/sam'), class=(["/sam", "/amelia"].includes(pageInfo.route) ? 'is-active' : false))
-                  | Users
-                a.navbar-item(href='/account', class=(pageInfo.route === "/account"  ? 'is-active' : false))
-                  .field.is-grouped
-                    .control
-                      span Account
-                    if pendingRequests.length > 0
-                      .control
-                        span.tag(class='is-danger')
-                          | #{pendingRequests.length}
-                a.navbar-item(href='/help', class=(pageInfo.route === "/help"  ? 'is-active' : false))
+                a.navbar-item(href=`/user`, class=([`/user`].includes(routeInfo.route) ? 'is-active' : false))
+                  | #{routeInfo.userName}
+                a.navbar-item(href=`/partner`, class=([`/partner`].includes(routeInfo.route) ? 'is-active' : false))
+                  | #{routeInfo.partnerName}
+                //- a.navbar-item(href='/account', class=(routeInfo.route === "/account"  ? 'is-active' : false))
+                  | Account
+                a.navbar-item(href='/help', class=(routeInfo.route === "/help"  ? 'is-active' : false))
                   | Help
             .navbar-end
               span.navbar-item
                 .field.is-grouped.has-addons
                   if user
                     .control
-                      a.button(href='/account')
+                      a.button(href='/account', class=(routeInfo.route === "/account"  ? 'is-active' : false))
                         span.icon.is-small
-                          img(src=`/images/${user.username}_avatar.png`, alt=user.username, height='18px', width='18px')
-                        span #{user.username.charAt(0).toUpperCase() + user.username.slice(1).toLowerCase()}
+                          img(src=`/images/${user.username}_avatar.png`, alt=user.username, height='28px', width='28px')
+                        | &nbsp;
+                        span #{routeInfo.userName}
+                        if pendingRequests.length > 0
+                          | &nbsp;
+                          span.tag(class='is-danger')
+                            | #{pendingRequests.length}
                     .control
                       a.button(href="/logout")
                         | Log out

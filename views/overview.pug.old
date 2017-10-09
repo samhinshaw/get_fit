@@ -1,0 +1,191 @@
+extends partials/layout
+
+block header
+  - const userName = user.username.charAt(0).toUpperCase() + user.username.slice(1).toLowerCase()
+  - const partnerName = user.partner.charAt(0).toUpperCase() + user.partner.slice(1).toLowerCase()
+  p.title
+    | Get Fit!
+  p.subtitle
+    | #{userName} & #{partnerName} are gonna be 
+    strong sexy 
+    | next summer! 👙 🏖
+
+block subnav
+  include includes/overview_subnav
+
+block content
+
+  - const moment = require('moment-timezone');
+  - moment().format();
+
+  //- - const now = moment.utc();
+  - const now = moment.tz('US/Pacific');
+  - const today = now.clone().startOf('day');
+  - const todayPretty = today.format('YYYY-MM-DD');
+  - const twoWeeksAgo = today.clone().subtract(14, 'days');
+  - const twoWeeksAgoPretty = twoWeeksAgo.format('YYYY-MM-DD');
+
+  //- - const tomorrow = today.clone().add(1, 'day');
+  //- - const tomorrowPretty = tomorrow.format('YYYY-MM-DD');
+
+  .field.is-grouped
+    .control
+      button.button.is-small.is-info.is-pulled-left.update-entry(data-date=todayPretty)
+        | Update Today
+    //- Note, if we place the tooltip directly onto the button, the behavior of
+    //-  the tooltop (which utilizes ::before and ::after pseudo-elements) will
+    //-  interfere with the loading spinner, which uses the ::after element on
+    //-  click! Therefore we must attach the tooltip to the parent .control div
+    //-  of the button. 
+    .control.tooltip.is-tooltip-top(data-tooltip="This may take a while to update.")
+      button.button.is-small.is-info.is-pulled-left.update-entry(data-date=`${twoWeeksAgoPretty} ${todayPretty}`)
+        | Update Past Two Weeks
+    //- .control
+      span.tag(style='margin-left: 1em;', class='is-danger')
+        | #{pointTally.sam.toFixed(1)}
+  br
+  .columns.is-desktop
+    .column.is-half
+      each entry in userEntries
+        //- - const entryDate = moment.utc(entry.date);
+        - const entryDate = moment.tz(entry.date, 'US/Pacific');
+        - const datePretty = entryDate.format('YYYY-MM-DD');
+        - const dateHuman = entryDate.format('MM-DD-YYYY');
+        - const weekDay = entryDate.format('ddd');
+        //- Break up into weeks and we'll come back to this for a weekly point total
+        if weekDay === 'Sun'
+          hr.thick
+        article.media
+          figure.media-left
+            p.image.is-48x48
+              span.is-pulled-right #{weekDay}
+              br
+              span.is-pulled-right #{entry.points.toFixed(1)}
+
+            //- p.image.is-64x64
+            //-   img(src='http://bulma.io/images/placeholders/128x128.png')
+          .media-content
+            .content
+              p
+                strong= dateHuman
+                span  &middot; 
+                //- First check to see if this entry was reported empty
+                if entry.isEmpty
+                  span No data yet!
+                //- Then, if left over calories, report remaining!
+                else if entry.netCals > 0
+                  span #{entry.netCals} 
+                  case entry.netCals
+                    when -1
+                    when 1
+                      | cal remaining
+                    default 
+                      | cals remaining
+                else if entry.netCals < 0
+                  if entry.netCals < -300
+                    span.is-danger #{-entry.netCals} 
+                  else 
+                    span.is-warning #{-entry.netCals} 
+                  case entry.netCals
+                    when -1
+                    when 1
+                      span cal over
+                    default 
+                      span cals over
+                else if entry.netCals === 0
+                  span you hit your goal EXACTLY
+                //- Could also check datePretty vs todayPretty
+                //- This will check Date object vs Date object
+                //- It may be more error prone, but also much more specific
+                //- if entry.date === today
+                //-   span.tag.is-dark Today
+                //-   span.tag.is-success #{today.dayOfWeek}
+              if entry.exercise.length > 0
+                each exercise, i in entry.exercise
+                  article.media.level.exercise
+                    .level-left
+                      .level-item
+                        //- show icons for exercise types!
+                        span.icon
+                          i
+                            img(src='/images/icons/' + exercise.icon, alt='&middot;', height="48" width="48")
+                      .level-item
+                        .content
+                          p #{exercise.points}pts - #{exercise.name}, (#{exercise.minutes}mins, #{exercise.cals}cals)
+          .media-right
+            a.button.update-entry(data-id=entry._id, data-date=datePretty)
+              span.icon.is-small
+                //- i.fa.fa-refresh
+                i.mdi.mdi-update
+    .column.is-half
+      each entry in partnerEntries
+        //- - const entryDate = moment.utc(entry.date);
+        - const entryDate = moment.tz(entry.date, 'US/Pacific');
+        - const datePretty = entryDate.format('YYYY-MM-DD');
+        - const dateHuman = entryDate.format('MM-DD-YYYY');
+        - const weekDay = entryDate.format('ddd');
+        //- Break up into weeks and we'll come back to this for a weekly point total
+        if weekDay === 'Sun'
+          hr.thick
+        article.media
+          figure.media-left
+            p.image.is-48x48
+              span.is-pulled-right #{weekDay}
+              br
+              span.is-pulled-right #{entry.points.toFixed(1)}
+
+            //- p.image.is-64x64
+            //-   img(src='http://bulma.io/images/placeholders/128x128.png')
+          .media-content
+            .content
+              p
+                strong= dateHuman
+                span  &middot; 
+                //- First check to see if this entry was reported empty
+                if entry.isEmpty
+                  span No data yet!
+                //- Then, if left over calories, report remaining!
+                else if entry.netCals > 0
+                  span #{entry.netCals} 
+                  case entry.netCals
+                    when -1
+                    when 1
+                      | cal remaining
+                    default 
+                      | cals remaining
+                else if entry.netCals < 0
+                  if entry.netCals < -300
+                    span.is-danger #{-entry.netCals} 
+                  else 
+                    span.is-warning #{-entry.netCals} 
+                  case entry.netCals
+                    when -1
+                    when 1
+                      span cal over
+                    default 
+                      span cals over
+                else if entry.netCals === 0
+                  span you hit your goal EXACTLY
+                //- Could also check datePretty vs todayPretty
+                //- This will check Date object vs Date object
+                //- It may be more error prone, but also much more specific
+                //- if entry.date === today
+                //-   span.tag.is-dark Today
+                //-   span.tag.is-success #{today.dayOfWeek}
+              if entry.exercise.length > 0
+                each exercise, i in entry.exercise
+                  article.media.level.exercise
+                    .level-left
+                      .level-item
+                        //- show icons for exercise types!
+                        span.icon
+                          i
+                            img(src='/images/icons/' + exercise.icon, alt='&middot;', height="48" width="48")
+                      .level-item
+                        .content
+                          p #{exercise.points}pts - #{exercise.name}, (#{exercise.minutes}mins, #{exercise.cals}cals)
+          .media-right
+            a.button.update-entry(data-id=entry._id, data-date=datePretty)
+              span.icon.is-small
+                //- i.fa.fa-refresh
+                i.mdi.mdi-update

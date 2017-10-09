@@ -1,7 +1,7 @@
 extends header
 
 block page
-  section.hero.is-small(class='is-'+pageInfo.heroType)
+  section.hero.is-small(class=`is-${routeInfo.heroType}`)
     .hero-body
       .container
         block header
@@ -13,28 +13,6 @@ block page
     .hero-foot
       .container
         block subnav
-        //- nav.tabs.is-boxed
-          ul
-            //- attributes based on IN-LINE conditionals!!!
-            //- Setup T/F statements for is-active routing highlighting
-            //- https://github.com/pugjs/pug/issues/240
-            li(class=(pageInfo.route === "/"  ? 'is-active' : false))
-              a(href="/") Home
-            //- li(class=(pageInfo.route === "/data" ? 'is-active' : false))
-            //-   a(href="/data/submit") Submit
-            li(class=(pageInfo.route === "/sam" ? 'is-active' : false))
-              a(href="/sam") 
-                | Sam
-                span.tag(style='margin-left: 1em;', class='is-danger')
-                  | #{pointTally.sam.toFixed(1)}
-            li(class=(pageInfo.route === "/amelia" ? 'is-active' : false))
-              a(href="/amelia")
-                | Amelia
-                span.tag(style='margin-left: 1em;', class='is-danger')   
-                  | #{pointTally.amelia.toFixed(1)}
-            li(class=(pageInfo.route === "/account" ? 'is-active' : false))
-              a(href="/account")
-                | My Account
   != messages('includes/notification', locals)
   section.section
     block content

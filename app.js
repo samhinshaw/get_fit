@@ -131,19 +131,25 @@ require('./config/passport')(passport);
 app.use(passport.initialize());
 app.use(passport.session());
 
-// Init global user variable for all routes
-// Shouldn't this be app.use?
-app.use((req, res, next) => {
-  // This '||' will assign to NULL if req.user does not exist
-  res.locals.user = req.user || null;
-  // also store 'logged-in' status
-  if (req.user) {
-    res.locals.loggedIn = true;
-  } else {
-    res.locals.loggedIn = false;
-  }
-  next();
-});
+// Init global user variable
+app.use(
+  asyncMiddleware(async (req, res, next) => {
+    // This '||' will assign to NULL if req.user does not exist
+    res.locals.user = req.user || null;
+
+    // also store 'logged-in' status
+    if (req.user) {
+      res.locals.loggedIn = true;
+      res.locals.partner = await User.findOne({
+        username: req.user.partner
+      });
+    } else {
+      res.locals.loggedIn = false;
+    }
+
+    next();
+  })
+);
 
 // Include custom middleware
 const mongoMiddleware = require('./middlewares/mongoMiddleware');
@@ -252,7 +258,7 @@ app.use(
 );
 
 // /////////////////////////////////////////////////////////////////////////////
-// /////////////// MIDDLEWARE TO CALCULATE POINTS & PURCHASES /////////////////
+// /////////////// END MIDDLEWARE TO CALCULATE POINTS & PURCHASES /////////////////
 // /////////////////////////////////////////////////////////////////////////////
 
 // Use middleware to modify locals object (makes available to view engine!)
@@ -264,13 +270,27 @@ app.use((req, res, next) => {
 });
 
 app.get('/', (req, res) => {
-  res.render('landing_page', {
-    pageInfo: {
-      heroType: 'dark',
-      route: '/',
-      user: 'main'
-    }
-  });
+  if (res.locals.loggedIn) {
+    res.render('landing_page', {
+      routeInfo: {
+        heroType: 'landing_page',
+        route: `/`,
+        user: res.locals.user.username,
+        userName: req.user.username.charAt(0).toUpperCase() + req.user.username.slice(1),
+        partnerName: req.user.partner.charAt(0).toUpperCase() + req.user.partner.slice(1).toLowerCase()
+      }
+    });
+  } else {
+    res.render('landing_page', {
+      routeInfo: {
+        heroType: 'landing_page',
+        route: `/`,
+        user: null,
+        userName: null,
+        partnerName: null
+      }
+    });
+  }
 });
 
 // Bring in User Data!
@@ -300,10 +320,12 @@ app.get('/overview', auth.ensureAuthenticated, (req, res) => {
       res.render('overview', {
         userEntries: sortedUserEntries,
         partnerEntries: sortedPartnerEntries,
-        pageInfo: {
-          heroType: 'dark',
-          route: '/overview',
-          user: 'main'
+        routeInfo: {
+          heroType: 'overview',
+          route: `/overview`,
+          user: req.user.username || null,
+          userName: req.user.username.charAt(0).toUpperCase() + req.user.username.slice(1) || null,
+          partnerName: req.user.partner.charAt(0).toUpperCase() + req.user.partner.slice(1).toLowerCase() || null
         }
       });
     }
@@ -311,6 +333,10 @@ app.get('/overview', auth.ensureAuthenticated, (req, res) => {
 });
 
 // Why doesn't this async version work?
+//
+// Update: I figured it out! I was using async/await wrong here...
+// we can still update it to work properly
+//
 // app.get('/', async (req, res) => {
 //   if (!res.locals.loggedIn) {
 //     res.render('account_login');
@@ -328,14 +354,18 @@ app.get('/overview', auth.ensureAuthenticated, (req, res) => {
 // const data = require('./routes/data');
 const account = require('./routes/account');
 const landing = require('./routes/landing');
-const sam = require('./routes/sam');
-const amelia = require('./routes/amelia');
+// const sam = require('./routes/sam');
+// const amelia = require('./routes/amelia');
+const user = require('./routes/user');
+const partner = require('./routes/partner');
 
 // app.use('/data', data);
 app.use('/', landing);
 app.use('/account', account);
-app.use('/sam', sam);
-app.use('/amelia', amelia);
+// app.use('/sam', sam);
+// app.use('/amelia', amelia);
+app.use('/user', user);
+app.use('/partner', partner);
 
 // Start Server
 app.listen(config.serverPort, () => {

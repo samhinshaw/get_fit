@@ -5,7 +5,15 @@ const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
 const userSchema = new Schema({
-  name: {
+  firstname: {
+    type: String,
+    required: true
+  },
+  lastname: {
+    type: String,
+    required: false
+  },
+  username: {
     type: String,
     required: true
   },
@@ -13,25 +21,25 @@ const userSchema = new Schema({
     type: String,
     required: true
   },
-  username: {
+  partner: {
     type: String,
+    required: false
+  },
+  calGoal: {
+    type: Number,
     required: true
   },
   password: {
     type: String,
     required: true
   },
-  calGoal: {
-    type: Number,
-    required: true
-  },
   currentPoints: {
     type: Number,
     required: true
   },
-  partner: {
+  fitnessGoal: {
     type: String,
-    required: true
+    required: false
   }
 });
 

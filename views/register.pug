@@ -1,43 +1,56 @@
 extends partials/header
 block page
   section.hero.is-default.is-bold.flex-content.landing-page
-    //- .hero-head
-      .container
     .hero-body
       .box
         h3.is-size-3 Register
         br
         form(method='POST', action='/register')
-          .field
-            label.label Name:
-            .control
-              input.input(name='name', type='text')
-          .field
-            label.label Username:
-            .control
-              input.input(name='username', type='text')
-          .field
-            label.label Email:
-            .control
-              input.input(name='email', type='text')
+          .columns.is-fullhd
+            .column.is-half
+              .field
+                label.label First name:
+                .control
+                  input.input(name='firstname', type='text', placeholder='John')
+              .field
+                label.label Last name:
+                  span.is-pulled-right.is-faded (optional)
+                .control
+                  input.input(name='lastname', type='text', placeholder='Doe')
+              .field
+                label.label Username:
+                .control
+                  input.input(name='username', type='text', placeholder='johndoe245')
+              .field
+                label.label Email:
+                .control
+                  input.input(name='email', type='text', placeholder='john@gmail.com')
+            .column.is-half
+              .field
+                label.label Partner's username:
+                  span.is-pulled-right.is-faded (optional)
+                .control
+                  input.input(name='partner', type='text', placeholder='jane995')
+              .field
+                label.label Daily calorie goal:
+                .control
+                  input.input(name='calGoal', type='number', placeholder=2000)
+              .field
+                label.label Fitness goal:
+                  span.is-pulled-right.is-faded (optional)
+                .control
+                  input.input(name='fitnessGoal', type='text', placeholder='those six pack abs 😉')
           hr
-          .field
-            label.label Partner:
-            .control
-              input.input(name='partner', type='text')
-          .field
-            label.label Calorie Goal:
-            .control
-              input.input(name='calGoal', type='number')
-          hr
-          .field
-            label.label Password:
-            .control
-              input.input(name='password', type='password')
-          .field
-            label.label Confirm Password:
-            .control
-              input.input(name='passwordConfirm', type='password')
-          input.button(type='submit', value='Submit')
+          .columns.is-fullhd
+            .column.is-6
+              .field
+                label.label Password:
+                .control
+                  input.input(name='password', type='password', placeholder='******')
+              .field
+                label.label Confirm password:
+                .control
+                  input.input(name='passwordConfirm', type='password', placeholder='******')
+              input.button(type='submit', value='Submit')
     .hero-foot
       != messages('includes/footer-notification', locals)
