@@ -10,6 +10,8 @@ block subnav
   include ../includes/account_subnav
 
 block content
+  - const moment = require('moment-timezone');
+  - moment().format();
   .columns.is-tablet
     .column.is-offset-3.is-6#request-container
       if pendingRequests.length === 0
@@ -20,18 +22,26 @@ block content
           header.card-header
             p.card-header-title
               | #{request.displayName}
-            a.card-header-icon(href='#', aria-label='more options')
-              span.icon
-                i.mdi.mdi-chevron-down(aria-hidden='true')
+            .card-header-icon.dropdown.is-hoverable(href='#', aria-label='more options')
+              .dropdown-trigger
+                span.icon
+                  i.mdi.mdi-chevron-down(aria-hidden='true')
+                //- button.button.is-info(aria-haspopup='true', aria-controls='dropdown-menu6')
+                  span Right aligned
+                  span.icon.is-small
+                    i.fa.fa-angle-down(aria-hidden='true')
+              .dropdown-menu(role='menu')
+                .dropdown-content
+                  .dropdown-item
+                    p
+                      em Sent at: 
+                      br
+                      time #{moment(request.timeRequested).format('ddd, MMM Do, h:ma')}
           .card-content
             .content
               h5.is-size-5 
                 u Message: 
               p #{request.requestMessage}
-              //- FORMAT THIS MOMENT
-              p
-                em Sent at: 
-                time #{request.timeRequested}
           footer.card-footer
             a.card-footer-item.request-button.approve(href='#!') Approve
             a.card-footer-item.request-button.deny(href='#!') Deny

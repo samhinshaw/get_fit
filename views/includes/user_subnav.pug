@@ -6,7 +6,7 @@
     | Overview
   //- a.navbar-item.is-tab(href='#')
     | Weight
-  a.navbar-item.is-tab(href=`/user/spend`, class=(['/user/spend'].includes(routeInfo.route) ? 'is-active' : false))
+  a.navbar-item.is-tab(href=`/user/spend`, class=('/user/spend' === routeInfo.route ? 'is-active' : false))
     span.icon.is-small
       i.mdi.mdi-shopping 
     | &nbsp;

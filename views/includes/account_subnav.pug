@@ -1,13 +1,11 @@
-nav.tabs.is-boxed
-  .container
-    .navbar-tabs
-      a.navbar-item.is-tab(href='/account', class=(route === "/account"  ? 'is-active' : false))
-        | You
-      a.navbar-item.is-tab(href='/account/requests', class=(route === "/account/requests"  ? 'is-active' : false))
-        .field.is-grouped
-          .control
-            span Requests
-          if pendingRequests.length > 0
-            .control
-              span.tag(class='is-danger')
-                | #{pendingRequests.length}
+.navbar-tabs
+  a.navbar-item.is-tab(href='/account', class=(routeInfo.route === "/account"  ? 'is-active' : false))
+    | You
+  a.navbar-item.is-tab(href='/account/requests', class=(routeInfo.route === "/account/requests"  ? 'is-active' : false))
+    .field.is-grouped
+      .control
+        span Requests
+      if pendingRequests.length > 0
+        .control
+          span.tag(class='is-danger')
+            | #{pendingRequests.length}

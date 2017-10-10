@@ -36,7 +36,7 @@
 }
 
 /* Manually replace the variable $navbar-item-active-color */
-#sam-subnav .navbar-item.is-tab {
+/* #sam-subnav .navbar-item.is-tab {
   color: whitesmoke;
 }
 
@@ -48,12 +48,12 @@
 
 #sam-subnav .navbar-item.is-tab:hover,
 #sam-subnav .navbar-item.is-tab:focus {
-  /* background-color: #292929; */
+  background-color: #292929;
   border-bottom-color: whitesmoke;
 }
 
 #amelia-subnav .navbar-item.is-tab.is-active {
-  /* background-color: #292929; */
+  background-color: #292929;
   font-weight: 600;
   border-bottom-color: #3273dc;
   color: #3273dc;
@@ -61,24 +61,13 @@
 
 #amelia-subnav .navbar-item.is-tab:hover,
 #amelia-subnav .navbar-item.is-tab:focus {
-  /* background-color: whitesmoke; */
+  background-color: whitesmoke;
   border-bottom-color: #3273dc;
-}
-
-.hero.is-dark .navbar-item.is-tab {
-  color: whitesmoke;
-}
-
-.hero.is-dark .navbar-item.is-tab.is-active {
-  /* background-color: #292929; */
-  font-weight: 600;
-  border-bottom-color: whitesmoke;
-  color: whitesmoke;
-}
+} 
 
 #main-subnav .navbar-item.is-tab:hover,
 #main-subnav .navbar-item.is-tab:focus {
-  /* background-color: #e8e8e8; */
+  background-color: #e8e8e8;
   border-bottom-color: #363636;
 }
 
@@ -87,7 +76,7 @@
 }
 
 #account-subnav .navbar-item.is-tab.is-active {
-  /* background-color: #292929; */
+  background-color: #292929;
   font-weight: 600;
   border-bottom-color: #23d160;
   color: #23d160;
@@ -95,14 +84,33 @@
 
 #account-subnav .navbar-item.is-tab:hover,
 #account-subnav .navbar-item.is-tab:focus {
-  /* background-color: #e8e8e8; */
+  background-color: #e8e8e8;
   border-bottom-color: #23d160;
+}
+*/
+
+/* Need to correct colors of tabs */
+.hero.is-info .navbar-item.is-tab,
+.hero.is-dark .navbar-item.is-tab,
+.hero.is-twitter .navbar-item.is-tab,
+.hero.is-success .navbar-item.is-tab {
+  color: whitesmoke;
+}
+
+.hero.is-info .navbar-item.is-tab.is-active,
+.hero.is-dark .navbar-item.is-tab.is-active,
+.hero.is-twitter .navbar-item.is-tab.is-active,
+.hero.is-success .navbar-item.is-tab.is-active {
+  /* background-color: #292929; */
+  font-weight: 600;
+  border-bottom-color: whitesmoke;
+  color: whitesmoke;
 }
 
 /* Remove padding on exercise media elements */
-.media.exercise.level:not(:last-child) {
+/* .media.exercise.level:not(:last-child) {
   margin-bottom: 1rem;
-}
+} */
 
 .thick {
   height: 5px;

@@ -137,6 +137,9 @@ router.post('/:date', auth.ensureAuthenticated, (req, res) => {
     endDate = date[1];
   }
 
+  // Note that since we're posting to /partner/:date, we know to update the
+  // partner's entry, not the user's entry
+
   // Python script options
   const options = {
     // mode: 'text',

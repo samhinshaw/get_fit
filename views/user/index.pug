@@ -35,32 +35,10 @@ block content
     .control.tooltip.is-tooltip-top(data-tooltip="This may take a while to update.")
       button.button.is-small.is-info.is-pulled-left.update-entry(data-date=`${twoWeeksAgoPretty} ${todayPretty}`)
         | Update Past Two Weeks
-    //- .control
+    .control
       span.tag(style='margin-left: 1em;', class='is-danger')
         | #{pointTally.sam.toFixed(1)}
   br
-      //- .card
-        header.card-header
-          p.card-header-title
-            | Monday, October 2nd
-          a.card-header-icon(href='#', aria-label='more options')
-            span 0
-            span &nbsp; &middot; &nbsp;
-            span.icon.is-small
-              i.mdi.mdi-chevron-down
-        .card-content
-          .content
-            p
-              | Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus nec iaculis mauris.
-              a(href='#') @bulmaio
-              | . 
-              a(href='#') #css
-              a(href='#') #responsive
-            time(datetime='2016-1-1') 11:09 PM - 1 Jan 2016
-        //- footer.card-footer
-          a.card-footer-item(href='#') Save
-          a.card-footer-item(href='#') Edit
-          a.card-footer-item(href='#') Delete
   each entry, i in entries
     //- - const entryDate = moment.utc(entry.date);
     - const entryDate = moment.tz(entry.date, 'US/Pacific');
