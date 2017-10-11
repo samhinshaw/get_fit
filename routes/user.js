@@ -108,10 +108,11 @@ router.get('/', auth.ensureAuthenticated, (req, res) => {
           // Object to send data along with response
           entries: sortedEntries,
           routeInfo: {
-            heroType: 'warning',
+            heroType: res.locals.user.username,
             route: '/user',
             user: req.user.username,
             userName: req.user.username.charAt(0).toUpperCase() + req.user.username.slice(1),
+            partner: req.user.partner,
             partnerName:
               req.user.partner.charAt(0).toUpperCase() + req.user.partner.slice(1).toLowerCase()
           }
@@ -130,10 +131,11 @@ router.get('/spend', auth.ensureAuthenticated, (req, res) => {
     res.render('user/spend', {
       rewards: sortedRewards,
       routeInfo: {
-        heroType: 'warning',
+        heroType: res.locals.user.username,
         route: '/user/spend',
         user: req.user.username,
         userName: req.user.username.charAt(0).toUpperCase() + req.user.username.slice(1),
+        partner: req.user.partner,
         partnerName:
           req.user.partner.charAt(0).toUpperCase() + req.user.partner.slice(1).toLowerCase()
       }

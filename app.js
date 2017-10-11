@@ -277,6 +277,7 @@ app.get('/', (req, res) => {
         route: `/`,
         user: res.locals.user.username,
         userName: req.user.username.charAt(0).toUpperCase() + req.user.username.slice(1),
+        partner: res.locals.user.partner,
         partnerName:
           req.user.partner.charAt(0).toUpperCase() + req.user.partner.slice(1).toLowerCase()
       }
@@ -288,6 +289,7 @@ app.get('/', (req, res) => {
         route: `/`,
         user: null,
         userName: null,
+        partner: res.locals.user.partner,
         partnerName: null
       }
     });
@@ -326,6 +328,7 @@ app.get('/overview', auth.ensureAuthenticated, (req, res) => {
           route: `/overview`,
           user: req.user.username || null,
           userName: req.user.username.charAt(0).toUpperCase() + req.user.username.slice(1) || null,
+          partner: res.locals.user.partner || null,
           partnerName:
             req.user.partner.charAt(0).toUpperCase() + req.user.partner.slice(1).toLowerCase() ||
             null

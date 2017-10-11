@@ -55,15 +55,15 @@ block content
         button.delete(aria-label='close')
       section.modal-card-body
         .content
-          p 
+          //- p 
             | Are you sure you wish to 
             span.response-type
             |  this request?
           .field
-            label.label Reply
+            //- label.label Reply
               span.is-pulled-right.is-faded (optional)
             .control
-              input.input(name='message', type='text')
+              input.input(name='message', type='text', placeholder='optional message')
       footer.modal-card-foot
         button.button.response-button.is-success#approve-request Approve
         button.button.response-button.is-danger#deny-request Deny

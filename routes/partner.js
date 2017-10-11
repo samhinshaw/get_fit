@@ -108,7 +108,7 @@ router.get('/', auth.ensureAuthenticated, (req, res) => {
           // Object to send data along with response
           entries: sortedEntries,
           routeInfo: {
-            heroType: 'info',
+            heroType: res.locals.user.partner,
             route: '/partner',
             user: req.user.username,
             userName: req.user.username.charAt(0).toUpperCase() + req.user.username.slice(1),

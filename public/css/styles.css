@@ -208,3 +208,12 @@
 .label .is-faded {
   color: #b5b5b5;
 }
+
+/* Card colors for overview page because apparently color scehems don't work for bulma cards! */
+.overview-card .card-header.is-sam {
+  background-color: #0f9d58;
+}
+
+.overview-card .card-header.is-amelia {
+  background-color: #81d8d0;
+}
