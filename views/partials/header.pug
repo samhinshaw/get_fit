@@ -40,7 +40,7 @@ html
                   | #{routeInfo.partnerName}
                 //- a.navbar-item(href='/account', class=(routeInfo.route === "/account"  ? 'is-active' : false))
                   | Account
-                a.navbar-item(href='/help', class=(routeInfo.route === "/help"  ? 'is-active' : false))
+                //- a.navbar-item(href='/help', class=(routeInfo.route === "/help"  ? 'is-active' : false))
                   | Help
             .navbar-end
               span.navbar-item
@@ -66,6 +66,8 @@ html
                     .control
                       a.button(href="/register")
                         | Sign up
+    //- Bring in Mixins
+    include ../mixins/ExerciseCard
     block page
     script(type='text/javascript', src='/bower_components/jquery/dist/jquery.min.js')
     script(type='text/javascript', src='/bower_components/moment/min/moment.min.js')

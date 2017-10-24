@@ -1,0 +1,70 @@
+mixin exerciseCard(entry)
+  - const entryDate = moment.tz(entry.date, 'US/Pacific');
+  - const datePretty = entryDate.format('YYYY-MM-DD');
+  - const dateHuman = entryDate.format('MM-DD-YYYY');
+  - const weekDay = entryDate.format('ddd');
+  - const fullDate = entryDate.format('dddd, MMMM Do, YYYY')
+  .card
+    header.card-header
+      p.card-header-title #{fullDate}
+      a.card-header-icon(href='#', aria-label='more options')
+        span #{entry.points.toFixed(1)}
+        span &nbsp; &middot; &nbsp;
+        span.icon.is-small
+          i.mdi.mdi-chevron-down
+    .card-content
+      .content
+        p
+          //- strong= dateHuman
+          //- span  &middot; 
+          //- First check to see if this entry was reported empty
+          if entry.isEmpty
+            span No data yet!
+          //- Then, if left over calories, report remaining!
+          else if entry.netCals > 0
+            span #{entry.netCals} 
+            case entry.netCals
+              when -1
+              when 1
+                | cal remaining
+              default 
+                | cals remaining
+          else if entry.netCals < 0
+            if entry.netCals < -300
+              span.is-danger #{-entry.netCals} 
+            else 
+              span.is-warning #{-entry.netCals} 
+            case entry.netCals
+              when -1
+              when 1
+                span cal over
+              default 
+                span cals over
+          else if entry.netCals === 0
+            span you hit your goal EXACTLY
+          //- Could also check datePretty vs todayPretty
+          //- This will check Date object vs Date object
+          //- It may be more error prone, but also much more specific
+          //- if entry.date === today
+          //-   span.tag.is-dark Today
+          //-   span.tag.is-success #{today.dayOfWeek}
+        if entry.exercise.length > 0
+          each exercise, i in entry.exercise
+            article.media.level.exercise
+              .level-left
+                .level-item
+                  //- show icons for exercise types!
+                  span.icon
+                    i
+                      img(src='/images/icons/' + exercise.icon, alt='&middot;', height="48" width="48")
+                .level-item
+                  .content
+                    p #{exercise.points}pts - #{exercise.name}, (#{exercise.minutes}mins, #{exercise.cals}cals)
+    footer.card-footer
+      a.card-footer-item(href='#!')
+        .button.update-entry(data-id=entry._id, data-date=datePretty)
+          span.icon.is-small
+            i.mdi.mdi-update
+          span Update
+      a.card-footer-item(href='#') Edit
+      a.card-footer-item(href='#') Delete
