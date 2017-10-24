@@ -4,8 +4,7 @@
   "description": "Fitness Tracker for Sam & Am",
   "main": "app.js",
   "scripts": {
-    "start":
-      "uglifyjs public/js/client.js --compress --mangle --source-map --output public/js/bundle.min.js && grunt dev && nodemon app.js",
+    "start": "uglifyjs public/js/client.js --compress --mangle --source-map --output public/js/bundle.min.js && grunt dev && nodemon app.js",
     "uglifyClient": "uglifyjs public/js/client.js --compress --mangle --source-map --output public/js/bundle.min.js",
     "format": "prettier --list-different --single-quote --print-width=120 \"public/js/**/*.js\"",
     "lint": "eslint **/*.js --quiet"
