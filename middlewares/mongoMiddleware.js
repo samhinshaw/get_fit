@@ -4,6 +4,7 @@
 const Moment = require('moment-timezone');
 const MomentRange = require('moment-range');
 const _ = require('lodash');
+const config = require('../config/database');
 // const async = require('async');
 
 const moment = MomentRange.extendMoment(Moment);
@@ -16,7 +17,7 @@ moment().format(); // required by package entirely
 // Instantiate some dates
 const now = moment().tz('US/Pacific');
 const today = now.clone().startOf('day');
-const startofTracking = moment('09-18-2017', 'MM-DD-YYYY')
+const startofTracking = moment(config.startDate, 'MM-DD-YYYY')
   .tz('US/Pacific')
   .startOf('day');
 const twoWeeksAgo = today.clone().subtract(14, 'days');
