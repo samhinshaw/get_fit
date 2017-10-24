@@ -4,7 +4,7 @@ Pull user's data from MyFitnessPal
 # since we're using python 2, we need to import this. OTHERWISE when calculating
 # points for exercise we get stuck with 0s because int/int = int. So 14/15 = 0.
 # SUCKS!!! I should switch to python 3.
-from __future__ import division
+# from __future__ import division
 import sys  # for system operations such as exit status codes
 import re  # regex library
 import json  # for parsing json
@@ -93,7 +93,7 @@ exerTypeDict = json.loads(parsedDict)['exerciseTypes']
 #     with open(filename, 'wb') as output:
 #         pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
 
-print 'Connecting to MongoDB database...'
+print('Connecting to MongoDB database...')
 mongoJSON = open(os.path.join('config', 'mongo_config.json')).read()
 mongoConfig = json.loads(mongoJSON)
 mongoPyConfig = mongoConfig['python']
@@ -116,7 +116,7 @@ client = MongoClient(mongoURI)
 db = client.get_fit
 entries = db.entries
 
-print 'Pulling in MyFitnessPal information for ' + user.capitalize() + '...'
+print('Pulling in MyFitnessPal information for ' + user.capitalize() + '...')
 
 MFPclient = myfitnesspal.Client(mfp)
 
@@ -142,7 +142,7 @@ MFPclient = myfitnesspal.Client(mfp)
 
 for date in arrow.Arrow.range(
         frame='day', start=startDate, end=endDate, tz='US/Pacific'):
-    print 'Loading data from ' + date.format('MMMM DD, YYYY')
+    print('Loading data from ' + date.format('MMMM DD, YYYY'))
     # Try/Except is mostly for if the API fails
     try:
         MFPcals = MFPclient.get_date(date.year, date.month, date.day)
@@ -184,7 +184,7 @@ for date in arrow.Arrow.range(
     except:
         sys.exit('We were not able to retrieve your exercise for this date!')
 
-    print 'Processing MyFitnessPal data...'
+    print('Processing MyFitnessPal data...')
 
     # set up empty exercise array to handle multiple exercises in a day
     exercises = []
@@ -225,7 +225,7 @@ for date in arrow.Arrow.range(
                       exerciseHits[0])
                 renamedEx = exerciseHits[0]
             else:
-                print "No hits!"
+                print("No hits!")
                 renamedEx = exerName
 
             # Assign icons. We have already assigned sanitized names, so we can do a
@@ -279,7 +279,7 @@ for date in arrow.Arrow.range(
         'lastUpdated': now.datetime
     }
 
-    print 'Writing data to MongoDB...'
+    print('Writing data to MongoDB...')
 
     # First check to see if date already exists in DB OH MY GOD, the field order of
     # the query matters when querying by subdocument in mongodb!!!!! OH for the love
@@ -288,7 +288,7 @@ for date in arrow.Arrow.range(
     # {'date.year': 2017, 'date.month': 9, 'date.day': 15}
 
     if entries.find_one({'date': date.datetime, 'user': user}):
-        print 'Found existing data for date, overwriting...'
+        print('Found existing data for date, overwriting...')
         entries.update_one(
             {
                 'date': date.datetime,
@@ -296,5 +296,5 @@ for date in arrow.Arrow.range(
             }, {'$set': MFPdata},
             upsert=False)
     else:
-        print 'No data found yet for this date, creating record...'
+        print('No data found yet for this date, creating record...')
         entries.insert_one(MFPdata)
