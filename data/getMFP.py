@@ -94,8 +94,9 @@ exerTypeDict = json.loads(parsedDict)['exerciseTypes']
 #         pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
 
 print 'Connecting to MongoDB database...'
-mongoJSON = open('mongo_config.json').read()
+mongoJSON = open(os.path.join('config', 'mongo_config.json')).read()
 mongoConfig = json.loads(mongoJSON)
+mongoPyConfig = mongoConfig['python']
 
 # For some reason, this method of authentication does not work!
 # client = MongoClient(
@@ -108,7 +109,7 @@ mongoConfig = json.loads(mongoJSON)
 
 # However, we can manually construct the URI and connect that way.
 # It's uglier, but it still works.
-mongoURI = "mongodb://" + mongoConfig['user'] + ":" + mongoConfig['password'] + "@" + mongoConfig['host'] + ":" + mongoConfig['port'] + "/" + mongoConfig['authSource'] + "?authMechanism=" + mongoConfig['authMechanism']
+mongoURI = "mongodb://" + mongoPyConfig['user'] + ":" + mongoPyConfig['password'] + "@" + mongoPyConfig['host'] + ":" + mongoPyConfig['port'] + "/" + mongoPyConfig['authSource'] + "?authMechanism=" + mongoPyConfig['authMechanism']
 
 client = MongoClient(mongoURI)
 

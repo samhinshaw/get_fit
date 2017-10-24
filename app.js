@@ -14,6 +14,9 @@ const config = require('./config/database');
 const _ = require('lodash');
 
 const auth = require('./config/auth.js');
+const mongoConfig = require('./config/mongo_config.json');
+
+const mongoNodeConfig = mongoConfig.node;
 
 const moment = MomentRange.extendMoment(Moment);
 moment().format(); // required by package entirely
@@ -52,7 +55,11 @@ const asyncMiddleware = fn => (req, res, next) => {
 // const promise = mongoose.connect('mongodb://localhost/myapp', {
 //   useMongoClient: true,
 // });
-mongoose.connect(config.database);
+
+const mongoURI = `mongodb://${mongoNodeConfig.user}:${mongoNodeConfig.password}@${mongoNodeConfig.host}:${mongoNodeConfig.port}/${mongoNodeConfig.authSource}?authMechanism=${mongoNodeConfig.authMechanism}`;
+
+// mongoose.connect(config.database);
+mongoose.connect(mongoURI);
 const db = mongoose.connection;
 
 // Check connection
