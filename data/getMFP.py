@@ -26,16 +26,18 @@ import myfitnesspal  # myfitnesspal API!
 
 now = arrow.now('US/Pacific')
 
-if len(sys.argv) == 3:
+if len(sys.argv) == 4:
     inputDate = sys.argv[1]
     user = sys.argv[2]
+    mfp = sys.argv[3]
     inputDate = arrow.get(inputDate, 'YYYY-MM-DD', tzinfo='US/Pacific')
     startDate = inputDate
     endDate = inputDate
-elif len(sys.argv) == 4:
+elif len(sys.argv) == 5:
     firstDate = sys.argv[1]
     secondDate = sys.argv[2]
     user = sys.argv[3]
+    mfp = sys.argv[4]
     firstDate = arrow.get(firstDate, 'YYYY-MM-DD', tzinfo='US/Pacific')
     secondDate = arrow.get(secondDate, 'YYYY-MM-DD', tzinfo='US/Pacific')
     if firstDate <= secondDate:
@@ -98,13 +100,15 @@ entries = db.entries
 
 print 'Pulling in MyFitnessPal information for ' + user.capitalize() + '...'
 
+MFPclient = myfitnesspal.Client(mfp)
+
 # Assign database collection and MFP connection
-if user == 'sam':
-    MFPclient = myfitnesspal.Client('jetknife')
-elif user == 'amelia':
-    MFPclient = myfitnesspal.Client('ameliaho')
-else:
-    sys.exit('Could not find user "' + user + '" in the database.')
+# if user == 'sam':
+#     MFPclient = myfitnesspal.Client('jetknife')
+# elif user == 'amelia':
+#     MFPclient = myfitnesspal.Client('ameliaho')
+# else:
+#     sys.exit('Could not find user "' + user + '" in the database.')
 
 # Calculate points based on that day's statistics!
 # Current values are:

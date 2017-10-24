@@ -1,32 +1,13 @@
 # Get Fit!
 
+## Important!!
+
+- Change Flash Messaging Placeholder on Register Page
 
 ## Features to Implement
 
-Back End  
-- ~~Redo models~~: 
-    + ~~User~~
-        + ~~Name~~
-        + ~~Username~~
-        + ~~Email~~
-        + ~~Password~~
-        + ~~Calorie Goal (calGoal)~~
-        + ~~Current Points (currentPoints)~~
-    + ~~Entries~~
-        + ~~netCals~~
-        + ~~totalCals~~
-        + ~~points~~
-        + ~~isEmpty~~
-        + ~~goalCals~~
-        + ~~date~~
-        + ~~exercise~~
-    + ~~Period~~
-        + ~~startDate~~
-        + ~~endDate~~
-        + ~~points~~
-        + ~~user~~
-- ~~Calculate points earned~~  
-    + ~~By day, in total, and in the past two weeks~~
+- Edit start date in user prefs
+- Change account options in user prefs
 
 - Store points in database for retrieval
     + Right now, points from a given timespan are calculated from daily point earnings **every time** the page renders

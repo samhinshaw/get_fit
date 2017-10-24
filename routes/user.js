@@ -230,7 +230,7 @@ router.post('/:date', auth.ensureAuthenticated, (req, res) => {
     // pythonPath: '/Users/samhinshaw/.miniconda2/bin/python',
     // pythonOptions: ['-u'],
     scriptPath: './data',
-    args: [startDate, endDate, res.locals.user.username]
+    args: [startDate, endDate, res.locals.user.username, res.locals.user.mfp]
   };
 
   // Run python script

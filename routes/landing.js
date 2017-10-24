@@ -49,33 +49,40 @@ router.post('/register', (req, res) => {
   const partner = req.body.partner;
   const calGoal = req.body.calGoal;
   const fitnessGoal = req.body.fitnessGoal;
+  const mfp = req.body.mfp;
+  const accessCode = req.body.accessCode;
   const password = req.body.password;
   const passwordConfirm = req.body.passwordConfirm;
 
   req.checkBody('firstname', 'Name is required').notEmpty();
   req.checkBody('lastname', 'Name is required').notEmpty();
   req.checkBody('email', 'Email is required').notEmpty();
-  req.checkBody('email', 'Email is not valid').isEmail();
+  req
+    .checkBody('email', 'Email is not valid')
+    .isEmail()
+    .trim()
+    .normalizeEmail();
   req.checkBody('calGoal', 'Calorie goal is required').notEmpty();
+  req.checkBody('mfp', 'MyFitnessPal username is required').notEmpty();
   // In the future, make sure username is not taken!!
   req.checkBody('username', 'Username is required').notEmpty();
   // req.checkBody('partner', 'Partner is required').notEmpty();
+  req.checkBody('accessCode', 'Access code is required').notEmpty();
   req.checkBody('password', 'Password is required').notEmpty();
   req.checkBody('passwordConfirm', 'Passwords do not match').equals(req.body.password);
 
   const errors = req.validationErrors();
 
   if (errors) {
-    // Handle errors within template...
-    // res.render('register', {
-    //   errors
-    // });
-
     // Or handle errors with flash
     errors.forEach(error => {
       req.flash('danger', error.msg);
     });
 
+    res.redirect('#');
+    // temporarily hard-wiring adding access code
+  } else if (accessCode !== '44829 cats fly over the Belgian moon on a Tuesday evening') {
+    req.flash('danger', 'Incorrect Access Code');
     res.redirect('#');
   } else {
     const newUser = new User({
@@ -83,6 +90,7 @@ router.post('/register', (req, res) => {
       lastname,
       username,
       email,
+      mfp,
       partner,
       calGoal,
       fitnessGoal,

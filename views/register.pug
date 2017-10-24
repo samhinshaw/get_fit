@@ -40,6 +40,10 @@ block page
                   span.is-pulled-right.is-faded (optional)
                 .control
                   input.input(name='fitnessGoal', type='text', placeholder='those six pack abs 😉')
+              .field
+                label.label MyFitnessPal Username:
+                .control
+                  input.input(name='mfp', type='text', placeholder='john22')
           hr
           .columns.is-fullhd
             .column.is-6
@@ -51,6 +55,13 @@ block page
                 label.label Confirm password:
                 .control
                   input.input(name='passwordConfirm', type='password', placeholder='******')
+            .column.is-6
+              .field
+                label.label Access Code:
+                .control
+                  input.input(name='accessCode', type='password', placeholder='******')
+          .field
+            .control
               input.button(type='submit', value='Submit')
     .hero-foot
       != messages('includes/footer-notification', locals)

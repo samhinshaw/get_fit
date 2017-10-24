@@ -33,6 +33,10 @@ const userSchema = new Schema({
     type: String,
     required: true
   },
+  mfp: {
+    type: String,
+    required: true
+  },
   currentPoints: {
     type: Number,
     required: true
