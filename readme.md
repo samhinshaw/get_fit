@@ -8,6 +8,10 @@
 
 - Edit start date in user prefs
 - Change account options in user prefs
+- Handle signup flow for if no partner yet
+- Styling bulma classes on registering inputs
+- Live-checking of whether usernames, etc are taken
+- Implement user storage of MFP passwords??
 
 - Store points in database for retrieval
     + Right now, points from a given timespan are calculated from daily point earnings **every time** the page renders
