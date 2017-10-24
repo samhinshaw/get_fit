@@ -8,32 +8,6 @@ const router = express.Router();
 // Bring in Article model
 const Article = require('../models/article');
 
-// Print in the page info we're using to style the page with Bulma
-const pageInfo = {
-  heroType: 'success',
-  route: '/data'
-};
-
-// Print in the user info we're using to style the page with Bulma
-const userInfo = {
-  sam: {
-    points: 3,
-    pointsClass: 'danger'
-  },
-  amelia: {
-    points: -1,
-    pointsClass: 'danger'
-  }
-};
-
-// Use middleware to modify locals object (makes available to view engine!)
-// https://stackoverflow.com/questions/12550067/expressjs-3-0-how-to-pass-res-locals-to-a-jade-view
-router.use((req, res, next) => {
-  res.locals.pageInfo = pageInfo;
-  res.locals.userInfo = userInfo;
-  next();
-});
-
 // Add a new route for submitting articles Note: For some reason, if this is
 // called AFTER the route for individual articles, the view template 'data' gets
 // called instead. Perhaps something to do with it trying to find an artcile

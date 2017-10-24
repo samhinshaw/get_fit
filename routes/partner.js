@@ -40,16 +40,6 @@ const router = express.Router();
 
 // Bring in user model
 const Entry = require('../models/entry');
-const Reward = require('../models/reward');
-const Request = require('../models/request');
-
-// Print in the page info we're using to style the page with Bulma
-// const pageInfo = {
-//   heroType: 'warning', // note, should update this to color, not warning
-//   route: `/${req.user.username}`,
-//   user: 'sam', // replace with session
-//   User: 'Sam'
-// };
 
 // Use middleware to modify locals object (makes available to view engine!)
 // https://stackoverflow.com/questions/12550067/expressjs-3-0-how-to-pass-res-locals-to-a-jade-view

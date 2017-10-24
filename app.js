@@ -159,83 +159,92 @@ const mongoMiddleware = require('./middlewares/mongoMiddleware');
 // /////////////////////////////////////////////////////////////////////////////
 app.use(
   asyncMiddleware(async (req, res, next) => {
-    // Don't need try, catch anymore since asyncMiddleware (see top of app.js) is
-    // handling async errors
+    // Workaround for now will simply not run this middleware if not logged in
+    // In the future, can probably think of a better way to architect this
+    if (req.user) {
+      // Don't need try, catch anymore since asyncMiddleware (see top of app.js) is
+      // handling async errors
 
-    // Get and concat all point tallies
-    const samWeeks = await mongoMiddleware.queryWeeksFromMongo('sam');
-    const samCustom = await mongoMiddleware.queryCustomPeriodsFromMongo('sam');
-    const ameliaWeeks = await mongoMiddleware.queryWeeksFromMongo('amelia');
-    const ameliaCustom = await mongoMiddleware.queryCustomPeriodsFromMongo('amelia');
+      // Get and concat all point tallies
+      const userWeeks = await mongoMiddleware.queryWeeksFromMongo(res.locals.user.username);
+      const userCustom = await mongoMiddleware.queryCustomPeriodsFromMongo(
+        res.locals.user.username
+      );
+      const partnerWeeks = await mongoMiddleware.queryWeeksFromMongo(res.locals.partner.username);
+      const partnerCustom = await mongoMiddleware.queryCustomPeriodsFromMongo(
+        res.locals.partner.username
+      );
 
-    const periods = _.union(samWeeks, samCustom, ameliaWeeks, ameliaCustom);
+      const periods = _.union(userWeeks, userCustom, partnerWeeks, partnerCustom);
 
-    // make the points array available to the view engine
-    res.locals.pointTotals = periods;
+      // make the points array available to the view engine
+      res.locals.pointTotals = periods;
 
-    // Save to periods collection
+      // Save to periods collection
 
-    periods.forEach(entry => {
-      const period = {
-        key: entry.key,
-        startDate: entry.startDate,
-        endDate: entry.endDate,
-        points: entry.points,
-        user: entry.user
+      periods.forEach(entry => {
+        const period = {
+          key: entry.key,
+          startDate: entry.startDate,
+          endDate: entry.endDate,
+          points: entry.points,
+          user: entry.user
+        };
+        // resave points
+        Period.findOneAndUpdate(
+          {
+            key: period.key,
+            user: period.user
+          },
+          { $set: period },
+          { upsert: true },
+          saveErr => {
+            if (saveErr) {
+              console.log(saveErr);
+            }
+          }
+        );
+      });
+
+      // make the current running total easily accessible. if more specific ones
+      // needed, we can get those within the views template
+      // Array.filter to find ALL (returns array even if only one match)
+      const pointTallies = periods.filter(period => period.key === 'sinceStart');
+
+      // Array.find to find the FIRST match. returns the item (not an array), but
+      // will only ever find one
+      const userPointTally = pointTallies.find(period => period.user === res.locals.user.username);
+      const partnerPointTally = pointTallies.find(
+        period => period.user === res.locals.partner.username
+      );
+
+      const pointTally = {
+        user: parseFloat(userPointTally.points),
+        partner: parseFloat(partnerPointTally.points)
       };
-      // resave points
-      Period.findOneAndUpdate(
-        {
-          key: period.key,
-          user: period.user
-        },
-        { $set: period },
-        { upsert: true },
-        saveErr => {
-          if (saveErr) {
-            console.log(saveErr);
+
+      // make the point tallies array available to the view engine
+      res.locals.pointTally = pointTally;
+
+      pointTallies.forEach(period => {
+        User.update(
+          {
+            username: period.user
+          },
+          {
+            $set: {
+              currentPoints: period.points
+            }
+          },
+          { upsert: true },
+          saveErr => {
+            if (saveErr) {
+              console.log(saveErr);
+            }
           }
-        }
-      );
-    });
-
-    // make the current running total easily accessible. if more specific ones
-    // needed, we can get those within the views template
-    // Array.filter to find ALL (returns array even if only one match)
-    const pointTallies = periods.filter(period => period.key === 'sinceStart');
-
-    // Array.find to find the FIRST match. returns the item (not an array), but
-    // will only ever find one
-    const samPointTally = pointTallies.find(period => period.user === 'sam');
-    const ameliaPointTally = pointTallies.find(period => period.user === 'amelia');
-
-    const pointTally = {
-      sam: parseFloat(samPointTally.points),
-      amelia: parseFloat(ameliaPointTally.points)
-    };
-
-    // make the point tallies array available to the view engine
-    res.locals.pointTally = pointTally;
-
-    pointTallies.forEach(period => {
-      User.update(
-        {
-          username: period.user
-        },
-        {
-          $set: {
-            currentPoints: period.points
-          }
-        },
-        { upsert: true },
-        saveErr => {
-          if (saveErr) {
-            console.log(saveErr);
-          }
-        }
-      );
-    });
-
+        );
+      });
+    }
     next();
   })
 );
@@ -289,7 +298,7 @@ app.get('/', (req, res) => {
         route: `/`,
         user: null,
         userName: null,
-        partner: res.locals.user.partner,
+        partner: null,
         partnerName: null
       }
     });
@@ -372,16 +381,12 @@ app.get('/api/user_data', auth.ensureAuthenticated, (req, res) => {
 // const data = require('./routes/data');
 const account = require('./routes/account');
 const landing = require('./routes/landing');
-// const sam = require('./routes/sam');
-// const amelia = require('./routes/amelia');
 const user = require('./routes/user');
 const partner = require('./routes/partner');
 
 // app.use('/data', data);
 app.use('/', landing);
 app.use('/account', account);
-// app.use('/sam', sam);
-// app.use('/amelia', amelia);
 app.use('/user', user);
 app.use('/partner', partner);
 

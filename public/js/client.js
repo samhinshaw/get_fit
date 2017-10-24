@@ -22,22 +22,6 @@ const handlers = {
       });
     }
   },
-  // deleteArticle: () => {
-  //   $('.delete-article').on('click', e => {
-  //     const id = $(e.target).attr('data-id');
-  //     $.ajax({
-  //       type: 'DELETE',
-  //       url: `/data/${id}`,
-  //       success: res => {
-  //         alert('Deleting Article');
-  //         window.location.href = '/';
-  //       },
-  //       error: err => {
-  //         console.log(err);
-  //       }
-  //     });
-  //   });
-  // },
   updateEntry: () => {
     $('.update-entry').on('click', e => {
       // First stop the click from enacting its default behavior. If this is a

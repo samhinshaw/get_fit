@@ -31,7 +31,7 @@ block content
               select(name='reward')
                 option(selected, disabled) Reward
                 each reward, i in rewards
-                  - const disabled = reward.cost > pointTally.sam
+                  - const disabled = reward.cost > pointTally.user
                   option(value=reward.key, disabled=disabled)= reward.displayName
                   
         .field

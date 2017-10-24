@@ -16,8 +16,6 @@ block content
     .columns.is-fullhd
       //- .column.is-2
       .column.is-6
-        //- h3.is-size-3 #{routeInfo.userName}
-        //- p Points: #{pointTally.sam.toFixed(1)}
         .card.overview-card
           header.card-header(class=`is-${user.username}`)
             p.card-header-title.is-size-4
@@ -41,13 +39,11 @@ block content
             .content
               h5.is-size-5 
                 u Points: 
-              p #{pointTally.sam.toFixed(1)}
+              p #{pointTally.user.toFixed(1)}
           //- footer.card-footer
             a.card-footer-item.request-button.approve(href='#!') Approve
             a.card-footer-item.request-button.deny(href='#!') Deny
       .column.is-6
-        //- h3.is-size-3 #{routeInfo.partnerName}
-        //- p Points: #{pointTally.amelia.toFixed(1)}
         .card.overview-card
           header.card-header(class=`is-${user.partner}`)
             p.card-header-title.is-size-4
@@ -71,7 +67,7 @@ block content
             .content
               h5.is-size-5 
                 u Points: 
-              p #{pointTally.amelia.toFixed(1)}
+              p #{pointTally.partner.toFixed(1)}
           //- footer.card-footer
             a.card-footer-item.request-button.approve(href='#!') Approve
             a.card-footer-item.request-button.deny(href='#!') Deny
