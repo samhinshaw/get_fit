@@ -6,3 +6,4 @@ samGStoken.rds
 .vscode
 *.pkl
 .sass-cache
+mongo_config.json

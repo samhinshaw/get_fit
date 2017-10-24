@@ -9,7 +9,7 @@ import sys  # for system operations such as exit status codes
 import re  # regex library
 import json  # for parsing json
 # import pickle  # for saving
-# import os
+import os
 # import feather
 # import pandas as pd
 # import csv
@@ -82,7 +82,7 @@ else:
 # This will potentially be replaced by mongoDB entries down the line
 
 #  probably should use os.path.join here
-dictFile = open('data/exerciseIconDictionary.json')
+dictFile = open(os.path.join('data', 'exerciseIconDictionary.json'))
 parsedDict = dictFile.read()
 exerciseDict = json.loads(parsedDict)['exercises']
 iconDict = json.loads(parsedDict)['icons']
@@ -94,7 +94,24 @@ exerTypeDict = json.loads(parsedDict)['exerciseTypes']
 #         pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
 
 print 'Connecting to MongoDB database...'
-client = MongoClient('mongodb://localhost:27025/')
+mongoJSON = open('mongo_config.json').read()
+mongoConfig = json.loads(mongoJSON)
+
+# For some reason, this method of authentication does not work!
+# client = MongoClient(
+#     host=mongoConfig['host'],
+#     port=mongoConfig['port'],
+#     user=mongoConfig['user'],
+#     password=mongoConfig['password'],
+#     authSource=mongoConfig['authSource'],
+#     authMechanism=mongoConfig['authMechanism'])
+
+# However, we can manually construct the URI and connect that way.
+# It's uglier, but it still works.
+mongoURI = "mongodb://" + mongoConfig['user'] + ":" + mongoConfig['password'] + "@" + mongoConfig['host'] + ":" + mongoConfig['port'] + "/" + mongoConfig['authSource'] + "?authMechanism=" + mongoConfig['authMechanism']
+
+client = MongoClient(mongoURI)
+
 db = client.get_fit
 entries = db.entries
 
