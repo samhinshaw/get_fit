@@ -12,6 +12,7 @@
 - Styling bulma classes on registering inputs
 - Live-checking of whether usernames, etc are taken
 - Implement user storage of MFP passwords??
+- Fix the fact that the primary color and the hover color are the same!
 
 - Store points in database for retrieval
     + Right now, points from a given timespan are calculated from daily point earnings **every time** the page renders

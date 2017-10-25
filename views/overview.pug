@@ -18,8 +18,7 @@ block content
       .column.is-6
         .card.overview-card
           header.card-header(class=`is-${user.username}`)
-            p.card-header-title.is-size-4
-              | #{routeInfo.userName}
+            a.card-header-title.is-size-4(href='/user') #{routeInfo.userName}
             .card-header-icon.dropdown.is-hoverable(href='#', aria-label='more options')
               .dropdown-trigger
                 span.icon
@@ -46,8 +45,7 @@ block content
       .column.is-6
         .card.overview-card
           header.card-header(class=`is-${user.partner}`)
-            p.card-header-title.is-size-4
-              | #{routeInfo.partnerName}
+            a.card-header-title.is-size-4(href='/partner') #{routeInfo.partnerName}
             .card-header-icon.dropdown.is-hoverable(href='#', aria-label='more options')
               .dropdown-trigger
                 span.icon

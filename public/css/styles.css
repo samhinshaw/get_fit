@@ -39,18 +39,34 @@
 .hero.is-info .navbar-item.is-tab,
 .hero.is-dark .navbar-item.is-tab,
 .hero.is-twitter .navbar-item.is-tab,
-.hero.is-success .navbar-item.is-tab {
+.hero.is-success .navbar-item.is-tab,
+.hero.is-sam .navbar-item.is-tab {
   color: whitesmoke;
+}
+.hero.is-info .navbar-item.is-tab:hover,
+.hero.is-dark .navbar-item.is-tab:hover,
+.hero.is-twitter .navbar-item.is-tab:hover,
+.hero.is-success .navbar-item.is-tab:hover,
+.hero.is-sam .navbar-item.is-tab:hover {
+  border-bottom-color: whitesmoke;
 }
 
 .hero.is-info .navbar-item.is-tab.is-active,
 .hero.is-dark .navbar-item.is-tab.is-active,
 .hero.is-twitter .navbar-item.is-tab.is-active,
-.hero.is-success .navbar-item.is-tab.is-active {
+.hero.is-success .navbar-item.is-tab.is-active,
+.hero.is-sam .navbar-item.is-tab.is-active {
   /* background-color: #292929; */
   font-weight: 600;
   border-bottom-color: whitesmoke;
   color: whitesmoke;
+}
+.hero.is-info .navbar-item.is-tab.is-active:hover,
+.hero.is-dark .navbar-item.is-tab.is-active:hover,
+.hero.is-twitter .navbar-item.is-tab.is-active:hover,
+.hero.is-success .navbar-item.is-tab.is-active:hover,
+.hero.is-sam .navbar-item.is-tab.is-active:hover {
+  border-bottom-color: whitesmoke;
 }
 
 /* Remove padding on exercise media elements */
@@ -162,4 +178,8 @@
 
 .overview-card .card-header.is-amelia {
   background-color: #81d8d0;
+}
+
+a.card-header-title:hover {
+  text-decoration: underline;
 }
