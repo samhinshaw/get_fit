@@ -32,11 +32,11 @@ html
             .navbar-start
               if user
                 //- Make username and partner name sentence case 
-                a.navbar-item(href='/overview', class=(routeInfo.route === "/overview"  ? 'is-active' : false))
+                a.navbar-item(href='/overview', class=(routeInfo.route.startsWith('/overview')  ? 'is-active' : false))
                   | Overview
-                a.navbar-item(href=`/user`, class=([`/user`].includes(routeInfo.route) ? 'is-active' : false))
+                a.navbar-item(href=`/user`, class=(routeInfo.route.startsWith('/user') ? 'is-active' : false))
                   | #{routeInfo.userName}
-                a.navbar-item(href=`/partner`, class=([`/partner`].includes(routeInfo.route) ? 'is-active' : false))
+                a.navbar-item(href=`/partner`, class=(routeInfo.route.startsWith('/partner') ? 'is-active' : false))
                   | #{routeInfo.partnerName}
                 //- a.navbar-item(href='/account', class=(routeInfo.route === "/account"  ? 'is-active' : false))
                   | Account
@@ -47,7 +47,7 @@ html
                 .field.is-grouped.has-addons
                   if user
                     .control
-                      a.button(href='/account', class=(routeInfo.route === "/account"  ? 'is-active' : false))
+                      a.button(href='/account', class=(routeInfo.route.startsWith('/account')  ? 'is-active' : false))
                         span.icon.is-small
                           img(src=`/images/${user.username}_avatar.png`, alt=user.username, height='28px', width='28px')
                         | &nbsp;
