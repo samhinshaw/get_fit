@@ -24,8 +24,9 @@ import myfitnesspal  # myfitnesspal API!
 # - Later on I may wish to pull calorie goals straight from MFP
 # MFPcals.goals['calories']
 
-# Set working directory to the directory of the script!
-os.chdir(os.path.dirname(sys.argv[0]))
+# Set working directory to project's working directory!
+# (one above the script's directory)
+os.chdir(os.path.join('..', os.path.dirname(sys.argv[0])))
 
 # what time and date is it right now?!?!
 now = arrow.now('US/Pacific')
