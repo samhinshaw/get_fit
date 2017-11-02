@@ -5,3 +5,4 @@ echo "Running daily MFP update on `date '+%Y-%m-%d'` at `date '+%H:%M:%S'`."
 # scripts than add a new datetime/timezone implementation to handle!
 python /home/sam/projects/get_fit/data/getDailyMFP.py 'sam' 'jetknife' 
 python /home/sam/projects/get_fit/data/getDailyMFP.py 'amelia' 'ameliaho'
+# python /Users/samhinshaw/projects/get_fit/data/getDailyMFP.py 'amelia' 'ameliaho'

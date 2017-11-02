@@ -25,8 +25,9 @@ import myfitnesspal  # myfitnesspal API!
 # MFPcals.goals['calories']
 
 # Set working directory to project's working directory!
+os.chdir(os.path.dirname(sys.argv[0]))
 # (one above the script's directory)
-os.chdir(os.path.join('..', os.path.dirname(sys.argv[0])))
+os.chdir('..')
 
 # what time and date is it right now?!?!
 now = arrow.now('US/Pacific')
