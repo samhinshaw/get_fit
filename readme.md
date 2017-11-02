@@ -14,6 +14,8 @@
 - Implement user storage of MFP passwords??
 - Fix the fact that the primary color and the hover color are the same!
 
+- Make "responses" tab for request responses!
+
 - Store points in database for retrieval
     + Right now, points from a given timespan are calculated from daily point earnings **every time** the page renders
     + Cache calculations in front end
