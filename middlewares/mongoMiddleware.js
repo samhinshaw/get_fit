@@ -138,7 +138,7 @@ async function queryCustomPeriodsFromMongo(user) {
     // Otherwise, we just want to know the number of points EARNED in that period.
     if (customPeriod.key === 'sinceStart') {
       const customPeriodRequests = requests.reduce((points, request) => {
-        const date = moment(request.date).tz('US/Pacific');
+        const date = moment(request.timeRequested).tz('US/Pacific');
         if (date.isBetween(customPeriod.startDate, customPeriod.endDate, 'day', '[]')) {
           return points + request.pointCost;
         }
