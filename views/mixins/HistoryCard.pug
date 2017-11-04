@@ -21,19 +21,28 @@ mixin HistoryCard(request)
           when 'approved'
             article.message.is-success
               .message-body
-                | #{request.requestMessage}
+                if request.requestMessage
+                  | #{request.requestMessage}
+                else 
+                  em You did not provide a message.
           when 'denied'
             article.message.is-danger
               .message-body
-                | #{request.requestMessage}
+                if request.requestMessage
+                  | #{request.requestMessage}
+                else 
+                  em You did not provide a message.
           default
             article.message
               .message-body
-                | #{request.requestMessage}
+                if request.requestMessage
+                  | #{request.requestMessage}
+                else 
+                  em You did not provide a message.
     footer.card-footer
       p.card-footer-item
-        em sent at:&nbsp;
+        em Sent:&nbsp;
         time #{moment(request.timeRequested).format('ddd, MMM Do, h:ma')}
       p.card-footer-item
-        em #{request.status} at:&nbsp;
+        em #{request.status.charAt(0).toUpperCase() + request.status.slice(1)}:&nbsp;
         time #{moment(request.timeResponded).format('ddd, MMM Do, h:ma')}

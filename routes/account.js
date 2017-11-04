@@ -266,13 +266,14 @@ router.get('/history', auth.ensureAuthenticated, (req, res) => {
       requester: req.user.username,
       status: ['approved', 'denied']
     },
-    (err, results) => {
+    (err, requests) => {
       if (err) {
         console.log(err);
       }
       // If we get the results back, reorder the dates
+      const sortedRequests = _.orderBy(requests, 'timeResponded', 'desc');
       res.render('account/history', {
-        approvedRequests: results,
+        approvedRequests: sortedRequests,
         routeInfo: {
           heroType: 'twitter',
           route: '/account/history',
