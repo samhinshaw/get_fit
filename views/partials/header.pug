@@ -35,9 +35,9 @@ html
                 a.navbar-item(href='/overview', class=(routeInfo.route.startsWith('/overview')  ? 'is-active' : false))
                   | Overview
                 a.navbar-item(href=`/user`, class=(routeInfo.route.startsWith('/user') ? 'is-active' : false))
-                  | #{routeInfo.userName}
+                  | #{routeInfo.userName} (#{pointTally.user})
                 a.navbar-item(href=`/partner`, class=(routeInfo.route.startsWith('/partner') ? 'is-active' : false))
-                  | #{routeInfo.partnerName}
+                  | #{routeInfo.partnerName} (#{pointTally.partner})
                 //- a.navbar-item(href='/account', class=(routeInfo.route === "/account"  ? 'is-active' : false))
                   | Account
                 //- a.navbar-item(href='/help', class=(routeInfo.route === "/help"  ? 'is-active' : false))
@@ -68,6 +68,7 @@ html
                         | Sign up
     //- Bring in Mixins
     include ../mixins/ExerciseCard
+    include ../mixins/HistoryCard
     block page
     script(type='text/javascript', src='/bower_components/jquery/dist/jquery.min.js')
     script(type='text/javascript', src='/bower_components/moment/min/moment.min.js')

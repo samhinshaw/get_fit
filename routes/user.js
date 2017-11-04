@@ -2,7 +2,7 @@
 const PythonShell = require('python-shell');
 const express = require('express');
 const _ = require('lodash');
-const request = require('request');
+// const request = require('request');
 const auth = require('../config/auth.js');
 
 // datetime functions
@@ -11,24 +11,24 @@ const moment = require('moment-timezone');
 // const mongoMiddleware = require('../middlewares/mongoMiddleware');
 
 // Define Async middleware wrapper to avoid try-catch
-const asyncMiddleware = fn => (req, res, next) => {
-  Promise.resolve(fn(req, res, next)).catch(next);
-};
+// const asyncMiddleware = fn => (req, res, next) => {
+//   Promise.resolve(fn(req, res, next)).catch(next);
+// };
 
 // IFTTT Configuration
 
-const configureIFTTT = (user, requestType) => {
-  const configOptions = {
-    url: `https://maker.ifttt.com/trigger/${requestType}/with/key/JCavOg5Om_uGsh0R6McOC`,
-    method: 'POST',
-    headers: {
-      // 'User-Agent': 'Super Agent/0.0.1',
-      'Content-Type': 'application/x-www-form-urlencoded'
-    },
-    form: { value1: user }
-  };
-  return configOptions;
-};
+// const configureIFTTT = (user, requestType) => {
+//   const configOptions = {
+//     url: `https://maker.ifttt.com/trigger/${requestType}/with/key/JCavOg5Om_uGsh0R6McOC`,
+//     method: 'POST',
+//     headers: {
+//       // 'User-Agent': 'Super Agent/0.0.1',
+//       'Content-Type': 'application/x-www-form-urlencoded'
+//     },
+//     form: { value1: user }
+//   };
+//   return configOptions;
+// };
 
 // Initialize Moment & Today Object
 moment().format(); // required by package entirely
@@ -40,8 +40,6 @@ const router = express.Router();
 
 // Bring in user model
 const Entry = require('../models/entry');
-const Reward = require('../models/reward');
-const Request = require('../models/request');
 
 // Use middleware to modify locals object (makes available to view engine!)
 // https://stackoverflow.com/questions/12550067/expressjs-3-0-how-to-pass-res-locals-to-a-jade-view
@@ -113,97 +111,6 @@ router.get('/', auth.ensureAuthenticated, (req, res) => {
     }
   );
 });
-
-router.get('/spend', auth.ensureAuthenticated, (req, res) => {
-  Reward.find({ for: res.locals.user.username }, (err, rewards) => {
-    if (err) {
-      console.log(err);
-    }
-    const sortedRewards = _.orderBy(rewards, 'cost', 'asc');
-    res.render('user/spend', {
-      rewards: sortedRewards,
-      routeInfo: {
-        heroType: res.locals.user.username,
-        route: '/user/spend',
-        user: req.user.username,
-        userName: req.user.username.charAt(0).toUpperCase() + req.user.username.slice(1),
-        partner: req.user.partner,
-        partnerName:
-          req.user.partner.charAt(0).toUpperCase() + req.user.partner.slice(1).toLowerCase()
-      }
-    });
-  });
-});
-
-router.post(
-  '/spend',
-  auth.ensureAuthenticated,
-  asyncMiddleware(async (req, res) => {
-    // if NOT logged in, exit now!
-    if (!res.locals.loggedIn) {
-      req.flash('danger', 'You must log in to make requests!');
-      res.redirect('/user/spend');
-    }
-    // (req, res, next)
-    const rewardKey = req.body.reward;
-
-    const query = {
-      key: rewardKey
-    };
-    // Pull up reward entry in DB
-    const rewardEntry = await Reward.findOne(query, (err, reward) => {
-      if (err) {
-        console.log(err);
-      }
-      return reward;
-    });
-
-    if (rewardEntry.cost > res.locals.pointTally.user) {
-      req.flash('danger', 'Not enough points!');
-      res.redirect('/user/spend');
-      return;
-    }
-
-    const newRequest = new Request({
-      reward: rewardKey,
-      displayName: rewardEntry.displayName,
-      pointCost: rewardEntry.cost,
-      requester: res.locals.user.username, // replace with session
-      requestMessage: req.body.message,
-      timeRequested: moment()
-        .tz('US/Pacific')
-        .toDate(),
-      status: 'unapproved'
-    });
-
-    newRequest.save(saveErr => {
-      if (saveErr) {
-        console.log(saveErr);
-      } else {
-        // If saved, send request via IFTTT
-        request(
-          // this function will return our configuration object with
-          configureIFTTT(
-            req.user.username.charAt(0).toUpperCase() + req.user.username.slice(1),
-            'reward_request'
-          ),
-          (error, response) => {
-            // (error, response, body)
-            if (error) {
-              console.log('ERROR:');
-              console.log(error);
-            } else if (!error && response.statusCode === 200) {
-              // Print out the response body
-              // console.log(body);
-              req.flash('success', 'Request sent! Points deducted from your account.');
-              res.redirect('/user/spend');
-            }
-          }
-        );
-      }
-    });
-  })
-);
 
 router.post('/:date', auth.ensureAuthenticated, (req, res) => {
   // parse date that was POSTed as string

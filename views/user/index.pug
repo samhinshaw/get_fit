@@ -35,7 +35,7 @@ block content
     .control.tooltip.is-tooltip-top(data-tooltip="This may take a while to update.")
       button.button.is-small.is-info.is-pulled-left.update-entry(data-date=`${twoWeeksAgoPretty} ${todayPretty}`)
         | Update Past Two Weeks
-    .control
+    //- .control
       span.tag(style='margin-left: 1em;', class='is-danger')
         | #{pointTally.user.toFixed(1)}
   br
@@ -49,5 +49,5 @@ block content
           br
     .columns.is-desktop
       .column.is-6.is-offset-3
-        +exerciseCard(entry)
+        +ExerciseCard(entry)
         br

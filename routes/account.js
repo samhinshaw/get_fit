@@ -3,8 +3,14 @@
 const express = require('express');
 const auth = require('../config/auth.js');
 const request = require('request');
+const _ = require('lodash');
+const moment = require('moment-timezone');
+
 const Request = require('../models/request');
+const Reward = require('../models/reward');
 // const flash = require('connect-flash');
+
+moment().format(); // required by package entirely
 
 const router = express.Router();
 
@@ -54,7 +60,144 @@ router.get('/', auth.ensureAuthenticated, (req, res) => {
   });
 });
 
+router.get('/spend', auth.ensureAuthenticated, (req, res) => {
+  Reward.find({ for: res.locals.user.username }, (err, rewards) => {
+    if (err) {
+      console.log(err);
+    }
+    const sortedRewards = _.orderBy(rewards, 'cost', 'asc');
+    res.render('account/spend', {
+      rewards: sortedRewards,
+      routeInfo: {
+        heroType: 'twitter',
+        route: '/account/spend',
+        user: req.user.username,
+        userName: req.user.username.charAt(0).toUpperCase() + req.user.username.slice(1),
+        partner: req.user.partner,
+        partnerName:
+          req.user.partner.charAt(0).toUpperCase() + req.user.partner.slice(1).toLowerCase()
+      }
+    });
+  });
+});
+
+router.post(
+  '/spend',
+  auth.ensureAuthenticated,
+  asyncMiddleware(async (req, res) => {
+    // if NOT logged in, exit now!
+    if (!res.locals.loggedIn) {
+      req.flash('danger', 'You must log in to make requests!');
+      res.redirect('/account/spend');
+    }
+    // (req, res, next)
+    const rewardKey = req.body.reward;
+
+    const query = {
+      key: rewardKey
+    };
+    // Pull up reward entry in DB
+    const rewardEntry = await Reward.findOne(query, (err, reward) => {
+      if (err) {
+        console.log(err);
+      }
+      return reward;
+    });
+
+    if (rewardEntry.cost > res.locals.pointTally.user) {
+      req.flash('danger', 'Not enough points!');
+      res.redirect('/account/spend');
+      return;
+    }
+
+    const newRequest = new Request({
+      reward: rewardKey,
+      displayName: rewardEntry.displayName,
+      pointCost: rewardEntry.cost,
+      requester: res.locals.user.username, // replace with session
+      requestMessage: req.body.message,
+      timeRequested: moment()
+        .tz('US/Pacific')
+        .toDate(),
+      status: 'unapproved'
+    });
+
+    newRequest.save(saveErr => {
+      if (saveErr) {
+        console.log(saveErr);
+      } else {
+        // If saved, send request via IFTTT
+        request(
+          // this function will return our configuration object with
+          configureIFTTT(
+            req.user.username.charAt(0).toUpperCase() + req.user.username.slice(1),
+            'reward_request'
+          ),
+          (error, response) => {
+            // (error, response, body)
+            if (error) {
+              console.log('ERROR:');
+              console.log(error);
+            } else if (!error && response.statusCode === 200) {
+              // Print out the response body
+              // console.log(body);
+              req.flash('success', 'Request sent! Points deducted from your account.');
+              res.redirect('/account/spend');
+            }
+          }
+        );
+      }
+    });
+  })
+);
+
+router.get('/send', auth.ensureAuthenticated, (req, res) => {
+  // Reward.find({ for: res.locals.user.username }, (err, rewards) => {
+  //   if (err) {
+  //     console.log(err);
+  //   }
+  //   const sortedRewards = _.orderBy(rewards, 'cost', 'asc');
+  res.render('account/send', {
+    // rewards: sortedRewards,
+    routeInfo: {
+      heroType: 'twitter',
+      route: '/account/send',
+      user: req.user.username,
+      userName: req.user.username.charAt(0).toUpperCase() + req.user.username.slice(1),
+      partner: req.user.partner,
+      partnerName:
+        req.user.partner.charAt(0).toUpperCase() + req.user.partner.slice(1).toLowerCase()
+    }
+  });
+  // });
+});
+
+router.get('/send', auth.ensureAuthenticated, (req, res) => {
+  // Reward.find({ for: res.locals.user.username }, (err, rewards) => {
+  //   if (err) {
+  //     console.log(err);
+  //   }
+  //   const sortedRewards = _.orderBy(rewards, 'cost', 'asc');
+  res.render('account/send', {
+    // rewards: sortedRewards,
+    routeInfo: {
+      heroType: 'twitter',
+      route: '/account/send',
+      user: req.user.username,
+      userName: req.user.username.charAt(0).toUpperCase() + req.user.username.slice(1),
+      partner: req.user.partner,
+      partnerName:
+        req.user.partner.charAt(0).toUpperCase() + req.user.partner.slice(1).toLowerCase()
+    }
+  });
+  // });
+});
+
 router.get('/requests', auth.ensureAuthenticated, (req, res) => {
+  // Our requests are pulled in via middleware in app.js so we can display the #
+  // of pending requests badge on your account info button in the navbar.
+  // Therefore, they do not need to be passed through here, and can be pulled
+  // directly from res.locals
   res.render('account/requests', {
     routeInfo: {
       heroType: 'twitter',
@@ -77,7 +220,10 @@ router.post('/requests/respond', auth.ensureAuthenticated, (req, res) => {
     {
       $set: {
         status: req.body.type,
-        responseMessage: req.body.message
+        responseMessage: req.body.message,
+        timeResponded: moment()
+          .tz('US/Pacific')
+          .toDate()
       }
     },
     err => {
@@ -110,6 +256,33 @@ router.post('/requests/respond', auth.ensureAuthenticated, (req, res) => {
           }
         );
       }
+    }
+  );
+});
+
+router.get('/history', auth.ensureAuthenticated, (req, res) => {
+  Request.find(
+    {
+      requester: req.user.username,
+      status: ['approved', 'denied']
+    },
+    (err, results) => {
+      if (err) {
+        console.log(err);
+      }
+      // If we get the results back, reorder the dates
+      res.render('account/history', {
+        approvedRequests: results,
+        routeInfo: {
+          heroType: 'twitter',
+          route: '/account/history',
+          user: req.user.username || null,
+          userName: req.user.username.charAt(0).toUpperCase() + req.user.username.slice(1) || null,
+          partnerName:
+            req.user.partner.charAt(0).toUpperCase() + req.user.partner.slice(1).toLowerCase() ||
+            null
+        }
+      });
     }
   );
 });

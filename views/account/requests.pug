@@ -1,10 +1,7 @@
 extends ../partials/layout
 
 block header
-  p.title
-    | Your Account
-  p.subtitle
-    | Edit your goals, respond to requests
+  include ../includes/account_header
 
 block subnav
   include ../includes/account_subnav
@@ -15,7 +12,11 @@ block content
   .columns.is-tablet
     .column.is-offset-3.is-6#request-container
       if pendingRequests.length === 0
-        h3.is-size-3 You have no pending requests!
+        article.message.is-info
+          .message-header
+            p No Requests
+          .message-body
+            | You have no pending requests.
       else
        each request, i in pendingRequests
         .card(data-id=request._id)
@@ -39,9 +40,14 @@ block content
                       time #{moment(request.timeRequested).format('ddd, MMM Do, h:ma')}
           .card-content
             .content
-              h5.is-size-5 
-                u Message: 
-              p #{request.requestMessage}
+              if request.message
+                article.message
+                  .message-body
+                    | #{request.requestMessage}
+              else 
+                article.message.is-warning
+                  .message-body
+                    em No message provided.
           footer.card-footer
             a.card-footer-item.request-button.approve(href='#!') Approve
             a.card-footer-item.request-button.deny(href='#!') Deny

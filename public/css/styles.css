@@ -183,3 +183,7 @@
 a.card-header-title:hover {
   text-decoration: underline;
 }
+
+a.navbar-item.is-tab:hover {
+  text-decoration: underline;
+}

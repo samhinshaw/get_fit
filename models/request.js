@@ -46,7 +46,7 @@ const requestSchema = new Schema(
       type: String,
       required: true
     },
-    timeApproved: {
+    timeResponded: {
       type: Date,
       required: false
     }

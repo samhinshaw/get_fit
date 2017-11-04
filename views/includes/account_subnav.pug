@@ -1,11 +1,43 @@
 .navbar-tabs
   a.navbar-item.is-tab(href='/account', class=(routeInfo.route === "/account"  ? 'is-active' : false))
-    | You
+    .field.is-grouped
+      .control
+        span.icon.is-small
+          i.mdi.mdi-account
+      .control 
+        | You
+  a.navbar-item.is-tab(href=`/account/spend`, class=('/account/spend' === routeInfo.route ? 'is-active' : false))
+    .field.is-grouped
+      .control
+        span.icon.is-small
+          i.mdi.mdi-shopping 
+      //- | &nbsp;
+      .control
+        | Spend Points
   a.navbar-item.is-tab(href='/account/requests', class=(routeInfo.route === "/account/requests"  ? 'is-active' : false))
     .field.is-grouped
+      .control
+        span.icon.is-small
+          i.mdi.mdi-email-open 
       .control
         span Requests
       if pendingRequests.length > 0
         .control
           span.tag(class='is-danger')
             | #{pendingRequests.length}
+  a.navbar-item.is-tab(href=`/account/send`, class=('/account/send' === routeInfo.route ? 'is-active' : false))
+    .field.is-grouped
+      .control
+        span.icon.is-small
+          i.mdi.mdi-gift 
+      //- | &nbsp;
+      .control
+        | Send Gifts
+  a.navbar-item.is-tab(href=`/account/history`, class=('/account/history' === routeInfo.route ? 'is-active' : false))
+    .field.is-grouped
+      .control
+        span.icon.is-small
+          i.mdi.mdi-history 
+      //- | &nbsp;
+      .control
+        | History

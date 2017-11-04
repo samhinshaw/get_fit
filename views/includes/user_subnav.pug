@@ -1,13 +1,10 @@
 .navbar-tabs
   a.navbar-item.is-tab(href=`/user`, class=(['/user', '/partner'].includes(routeInfo.route) ? 'is-active' : false))
-    span.icon.is-small
-      i.mdi.mdi-view-list 
-    | &nbsp;
-    | Overview
+    .field.is-grouped
+      .control
+        span.icon.is-small
+          i.mdi.mdi-view-list 
+      .control
+        | Overview
   //- a.navbar-item.is-tab(href='#')
     | Weight
-  a.navbar-item.is-tab(href=`/user/spend`, class=('/user/spend' === routeInfo.route ? 'is-active' : false))
-    span.icon.is-small
-      i.mdi.mdi-shopping 
-    | &nbsp;
-    | Spend Points

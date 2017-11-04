@@ -1,4 +1,5 @@
-mixin exerciseCard(entry)
+//- Mixins included in partials/header.pug
+mixin ExerciseCard(entry)
   - const entryDate = moment.tz(entry.date, 'US/Pacific');
   - const datePretty = entryDate.format('YYYY-MM-DD');
   - const dateHuman = entryDate.format('MM-DD-YYYY');

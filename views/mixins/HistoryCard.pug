@@ -1,0 +1,39 @@
+//- Mixins included in partials/header.pug
+mixin HistoryCard(request)
+  .card(data-id=request._id)
+    header.card-header
+      p.card-header-title
+        | #{request.displayName}
+      .card-header-icon.dropdown.is-hoverable(href='#', aria-label='more options')
+        .dropdown-trigger
+          span.icon
+            i.mdi.mdi-chevron-down(aria-hidden='true')
+          //- button.button.is-info(aria-haspopup='true', aria-controls='dropdown-menu6')
+            span Right aligned
+            span.icon.is-small
+              i.fa.fa-angle-down(aria-hidden='true')
+        //- .dropdown-menu(role='menu')
+          .dropdown-content
+            .dropdown-item
+    .card-content
+      .content
+        case request.status
+          when 'approved'
+            article.message.is-success
+              .message-body
+                | #{request.requestMessage}
+          when 'denied'
+            article.message.is-danger
+              .message-body
+                | #{request.requestMessage}
+          default
+            article.message
+              .message-body
+                | #{request.requestMessage}
+    footer.card-footer
+      p.card-footer-item
+        em sent at:&nbsp;
+        time #{moment(request.timeRequested).format('ddd, MMM Do, h:ma')}
+      p.card-footer-item
+        em #{request.status} at:&nbsp;
+        time #{moment(request.timeResponded).format('ddd, MMM Do, h:ma')}

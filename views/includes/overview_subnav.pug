@@ -1,9 +1,11 @@
 .navbar-tabs
   a.navbar-item.is-tab.is-active(href='#')
-    span.icon.is-small
-      i.mdi.mdi-view-list 
-    | &nbsp;
-    | Summary
+    .field.is-grouped
+      .control
+        span.icon.is-small
+          i.mdi.mdi-view-list 
+      .control
+        | Summary
   a.navbar-item.is-tab(href=`/${user.username}`)
     | #{userName}
   a.navbar-item.is-tab(href=`/${user.partner}`)

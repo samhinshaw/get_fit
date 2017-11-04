@@ -1,0 +1,45 @@
+extends ../partials/layout
+
+block header
+  include ../includes/account_header
+
+block subnav
+  include ../includes/account_subnav
+
+block content
+  - const moment = require('moment-timezone');
+  - moment().format();
+  .columns.is-tablet
+    .column.is-offset-3.is-6#request-container
+      if approvedRequests.length === 0
+        article.message
+          .message-header
+            p No History
+          .message-body
+            | You do not currently have any reward history.
+      else
+       each request, i in approvedRequests
+        +HistoryCard(request)
+        br
+  //- Modal for copyright info. Hidden until JS click event received.
+  .modal#request-modal
+    .modal-background
+    .modal-card
+      header.modal-card-head
+        p.modal-card-title Reply to Request
+        button.delete(aria-label='close')
+      section.modal-card-body
+        .content
+          //- p 
+            | Are you sure you wish to 
+            span.response-type
+            |  this request?
+          .field
+            //- label.label Reply
+              span.is-pulled-right.is-faded (optional)
+            .control
+              input.input(name='message', type='text', placeholder='optional message')
+      footer.modal-card-foot
+        button.button.response-button.is-success#approve-request Approve
+        button.button.response-button.is-danger#deny-request Deny
+        button.button.cancel Cancel

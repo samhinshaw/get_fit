@@ -10,5 +10,8 @@ block content
   != messages('includes/notification', locals)
   .columns
     .column.is-offset-2.is-8
-      .avatar-container.is-pulled-right
-        img(src=`/images/${user.username}_avatar.png`, alt=user.username)
+      article.message.is-warning
+        .message-header
+          p Feature In Progress
+        .message-body
+          | I don't have this working yet... but it's gonna be a great feature! 😘

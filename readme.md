@@ -14,6 +14,9 @@
 - Implement user storage of MFP passwords??
 - Fix the fact that the primary color and the hover color are the same!
 
+- Change flash messaging location on some pages!
+    - Check account/spend (requests) to see the correct implementation
+
 - Make "responses" tab for request responses!
 
 - Store points in database for retrieval
@@ -64,3 +67,6 @@ Then we can fix things.
 Switch from using 'is-danger' (etc) classes to style different pages! Instead we should be specifying the page and then we'll style it differently ourselves.  
 
 - Update update-entry buttons to properly correspond to user/partner 
+- Instead of using capitalized username as userName, actually use the user's name from their name field!
+- Stop pulling directly from req.user, always user res.locals.user
+- Then just pull from the partner object, which we'll set to res.locals.partner
