@@ -40,14 +40,5 @@ block content
         | #{pointTally.user.toFixed(1)}
   br
   each entry, i in entries
-    //- Break up into weeks and we'll come back to this for a weekly point total
-    .columns.is-desktop
-      .column.is-8.is-offset-2
-        if weekDay === 'Sun'
-          //- br
-          h3.is-size-3 #{`Week of ${fullDate}`}
-          br
-    .columns.is-desktop
-      .column.is-6.is-offset-3
-        +ExerciseCard(entry)
-        br
+    +ExerciseCard(entry)
+    br

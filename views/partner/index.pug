@@ -38,19 +38,7 @@ block content
     .control.tooltip.is-tooltip-top(data-tooltip="This may take a while to update.")
       button.button.is-small.is-info.is-pulled-left.update-entry(data-date=`${twoWeeksAgoPretty} ${todayPretty}`)
         | Update Past Two Weeks
-    .control
-      span.tag(style='margin-left: 1em;', class='is-danger')
-        | #{pointTally.partner.toFixed(1)}
   br
   each entry, i in entries
-    //- Break up into weeks and we'll come back to this for a weekly point total
-    .columns.is-desktop
-      .column.is-8.is-offset-2
-        if weekDay === 'Sun'
-          //- br
-          h3.is-size-3 #{`Week of ${fullDate}`}
-          br
-    .columns.is-desktop
-      .column.is-6.is-offset-3
-        +ExerciseCard(entry)
-        br
+    +ExerciseCard(entry)
+    br
