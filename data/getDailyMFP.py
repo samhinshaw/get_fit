@@ -31,6 +31,8 @@ os.chdir('..')
 
 # what time and date is it right now?!?!
 now = arrow.now('US/Pacific')
+print('Now is: ')
+print(now)
 # Get the start of today
 today = now.floor('day')
 # and yesterday
