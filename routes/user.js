@@ -130,11 +130,18 @@ router.post('/:date', auth.ensureAuthenticated, (req, res) => {
 
   // Note that since we're posting to /user/:date, we know to update the user's
   // entry, not the partner's entry
+  let pythonPath;
+
+  if (process.platform === 'linux') {
+    pythonPath = '/home/sam/.miniconda3/bin/python3';
+  } else if (process.platform === 'darwin') {
+    pythonPath = '/Users/samhinshaw/.miniconda3/bin/python';
+  }
 
   // Python script options
   const options = {
     // mode: 'text',
-    // pythonPath: '/Users/samhinshaw/.miniconda2/bin/python',
+    pythonPath,
     // pythonOptions: ['-u'],
     scriptPath: './data',
     args: [startDate, endDate, res.locals.user.username, res.locals.user.mfp]
