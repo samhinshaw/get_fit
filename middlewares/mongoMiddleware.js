@@ -115,12 +115,15 @@ async function queryCustomPeriodsFromMongo(user) {
     return res;
   });
 
-  const requests = await Request.find({ requester: user }, (err, res) => {
-    if (err) {
-      console.log(err);
+  const requests = await Request.find(
+    { requester: user, status: ['approved', 'unapproved'] },
+    (err, res) => {
+      if (err) {
+        console.log(err);
+      }
+      return res;
     }
-    return res;
-  });
+  );
 
   const customPeriods = await customRanges.reduce((customPeriodResult, customPeriod) => {
     // For each date that exists in this period, sum the points
