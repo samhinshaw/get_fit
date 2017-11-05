@@ -13,6 +13,9 @@
 - Live-checking of whether usernames, etc are taken
 - Implement user storage of MFP passwords??
 - Fix the fact that the primary color and the hover color are the same!
+- Fix exercise icon being on different level than text
+- Make it so an exercise/day card 'update' button is enabled anytime the parent element is clicked.
+- Implement last logged in value (either via passport.js or by storing in DB) and use it to see if a request was made or gift was sent since last access. If true, display popup modal. 
 
 - Change flash messaging location on some pages!
     - Check account/spend (requests) to see the correct implementation

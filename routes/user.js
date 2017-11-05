@@ -32,35 +32,15 @@ const moment = require('moment-timezone');
 
 // Initialize Moment & Today Object
 moment().format(); // required by package entirely
-// const now = moment.utc();
-const now = moment().tz('US/Pacific');
-const today = now.clone().startOf('day');
-
 const router = express.Router();
 
 // Bring in user model
 const Entry = require('../models/entry');
 
-// Use middleware to modify locals object (makes available to view engine!)
-// https://stackoverflow.com/questions/12550067/expressjs-3-0-how-to-pass-res-locals-to-a-jade-view
-router.use((req, res, next) => {
-  res.locals.today = today; // do we want to pass an object instead?
-  res.locals.require = require;
-  // res.locals.routeInfo = {
-  //   heroType: req.user.username,
-  //   route: '/user',
-  //   user: req.user.username,
-  //   userName: req.user.username.charAt(0).toUpperCase() + req.user.username.slice(1),
-  //   partnerName: req.user.partner.charAt(0).toUpperCase() + req.user.partner.slice(1).toLowerCase()
-  // };
-  next();
-});
-
 // Route to Sam's Data
 router.get('/', auth.ensureAuthenticated, (req, res) => {
   // Construct an array of dates to query. Let's get the past two weeks
   // First our start and end points:
-  const twoWeeksAgo = today.clone().subtract(14, 'days');
 
   // NOTE, we can also query an array of dates, as I did see a StackOverflow
   // post mentioning that the $gte and $lte operators can be a bit wonky with
@@ -81,17 +61,24 @@ router.get('/', auth.ensureAuthenticated, (req, res) => {
       //   $in: queryDates
       // }
       date: {
-        $gte: twoWeeksAgo.toDate(),
-        $lte: today.toDate()
+        $gte: res.locals.twoWeeksAgo.toDate(),
+        $lte: res.locals.today.toDate()
       },
       user: res.locals.user.username
     },
     (err, entries) => {
       if (err) {
+        console.log('ERROR, WILL ROBINSON!');
         console.log(err);
       } else {
+        console.log('SUCCESS, WILL ROBINSON!');
         // If we get the results back, reorder the dates
         const sortedEntries = _.orderBy(entries, 'date', 'desc');
+
+        sortedEntries.map(entry => {
+          console.log(entry.date);
+          return true;
+        });
 
         // render page
         res.render('user/index', {

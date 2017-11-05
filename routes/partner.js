@@ -2,7 +2,7 @@
 const PythonShell = require('python-shell');
 const express = require('express');
 const _ = require('lodash');
-const request = require('request');
+// const request = require('request');
 const auth = require('../config/auth.js');
 
 // datetime functions
@@ -11,57 +11,35 @@ const moment = require('moment-timezone');
 // const mongoMiddleware = require('../middlewares/mongoMiddleware');
 
 // Define Async middleware wrapper to avoid try-catch
-const asyncMiddleware = fn => (req, res, next) => {
-  Promise.resolve(fn(req, res, next)).catch(next);
-};
+// const asyncMiddleware = fn => (req, res, next) => {
+//   Promise.resolve(fn(req, res, next)).catch(next);
+// };
 
-// IFTTT Configuration
+// // IFTTT Configuration
 
-function configureIFTTT(user, requestType) {
-  const configOptions = {
-    url: `https://maker.ifttt.com/trigger/${requestType}/with/key/JCavOg5Om_uGsh0R6McOC`,
-    method: 'POST',
-    headers: {
-      // 'User-Agent': 'Super Agent/0.0.1',
-      'Content-Type': 'application/x-www-form-urlencoded'
-    },
-    form: { value1: user }
-  };
-  return configOptions;
-}
+// function configureIFTTT(user, requestType) {
+//   const configOptions = {
+//     url: `https://maker.ifttt.com/trigger/${requestType}/with/key/JCavOg5Om_uGsh0R6McOC`,
+//     method: 'POST',
+//     headers: {
+//       // 'User-Agent': 'Super Agent/0.0.1',
+//       'Content-Type': 'application/x-www-form-urlencoded'
+//     },
+//     form: { value1: user }
+//   };
+//   return configOptions;
+// }
 
 // Initialize Moment & Today Object
 moment().format(); // required by package entirely
-// const now = moment.utc();
-const now = moment().tz('US/Pacific');
-const today = now.clone().startOf('day');
 
 const router = express.Router();
 
 // Bring in user model
 const Entry = require('../models/entry');
 
-// Use middleware to modify locals object (makes available to view engine!)
-// https://stackoverflow.com/questions/12550067/expressjs-3-0-how-to-pass-res-locals-to-a-jade-view
-router.use((req, res, next) => {
-  res.locals.today = today; // do we want to pass an object instead?
-  res.locals.require = require;
-  // res.locals.routeInfo = {
-  //   heroType: req.user.username,
-  //   route: '/user',
-  //   user: req.user.username,
-  //   userName: req.user.username.charAt(0).toUpperCase() + req.user.username.slice(1),
-  //   partnerName: req.user.partner.charAt(0).toUpperCase() + req.user.partner.slice(1).toLowerCase()
-  // };
-  next();
-});
-
 // Route to Sam's Data
 router.get('/', auth.ensureAuthenticated, (req, res) => {
-  // Construct an array of dates to query. Let's get the past two weeks
-  // First our start and end points:
-  const twoWeeksAgo = today.clone().subtract(14, 'days');
-
   // NOTE, we can also query an array of dates, as I did see a StackOverflow
   // post mentioning that the $gte and $lte operators can be a bit wonky with
   // dates. I have not experienced that yet, so I will avoid anything containing
@@ -81,8 +59,8 @@ router.get('/', auth.ensureAuthenticated, (req, res) => {
       //   $in: queryDates
       // }
       date: {
-        $gte: twoWeeksAgo.toDate(),
-        $lte: today.toDate()
+        $gte: res.locals.twoWeeksAgo.toDate(),
+        $lte: res.locals.today.toDate()
       },
       user: res.locals.user.partner
     },

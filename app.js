@@ -20,27 +20,7 @@ const mongoNodeConfig = mongoConfig.node;
 
 const moment = MomentRange.extendMoment(Moment);
 moment().format(); // required by package entirely
-const now = moment().tz('US/Pacific');
-const today = now.clone().startOf('day');
-// const startofTracking = moment('09-18-2017', 'MM-DD-YYYY')
-//   .tz('US/Pacific')
-//   .startOf('day');
-const twoWeeksAgo = today.clone().subtract(14, 'days');
-// .startOf('week')    = Sunday
-// .startOf('isoweek') = Monday
-// const customRanges = [
-//   {
-//     // We started Monday, Sept 18th
-//     key: 'sinceStart',
-//     startDate: startofTracking,
-//     endDate: today
-//   },
-//   {
-//     key: 'pastTwoWeeks',
-//     startDate: twoWeeksAgo,
-//     endDate: today
-//   }
-// ];
+
 // Define Async middleware wrapper to avoid try-catch
 const asyncMiddleware = fn => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch(next);
@@ -109,6 +89,23 @@ app.use(require('connect-flash')());
 
 app.use((req, res, next) => {
   res.locals.messages = expMessages(req, res);
+  next();
+});
+
+// Make sure that our moment initialization is run as middleware! Otherwise
+// functions will only be run when the app starts!!! Use middleware to modify
+// locals object (makes available to view engine!)
+// https://stackoverflow.com/questions/12550067/expressjs-3-0-how-to-pass-res-locals-to-a-jade-view
+app.use((req, res, next) => {
+  const now = moment().tz('US/Pacific');
+  res.locals.now = now; // do we want to pass an object instead?
+  const today = now.clone().startOf('day');
+  res.locals.today = today; // do we want to pass an object instead?
+  const twoWeeksAgo = today.clone().subtract(14, 'days');
+  res.locals.twoWeeksAgo = twoWeeksAgo; // do we want to pass an object instead?
+
+  // Also allow pug to bring in packages
+  res.locals.require = require;
   next();
 });
 
@@ -277,14 +274,6 @@ app.use(
 // /////////////// END MIDDLEWARE TO CALCULATE POINTS & PURCHASES /////////////////
 // /////////////////////////////////////////////////////////////////////////////
 
-// Use middleware to modify locals object (makes available to view engine!)
-// https://stackoverflow.com/questions/12550067/expressjs-3-0-how-to-pass-res-locals-to-a-jade-view
-app.use((req, res, next) => {
-  res.locals.today = today; // do we want to pass an object instead?
-  res.locals.require = require;
-  next();
-});
-
 app.get('/', (req, res) => {
   if (res.locals.loggedIn) {
     res.render('landing_page', {
@@ -320,8 +309,8 @@ app.get('/overview', auth.ensureAuthenticated, (req, res) => {
   Entry.find(
     {
       date: {
-        $gte: twoWeeksAgo.toDate(),
-        $lte: today.toDate()
+        $gte: res.locals.twoWeeksAgo.toDate(),
+        $lte: res.locals.today.toDate()
       }
     },
     (err, entries) => {

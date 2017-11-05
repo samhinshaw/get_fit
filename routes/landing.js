@@ -90,7 +90,6 @@ router.post('/register', (req, res) => {
       email,
       mfp,
       partner,
-      calGoal,
       fitnessGoal,
       password,
       currentPoints: 0
