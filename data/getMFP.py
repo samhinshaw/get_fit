@@ -246,11 +246,8 @@ for date in arrow.Arrow.range(
             else:
                 points = 0
 
-            print(points)
             # Then round to 2 decimal places
             points = round(points, 1)
-            print('rounded: ')
-            print(points)
             totExerPoints += points
 
             exercises.append({
