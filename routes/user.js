@@ -68,17 +68,10 @@ router.get('/', auth.ensureAuthenticated, (req, res) => {
     },
     (err, entries) => {
       if (err) {
-        console.log('ERROR, WILL ROBINSON!');
         console.log(err);
       } else {
-        console.log('SUCCESS, WILL ROBINSON!');
         // If we get the results back, reorder the dates
         const sortedEntries = _.orderBy(entries, 'date', 'desc');
-
-        sortedEntries.map(entry => {
-          console.log(entry.date);
-          return true;
-        });
 
         // render page
         res.render('user/index', {

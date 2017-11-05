@@ -4,38 +4,13 @@
 const Moment = require('moment-timezone');
 const MomentRange = require('moment-range');
 const _ = require('lodash');
-const config = require('../config/database');
+// const config = require('../config/database');
 // const async = require('async');
 
 const moment = MomentRange.extendMoment(Moment);
 
 // Initialize Moment & Today Object
 moment().format(); // required by package entirely
-
-// ///// Fudge Data /////////
-
-// Instantiate some dates
-const now = moment().tz('US/Pacific');
-const today = now.clone().startOf('day');
-const startofTracking = moment(config.startDate, 'MM-DD-YYYY')
-  .tz('US/Pacific')
-  .startOf('day');
-const twoWeeksAgo = today.clone().subtract(14, 'days');
-// .startOf('week')    = Sunday
-// .startOf('isoweek') = Monday
-const customRanges = [
-  {
-    // We started Monday, Sept 18th
-    key: 'sinceStart',
-    startDate: startofTracking,
-    endDate: today
-  },
-  {
-    key: 'pastTwoWeeks',
-    startDate: twoWeeksAgo,
-    endDate: today
-  }
-];
 
 // Bring in user models
 const Entry = require('../models/entry');
@@ -106,7 +81,7 @@ async function queryWeeksFromMongo(user) {
   return weekPeriods;
 }
 
-async function queryCustomPeriodsFromMongo(user) {
+async function queryCustomPeriodsFromMongo(user, customRanges) {
   // First get all db entries for that user
   const entries = await Entry.find({ user }, (err, res) => {
     if (err) {
@@ -167,26 +142,26 @@ async function queryCustomPeriodsFromMongo(user) {
   return customPeriods;
 }
 
-async function getSortedEntries(user) {
-  const sortedEntries = await Entry.find(
-    {
-      user,
-      date: {
-        $gte: twoWeeksAgo.toDate(),
-        $lte: today.toDate()
-      }
-    },
-    (err, res) => {
-      if (err) {
-        console.log(err);
-      }
-      // If we get the results back, reorder the dates
-      const sortedRes = _.orderBy(res, 'date', 'desc');
-      return sortedRes;
-    }
-  );
-  return sortedEntries;
-}
+// async function getSortedEntries(user, startDate, endDate) {
+//   const sortedEntries = await Entry.find(
+//     {
+//       user,
+//       date: {
+//         $gte: startDate.toDate(),
+//         $lte: endDate.toDate()
+//       }
+//     },
+//     (err, res) => {
+//       if (err) {
+//         console.log(err);
+//       }
+//       // If we get the results back, reorder the dates
+//       const sortedRes = _.orderBy(res, 'date', 'desc');
+//       return sortedRes;
+//     }
+//   );
+//   return sortedEntries;
+// }
 
 async function getPendingRequests(partner) {
   const requests = await Request.find(
@@ -208,6 +183,6 @@ async function getPendingRequests(partner) {
 module.exports = {
   queryWeeksFromMongo,
   queryCustomPeriodsFromMongo,
-  getSortedEntries,
+  // getSortedEntries,
   getPendingRequests
 };

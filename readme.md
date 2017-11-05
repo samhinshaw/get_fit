@@ -16,6 +16,9 @@
 - Fix exercise icon being on different level than text
 - Make it so an exercise/day card 'update' button is enabled anytime the parent element is clicked.
 - Implement last logged in value (either via passport.js or by storing in DB) and use it to see if a request was made or gift was sent since last access. If true, display popup modal. 
+- Refactor point tallying. This could be done much better, and points don't need to be saved, may as well be recalculated each time. 
+        + Also, it is going to get too expensive to recalculate ALL of the weeks each time. Instead, save old weeks and only recalculate the week totals when those values get updated. Name weeks based on the Monday?
+        + Somehow we should save the totals and know when a value gets updated... (based on lastUpdated entry attribute?) and THEN recalculate if necessary. 
 
 - Change flash messaging location on some pages!
     - Check account/spend (requests) to see the correct implementation

@@ -98,13 +98,40 @@ app.use((req, res, next) => {
 // https://stackoverflow.com/questions/12550067/expressjs-3-0-how-to-pass-res-locals-to-a-jade-view
 app.use((req, res, next) => {
   const now = moment().tz('US/Pacific');
-  res.locals.now = now; // do we want to pass an object instead?
-  const today = now.clone().startOf('day');
-  res.locals.today = today; // do we want to pass an object instead?
-  const twoWeeksAgo = today.clone().subtract(14, 'days');
-  res.locals.twoWeeksAgo = twoWeeksAgo; // do we want to pass an object instead?
+  res.locals.now = now;
 
-  // Also allow pug to bring in packages
+  const today = now.clone().startOf('day');
+  res.locals.today = today;
+
+  const twoWeeksAgo = today.clone().subtract(14, 'days');
+  res.locals.twoWeeksAgo = twoWeeksAgo;
+
+  // .startOf('week')    = Sunday
+  // .startOf('isoweek') = Monday
+  const startofTracking = moment(config.startDate, 'MM-DD-YYYY')
+    .tz('US/Pacific')
+    .startOf('day');
+  res.locals.startofTracking = startofTracking;
+
+  const customRanges = [
+    {
+      // We started Monday, Sept 18th
+      key: 'sinceStart',
+      startDate: startofTracking,
+      endDate: today
+    },
+    {
+      key: 'pastTwoWeeks',
+      startDate: twoWeeksAgo,
+      endDate: today
+    }
+  ];
+  res.locals.customRanges = customRanges; // do we want to pass an object instead?
+  next();
+});
+
+// Allow pug to bring in packages
+app.use((req, res, next) => {
   res.locals.require = require;
   next();
 });
@@ -172,11 +199,13 @@ app.use(
       // Get and concat all point tallies
       const userWeeks = await mongoMiddleware.queryWeeksFromMongo(res.locals.user.username);
       const userCustom = await mongoMiddleware.queryCustomPeriodsFromMongo(
-        res.locals.user.username
+        res.locals.user.username,
+        res.locals.customRanges
       );
       const partnerWeeks = await mongoMiddleware.queryWeeksFromMongo(res.locals.partner.username);
       const partnerCustom = await mongoMiddleware.queryCustomPeriodsFromMongo(
-        res.locals.partner.username
+        res.locals.partner.username,
+        res.locals.customRanges
       );
 
       const periods = _.union(userWeeks, userCustom, partnerWeeks, partnerCustom);
@@ -364,8 +393,8 @@ app.get('/api/user_data', auth.ensureAuthenticated, (req, res) => {
 //   if (!res.locals.loggedIn) {
 //     res.render('account_login');
 //   } else {
-//     const userEntries = await mongoMiddleware.getSortedEntries(res.locals.user.username);
-//     const partnerEntries = await mongoMiddleware.getSortedEntries(res.locals.user.partner);
+//     const userEntries = await mongoMiddleware.getSortedEntries(res.locals.user.username, startDate, endDate);
+//     const partnerEntries = await mongoMiddleware.getSortedEntries(res.locals.user.partner, startDate, endDate);
 //     res.render('overview', {
 //       userEntries: await userEntries,
 //       partnerEntries: await partnerEntries
