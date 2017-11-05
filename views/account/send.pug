@@ -8,10 +8,41 @@ block subnav
 
 block content
   != messages('includes/notification', locals)
-  .columns
-    .column.is-offset-2.is-8
-      article.message.is-warning
-        .message-header
-          p Feature In Progress
-        .message-body
-          | I don't have this working yet... but it's gonna be a great feature! 😘
+  - const moment = require('moment-timezone');
+  - moment().format();
+
+  //- - const now = moment.utc();
+  - const now = moment.tz('US/Pacific');
+  - const today = now.clone().startOf('day');
+  - const todayPretty = today.format('YYYY-MM-DD');
+  .columns.is-fullhd
+    .column.is-6.is-offset-3
+      h4.is-size-4 Send Gifts to Your Partner
+      p 
+        em All fields are optional.
+      br
+      form(method="POST", action="/account/send")
+        .field
+          label.label Send Points
+          .control
+            input.input(type="number", name="points", placeholder="10")
+        .field
+          label.label Send Rewards
+          .control
+            .select
+              select(name='reward')
+                option(selected, disabled) Reward
+                each reward, i in rewards
+                  option(value=reward.key)= reward.displayName
+        .field
+          label.label Message
+          .control
+            textarea.textarea(name='message', placeholder="What's the occasion?")
+        //- Currently no Bulma styling for a date-picker, so let's just skip this for now
+        //- .field
+        //-   label.label Date
+        //-   .control
+        //-     input(type='date', name='dateRequest')
+        .field.is-grouped
+          .control
+            button.button Send Request
