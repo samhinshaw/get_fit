@@ -85,12 +85,6 @@ router.post(
   '/spend',
   auth.ensureAuthenticated,
   asyncMiddleware(async (req, res) => {
-    // if NOT logged in, exit now!
-    if (!res.locals.loggedIn) {
-      req.flash('danger', 'You must log in to make requests!');
-      res.redirect('/account/spend');
-    }
-    // (req, res, next)
     const rewardKey = req.body.reward;
 
     const query = {
@@ -152,24 +146,24 @@ router.post(
 );
 
 router.get('/send', auth.ensureAuthenticated, (req, res) => {
-  // Reward.find({ for: res.locals.user.username }, (err, rewards) => {
-  //   if (err) {
-  //     console.log(err);
-  //   }
-  //   const sortedRewards = _.orderBy(rewards, 'cost', 'asc');
-  res.render('account/send', {
-    // rewards: sortedRewards,
-    routeInfo: {
-      heroType: 'twitter',
-      route: '/account/send',
-      user: req.user.username,
-      userName: req.user.username.charAt(0).toUpperCase() + req.user.username.slice(1),
-      partner: req.user.partner,
-      partnerName:
-        req.user.partner.charAt(0).toUpperCase() + req.user.partner.slice(1).toLowerCase()
+  Reward.find({ for: res.locals.partner.username }, (err, rewards) => {
+    if (err) {
+      console.log(err);
     }
+    const sortedRewards = _.orderBy(rewards, 'cost', 'asc');
+    res.render('account/send', {
+      rewards: sortedRewards,
+      routeInfo: {
+        heroType: 'twitter',
+        route: '/account/send',
+        user: req.user.username,
+        userName: req.user.username.charAt(0).toUpperCase() + req.user.username.slice(1),
+        partner: req.user.partner,
+        partnerName:
+          req.user.partner.charAt(0).toUpperCase() + req.user.partner.slice(1).toLowerCase()
+      }
+    });
   });
-  // });
 });
 
 router.get('/send', auth.ensureAuthenticated, (req, res) => {
