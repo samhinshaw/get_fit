@@ -25,10 +25,6 @@ const userSchema = new Schema({
     type: String,
     required: false
   },
-  calGoal: {
-    type: Number,
-    required: true
-  },
   password: {
     type: String,
     required: true

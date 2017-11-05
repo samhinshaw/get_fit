@@ -47,7 +47,6 @@ router.post('/register', (req, res) => {
   const username = req.body.username;
   const email = req.body.email;
   const partner = req.body.partner;
-  const calGoal = req.body.calGoal;
   const fitnessGoal = req.body.fitnessGoal;
   const mfp = req.body.mfp;
   const accessCode = req.body.accessCode;
@@ -62,7 +61,6 @@ router.post('/register', (req, res) => {
     .isEmail()
     .trim()
     .normalizeEmail();
-  req.checkBody('calGoal', 'Calorie goal is required').notEmpty();
   req.checkBody('mfp', 'MyFitnessPal username is required').notEmpty();
   // In the future, make sure username is not taken!!
   req.checkBody('username', 'Username is required').notEmpty();
