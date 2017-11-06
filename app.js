@@ -73,6 +73,9 @@ app.use(bodyParser.urlencoded({ extended: false }));
 // Route for static assests such as CSS and JS
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Include custom middleware
+const mongoMiddleware = require('./middlewares/mongoMiddleware');
+
 // Middleware for Lesson 8, Messaging & Validation
 // Session Handling Middleware
 app.use(
@@ -89,44 +92,6 @@ app.use(require('connect-flash')());
 
 app.use((req, res, next) => {
   res.locals.messages = expMessages(req, res);
-  next();
-});
-
-// Make sure that our moment initialization is run as middleware! Otherwise
-// functions will only be run when the app starts!!! Use middleware to modify
-// locals object (makes available to view engine!)
-// https://stackoverflow.com/questions/12550067/expressjs-3-0-how-to-pass-res-locals-to-a-jade-view
-app.use((req, res, next) => {
-  const now = moment().tz('US/Pacific');
-  res.locals.now = now;
-
-  const today = now.clone().startOf('day');
-  res.locals.today = today;
-
-  const twoWeeksAgo = today.clone().subtract(14, 'days');
-  res.locals.twoWeeksAgo = twoWeeksAgo;
-
-  // .startOf('week')    = Sunday
-  // .startOf('isoweek') = Monday
-  const startofTracking = moment(config.startDate, 'MM-DD-YYYY')
-    .tz('US/Pacific')
-    .startOf('day');
-  res.locals.startofTracking = startofTracking;
-
-  const customRanges = [
-    {
-      // We started Monday, Sept 18th
-      key: 'sinceStart',
-      startDate: startofTracking,
-      endDate: today
-    },
-    {
-      key: 'pastTwoWeeks',
-      startDate: twoWeeksAgo,
-      endDate: today
-    }
-  ];
-  res.locals.customRanges = customRanges; // do we want to pass an object instead?
   next();
 });
 
@@ -182,8 +147,49 @@ app.use(
   })
 );
 
-// Include custom middleware
-const mongoMiddleware = require('./middlewares/mongoMiddleware');
+// Make sure that our moment initialization is run as middleware! Otherwise
+// functions will only be run when the app starts!!! Use middleware to modify
+// locals object (makes available to view engine!)
+// https://stackoverflow.com/questions/12550067/expressjs-3-0-how-to-pass-res-locals-to-a-jade-view
+app.use((req, res, next) => {
+  if (req.user) {
+    const now = moment().tz('US/Pacific');
+    res.locals.now = now;
+
+    const today = now.clone().startOf('day');
+    res.locals.today = today;
+
+    const twoWeeksAgo = today.clone().subtract(14, 'days');
+    res.locals.twoWeeksAgo = twoWeeksAgo;
+
+    // .startOf('week')    = Sunday
+    // .startOf('isoweek') = Monday
+    console.log('I am about to parse the start date! It is stored in my config file as: ');
+    console.log(config.startDate);
+    const startOfTracking = moment(config.startDate, 'MM-DD-YYYY')
+      .tz('US/Pacific')
+      .startOf('day');
+    // res.locals.startOfTracking = startOfTracking;
+    console.log('I have finished parsing the start date! It has been parsed as: ');
+    console.log(startOfTracking);
+
+    const customRanges = [
+      {
+        // We started Monday, Sept 18th
+        key: 'sinceStart',
+        startDate: startOfTracking,
+        endDate: today
+      },
+      {
+        key: 'pastTwoWeeks',
+        startDate: twoWeeksAgo,
+        endDate: today
+      }
+    ];
+    res.locals.customRanges = customRanges; // do we want to pass an object instead?
+  }
+  next();
+});
 
 // /////////////////////////////////////////////////////////////////////////////
 // /////////////// MIDDLEWARE TO CALCULATE POINTS & PURCHASES /////////////////
