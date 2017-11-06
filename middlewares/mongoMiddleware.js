@@ -82,6 +82,8 @@ async function queryWeeksFromMongo(user) {
 }
 
 async function queryCustomPeriodsFromMongo(user, customRanges) {
+  console.log('Custom Ranges: ');
+  console.log(customRanges);
   // First get all db entries for that user
   const entries = await Entry.find({ user }, (err, res) => {
     if (err) {
@@ -105,10 +107,18 @@ async function queryCustomPeriodsFromMongo(user, customRanges) {
     const customPeriodPoints = entries.reduce((points, entry) => {
       const date = moment(entry.date).tz('US/Pacific');
       if (date.isBetween(customPeriod.startDate, customPeriod.endDate, 'day', '[]')) {
+        // console.log('date: ');
+        // console.log(date);
+        // console.log('points: ');
+        // console.log(entry.points);
         return points + entry.points;
       }
       return points;
     }, 0);
+
+    console.log('customPeriod: ');
+    console.log(customPeriod);
+    console.log(customPeriodPoints);
 
     let totalForPeriod;
 
