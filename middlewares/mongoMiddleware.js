@@ -103,10 +103,6 @@ async function queryCustomPeriodsFromMongo(user, customRanges) {
     const customPeriodPoints = entries.reduce((points, entry) => {
       const date = moment.tz(entry.date, 'US/Pacific');
       if (date.isBetween(customPeriod.startDate, customPeriod.endDate, 'day', '[]')) {
-        // console.log('date: ');
-        // console.log(date);
-        // console.log('points: ');
-        // console.log(entry.points);
         return points + entry.points;
       }
       return points;
@@ -117,7 +113,6 @@ async function queryCustomPeriodsFromMongo(user, customRanges) {
     // IF we're counting from the start, subtract requests, since that's our running TOTAL.
     // Otherwise, we just want to know the number of points EARNED in that period.
     if (customPeriod.key === 'sinceStart') {
-      console.log('The custom range is: ', customPeriod);
       const customPeriodRequests = requests.reduce((points, request) => {
         const date = moment.tz(request.timeRequested, 'US/Pacific');
         if (date.isBetween(customPeriod.startDate, customPeriod.endDate, 'day', '[]')) {
