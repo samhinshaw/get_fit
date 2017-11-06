@@ -10,7 +10,7 @@ const Request = require('../models/request');
 const Reward = require('../models/reward');
 // const flash = require('connect-flash');
 
-moment().format(); // required by package entirely
+// moment().format(); // required by package entirely
 
 const router = express.Router();
 

@@ -3,14 +3,14 @@
 // const mongoose = require('mongoose');
 const Moment = require('moment-timezone');
 const MomentRange = require('moment-range');
-const _ = require('lodash');
+// const _ = require('lodash');
 // const config = require('../config/database');
 // const async = require('async');
 
 const moment = MomentRange.extendMoment(Moment);
 
 // Initialize Moment & Today Object
-moment().format(); // required by package entirely
+// moment().format();
 
 // Bring in user models
 const Entry = require('../models/entry');

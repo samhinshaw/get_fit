@@ -7,7 +7,7 @@ const auth = require('../config/auth.js');
 
 // datetime functions
 // const moment = require('moment');
-const moment = require('moment-timezone');
+// const moment = require('moment-timezone');
 // const mongoMiddleware = require('../middlewares/mongoMiddleware');
 
 // Define Async middleware wrapper to avoid try-catch
@@ -31,7 +31,7 @@ const moment = require('moment-timezone');
 // }
 
 // Initialize Moment & Today Object
-moment().format(); // required by package entirely
+// moment().format(); // required by package entirely
 
 const router = express.Router();
 

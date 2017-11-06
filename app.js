@@ -19,7 +19,7 @@ const mongoConfig = require('./config/mongo_config.json');
 const mongoNodeConfig = mongoConfig.node;
 
 const moment = MomentRange.extendMoment(Moment);
-moment().format(); // required by package entirely
+// moment().format(); // required by package entirely
 
 // Define Async middleware wrapper to avoid try-catch
 const asyncMiddleware = fn => (req, res, next) => {
