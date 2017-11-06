@@ -153,7 +153,7 @@ app.use(
 // https://stackoverflow.com/questions/12550067/expressjs-3-0-how-to-pass-res-locals-to-a-jade-view
 app.use((req, res, next) => {
   if (req.user) {
-    const now = moment().tz('US/Pacific');
+    const now = moment.tz('US/Pacific');
     res.locals.now = now;
 
     const today = now.clone().startOf('day');
@@ -163,19 +163,9 @@ app.use((req, res, next) => {
     res.locals.twoWeeksAgo = twoWeeksAgo;
 
     // .startOf('week')    = Sunday
-    // .startOf('isoweek') = Monday
-    console.log(
-      'I am about to parse the start date! It is stored in my config file as: ',
-      config.startDate
-    );
-    console.log('Base parse: ', moment(config.startDate, 'MM-DD-YYYY'));
-    console.log('With timezone: ', moment(config.startDate, 'MM-DD-YYYY').tz('US/Pacific'));
-    const startOfTracking = moment(config.startDate, 'MM-DD-YYYY')
-      .tz('US/Pacific')
-      .startOf('day');
-    // res.locals.startOfTracking = startOfTracking;
-    console.log('Start of day:', startOfTracking);
 
+    const startOfTracking = moment.tz(config.startDate, 'MM-DD-YYYY', 'US/Pacific').startOf('day');
+    // res.locals.startOfTracking = startOfTracking;
     const customRanges = [
       {
         // We started Monday, Sept 18th

@@ -29,9 +29,7 @@ async function queryWeeksFromMongo(user) {
 
   // or remove redundancies in-line
   const weekMondays = await entries.reduce((weeks, entry) => {
-    const monday = moment(entry.date)
-      .tz('US/Pacific')
-      .startOf('isoweek');
+    const monday = moment.tz(entry.date, 'YYYY-MM-DD', 'US/Pacific').startOf('isoweek');
 
     // const weekPeriod = entry.reduce;
     // can't compare moments directly, so we have to use moment's
@@ -60,7 +58,7 @@ async function queryWeeksFromMongo(user) {
 
     // For each date that exists in this period, sum the points
     const weekPoints = entries.reduce((points, entry) => {
-      const date = moment(entry.date).tz('US/Pacific');
+      const date = moment.tz(entry.date, 'YYYY-MM-DD', 'US/Pacific');
       if (date.isBetween(monday, sunday, 'day', '[]')) {
         return points + entry.points;
       }
@@ -103,7 +101,7 @@ async function queryCustomPeriodsFromMongo(user, customRanges) {
   const customPeriods = await customRanges.reduce((customPeriodResult, customPeriod) => {
     // For each date that exists in this period, sum the points
     const customPeriodPoints = entries.reduce((points, entry) => {
-      const date = moment(entry.date).tz('US/Pacific');
+      const date = moment.tz(entry.date, 'YYYY-MM-DD', 'US/Pacific');
       if (date.isBetween(customPeriod.startDate, customPeriod.endDate, 'day', '[]')) {
         // console.log('date: ');
         // console.log(date);
@@ -120,7 +118,7 @@ async function queryCustomPeriodsFromMongo(user, customRanges) {
     // Otherwise, we just want to know the number of points EARNED in that period.
     if (customPeriod.key === 'sinceStart') {
       const customPeriodRequests = requests.reduce((points, request) => {
-        const date = moment(request.timeRequested).tz('US/Pacific');
+        const date = moment.tz(request.timeRequested, 'US/Pacific');
         if (date.isBetween(customPeriod.startDate, customPeriod.endDate, 'day', '[]')) {
           return points + request.pointCost;
         }

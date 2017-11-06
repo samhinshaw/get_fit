@@ -97,9 +97,7 @@ router.post(
       pointCost: rewardEntry.cost,
       requester: res.locals.user.username, // replace with session
       requestMessage: req.body.message,
-      timeRequested: moment()
-        .tz('US/Pacific')
-        .toDate(),
+      timeRequested: moment.tz('US/Pacific').toDate(),
       status: 'unapproved'
     });
 
@@ -202,9 +200,7 @@ router.post('/requests/respond', auth.ensureAuthenticated, (req, res) => {
       $set: {
         status: req.body.type,
         responseMessage: req.body.message,
-        timeResponded: moment()
-          .tz('US/Pacific')
-          .toDate()
+        timeResponded: moment.tz('US/Pacific').toDate()
       }
     },
     err => {
