@@ -164,14 +164,17 @@ app.use((req, res, next) => {
 
     // .startOf('week')    = Sunday
     // .startOf('isoweek') = Monday
-    console.log('I am about to parse the start date! It is stored in my config file as: ');
-    console.log(config.startDate);
+    console.log(
+      'I am about to parse the start date! It is stored in my config file as: ',
+      config.startDate
+    );
+    console.log('Base parse: ', moment(config.startDate, 'MM-DD-YYYY'));
+    console.log('With timezone: ', moment(config.startDate, 'MM-DD-YYYY').tz('US/Pacific'));
     const startOfTracking = moment(config.startDate, 'MM-DD-YYYY')
       .tz('US/Pacific')
       .startOf('day');
     // res.locals.startOfTracking = startOfTracking;
-    console.log('I have finished parsing the start date! It has been parsed as: ');
-    console.log(startOfTracking);
+    console.log('Start of day:', startOfTracking);
 
     const customRanges = [
       {
