@@ -154,17 +154,21 @@ app.use(
 app.use((req, res, next) => {
   if (req.user) {
     const now = moment.tz('US/Pacific');
+    console.log('Now is: ', now);
     res.locals.now = now;
 
     const today = now.clone().startOf('day');
+    console.log('Today is: ', today);
     res.locals.today = today;
 
     const twoWeeksAgo = today.clone().subtract(14, 'days');
+    console.log('Two weeks ago was: ', twoWeeksAgo);
     res.locals.twoWeeksAgo = twoWeeksAgo;
 
     // .startOf('week')    = Sunday
 
     const startOfTracking = moment.tz(config.startDate, 'MM-DD-YYYY', 'US/Pacific').startOf('day');
+    console.log('Started Tracking: ', startOfTracking);
     // res.locals.startOfTracking = startOfTracking;
     const customRanges = [
       {
