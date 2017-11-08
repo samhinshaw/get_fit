@@ -170,10 +170,10 @@ for date in arrow.Arrow.range(
 
         # Check to see if the entry was completed
         if MFPcals.complete:
-            isCompleted = True
+            complete = True
         # If incomplete, force calorie points to -1
         else:
-            isCompleted = False
+            complete = False
             calPoints = -1
 
     except:
@@ -281,7 +281,7 @@ for date in arrow.Arrow.range(
         'netCals': netCals,
         'exercise': exercises,
         'isEmpty': isEmpty,
-        'isCompleted': isCompleted,
+        'complete': complete,
         'points': totalDaysPoints,
         'user': user,
         'lastUpdated': now.datetime

@@ -34,7 +34,7 @@ const entrySchema = new Schema(
       type: Boolean,
       required: true
     },
-    isCompleted: {
+    complete: {
       type: Boolean,
       required: true
     },
