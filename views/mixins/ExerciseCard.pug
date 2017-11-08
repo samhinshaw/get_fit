@@ -11,9 +11,16 @@ mixin ExerciseCard(entry)
     br
   .columns.is-desktop
     .column.is-6.is-offset-3
-      .card
+      .card.exercise-card
         header.card-header
-          p.card-header-title #{fullDate}
+          p.card-header-title
+            a.icon.is-small(href=`http://www.myfitnesspal.com/food/diary?date=${datePretty}#complete_day`, target='_blank')
+              if entry.complete
+                i.mdi.mdi-checkbox-marked-circle-outline
+              else
+                i.mdi.mdi-checkbox-blank-circle-outline
+            a(href=`http://www.myfitnesspal.com/food/diary?date=${datePretty}`, target='_blank')
+              | &nbsp;&nbsp;#{fullDate}
           a.card-header-icon(href='#!', aria-label='more options')
             if entry.points < 0 
               span.tag.is-danger
@@ -79,10 +86,21 @@ mixin ExerciseCard(entry)
                       .content
                         p #{exercise.points}pts - #{exercise.name}, (#{exercise.minutes}mins, #{exercise.cals}cals)
         footer.card-footer
-          a.card-footer-item(href='#!')
-            .button.update-entry(data-id=entry._id, data-date=datePretty)
+          a.card-footer-item
+            .button.is-fullwidth.is-fullheight.update-entry(data-id=entry._id, data-date=datePretty, href='#!')
               span.icon.is-small
                 i.mdi.mdi-update
               span Update
-          //- a.card-footer-item(href='#') Edit
-          //- a.card-footer-item(href='#') Delete
+          //- Buttons for completed vs not completed
+          //- if entry.complete
+            a.card-footer-item(href=`http://www.myfitnesspal.com/food/diary?date=${datePretty}#complete_day`, target='_blank') 
+              .button.update-entry
+                span.icon.is-small
+                  i.mdi.mdi-checkbox-marked-outline
+                span Complete
+          //- else
+            a.card-footer-item(href=`http://www.myfitnesspal.com/food/diary?date=${datePretty}#complete_day`, target='_blank') 
+              .button.update-entry
+                span.icon.is-small
+                  i.mdi.mdi-checkbox-blank-outline
+                span Incomplete
