@@ -168,6 +168,12 @@ for date in arrow.Arrow.range(
             isEmpty = True
             calPoints = -1
 
+        # Check to see if the entry was completed
+        if MFPcals.complete:
+            isCompleted: True
+        else:
+            isCompleted: False
+
     except:
         sys.exit('There was an error retrieving your data from MyFitnessPal.')
 
@@ -273,6 +279,7 @@ for date in arrow.Arrow.range(
         'netCals': netCals,
         'exercise': exercises,
         'isEmpty': isEmpty,
+        'isCompleted': isCompleted,
         'points': totalDaysPoints,
         'user': user,
         'lastUpdated': now.datetime

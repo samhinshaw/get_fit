@@ -34,6 +34,10 @@ const entrySchema = new Schema(
       type: Boolean,
       required: true
     },
+    isCompleted: {
+      type: Boolean,
+      required: true
+    },
     points: {
       type: Number,
       required: true
