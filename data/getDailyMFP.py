@@ -163,8 +163,10 @@ for date in arrow.Arrow.range(
         # Check to see if the entry was completed
         if MFPcals.complete:
             isCompleted: True
+        # If incomplete, force calorie points to -1
         else:
             isCompleted: False
+            calPoints = -1
 
     except:
         sys.exit('There was an error retrieving your data from MyFitnessPal.')
