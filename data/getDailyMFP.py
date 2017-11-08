@@ -162,10 +162,10 @@ for date in arrow.Arrow.range(
 
         # Check to see if the entry was completed
         if MFPcals.complete:
-            isCompleted: True
+            isCompleted = True
         # If incomplete, force calorie points to -1
         else:
-            isCompleted: False
+            isCompleted = False
             calPoints = -1
 
     except:
