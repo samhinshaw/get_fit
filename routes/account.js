@@ -39,10 +39,14 @@ router.get('/', auth.ensureAuthenticated, (req, res) => {
     routeInfo: {
       heroType: 'twitter',
       route: '/account',
-      user: req.user.username || null,
-      userName: req.user.username.charAt(0).toUpperCase() + req.user.username.slice(1) || null,
+      user: res.locals.user.username || null,
+      userName:
+        res.locals.user.firstname.charAt(0).toUpperCase() + res.locals.user.firstname.slice(1) ||
+        null,
+      partner: res.locals.partner.username,
       partnerName:
-        req.user.partner.charAt(0).toUpperCase() + req.user.partner.slice(1).toLowerCase() || null
+        res.locals.partner.firstname.charAt(0).toUpperCase() +
+          res.locals.partner.firstname.slice(1).toLowerCase() || null
     }
   });
 });
@@ -58,11 +62,13 @@ router.get('/spend', auth.ensureAuthenticated, (req, res) => {
       routeInfo: {
         heroType: 'twitter',
         route: '/account/spend',
-        user: req.user.username,
-        userName: req.user.username.charAt(0).toUpperCase() + req.user.username.slice(1),
-        partner: req.user.partner,
+        user: res.locals.user.username,
+        userName:
+          res.locals.user.firstname.charAt(0).toUpperCase() + res.locals.user.firstname.slice(1),
+        partner: res.locals.partner.username,
         partnerName:
-          req.user.partner.charAt(0).toUpperCase() + req.user.partner.slice(1).toLowerCase()
+          res.locals.partner.firstname.charAt(0).toUpperCase() +
+          res.locals.partner.firstname.slice(1).toLowerCase()
       }
     });
   });
@@ -109,7 +115,7 @@ router.post(
         request(
           // this function will return our configuration object with
           configureIFTTT(
-            req.user.username.charAt(0).toUpperCase() + req.user.username.slice(1),
+            res.locals.user.firstname.charAt(0).toUpperCase() + res.locals.user.firstname.slice(1),
             'reward_request'
           ),
           (error, response) => {
@@ -141,11 +147,13 @@ router.get('/send', auth.ensureAuthenticated, (req, res) => {
       routeInfo: {
         heroType: 'twitter',
         route: '/account/send',
-        user: req.user.username,
-        userName: req.user.username.charAt(0).toUpperCase() + req.user.username.slice(1),
-        partner: req.user.partner,
+        user: res.locals.user.username,
+        userName:
+          res.locals.user.firstname.charAt(0).toUpperCase() + res.locals.user.firstname.slice(1),
+        partner: res.locals.partner.username,
         partnerName:
-          req.user.partner.charAt(0).toUpperCase() + req.user.partner.slice(1).toLowerCase()
+          res.locals.partner.firstname.charAt(0).toUpperCase() +
+          res.locals.partner.firstname.slice(1).toLowerCase()
       }
     });
   });
@@ -162,11 +170,13 @@ router.get('/send', auth.ensureAuthenticated, (req, res) => {
     routeInfo: {
       heroType: 'twitter',
       route: '/account/send',
-      user: req.user.username,
-      userName: req.user.username.charAt(0).toUpperCase() + req.user.username.slice(1),
-      partner: req.user.partner,
+      user: res.locals.user.username,
+      userName:
+        res.locals.user.firstname.charAt(0).toUpperCase() + res.locals.user.firstname.slice(1),
+      partner: res.locals.partner.username,
       partnerName:
-        req.user.partner.charAt(0).toUpperCase() + req.user.partner.slice(1).toLowerCase()
+        res.locals.partner.firstname.charAt(0).toUpperCase() +
+        res.locals.partner.firstname.slice(1).toLowerCase()
     }
   });
   // });
@@ -181,10 +191,13 @@ router.get('/requests', auth.ensureAuthenticated, (req, res) => {
     routeInfo: {
       heroType: 'twitter',
       route: '/account/requests',
-      user: req.user.username || null,
-      userName: req.user.username.charAt(0).toUpperCase() + req.user.username.slice(1) || null,
+      user: res.locals.user.username || null,
+      userName:
+        res.locals.user.firstname.charAt(0).toUpperCase() + res.locals.user.firstname.slice(1) ||
+        null,
       partnerName:
-        req.user.partner.charAt(0).toUpperCase() + req.user.partner.slice(1).toLowerCase() || null
+        res.locals.partner.firstname.charAt(0).toUpperCase() +
+          res.locals.partner.firstname.slice(1).toLowerCase() || null
     }
   });
 });
@@ -213,7 +226,7 @@ router.post('/requests/respond', auth.ensureAuthenticated, (req, res) => {
         request(
           // this function will return our configuration object with
           configureIFTTT(
-            req.user.username.charAt(0).toUpperCase() + req.user.username.slice(1),
+            res.locals.user.firstname.charAt(0).toUpperCase() + res.locals.user.firstname.slice(1),
             'request_response'
           ),
           (error, response) => {
@@ -240,7 +253,7 @@ router.post('/requests/respond', auth.ensureAuthenticated, (req, res) => {
 router.get('/history', auth.ensureAuthenticated, (req, res) => {
   Request.find(
     {
-      requester: req.user.username,
+      requester: res.locals.user.username,
       status: ['approved', 'denied']
     },
     (err, requests) => {
@@ -254,11 +267,13 @@ router.get('/history', auth.ensureAuthenticated, (req, res) => {
         routeInfo: {
           heroType: 'twitter',
           route: '/account/history',
-          user: req.user.username || null,
-          userName: req.user.username.charAt(0).toUpperCase() + req.user.username.slice(1) || null,
+          user: res.locals.user.username || null,
+          userName:
+            res.locals.user.firstname.charAt(0).toUpperCase() +
+              res.locals.user.firstname.slice(1) || null,
           partnerName:
-            req.user.partner.charAt(0).toUpperCase() + req.user.partner.slice(1).toLowerCase() ||
-            null
+            res.locals.partner.firstname.charAt(0).toUpperCase() +
+              res.locals.partner.firstname.slice(1).toLowerCase() || null
         }
       });
     }

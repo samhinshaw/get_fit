@@ -80,11 +80,14 @@ router.get('/', auth.ensureAuthenticated, (req, res) => {
           routeInfo: {
             heroType: res.locals.user.username,
             route: '/user',
-            user: req.user.username,
-            userName: req.user.username.charAt(0).toUpperCase() + req.user.username.slice(1),
-            partner: req.user.partner,
+            user: res.locals.user.username,
+            userName:
+              res.locals.user.firstname.charAt(0).toUpperCase() +
+              res.locals.user.firstname.slice(1),
+            partner: res.locals.partner.username,
             partnerName:
-              req.user.partner.charAt(0).toUpperCase() + req.user.partner.slice(1).toLowerCase()
+              res.locals.partner.firstname.charAt(0).toUpperCase() +
+              res.locals.partner.firstname.slice(1).toLowerCase()
           }
         });
       }

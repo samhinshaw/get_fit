@@ -291,7 +291,7 @@ app.use(
       // Get pending requests -- we want to find the ones our PARTNER has
       // requested, because we only have a field in the document for requester,
       // not requestee. So we want to see what we have yet to approve
-      const pendingRequests = await mongoMiddleware.getPendingRequests(res.locals.user.partner);
+      const pendingRequests = await mongoMiddleware.getPendingRequests(res.locals.partner.username);
       res.locals.pendingRequests = pendingRequests;
     }
     next();
@@ -309,10 +309,12 @@ app.get('/', (req, res) => {
         heroType: 'landing_page',
         route: `/`,
         user: res.locals.user.username,
-        userName: req.user.username.charAt(0).toUpperCase() + req.user.username.slice(1),
-        partner: res.locals.user.partner,
+        userName:
+          res.locals.user.firstname.charAt(0).toUpperCase() + res.locals.user.firstname.slice(1),
+        partner: res.locals.partner.username,
         partnerName:
-          req.user.partner.charAt(0).toUpperCase() + req.user.partner.slice(1).toLowerCase()
+          res.locals.partner.firstname.charAt(0).toUpperCase() +
+          res.locals.partner.firstname.slice(1).toLowerCase()
       }
     });
   } else {
@@ -333,7 +335,7 @@ app.get('/', (req, res) => {
 app.get('/overview', auth.ensureAuthenticated, (req, res) => {
   // Otherwise, query DB for entries to display!
   const user = res.locals.user.username;
-  const partner = res.locals.user.partner;
+  const partner = res.locals.partner.username;
   Entry.find(
     {
       date: {
@@ -359,12 +361,14 @@ app.get('/overview', auth.ensureAuthenticated, (req, res) => {
         routeInfo: {
           heroType: 'dark',
           route: `/overview`,
-          user: req.user.username || null,
-          userName: req.user.username.charAt(0).toUpperCase() + req.user.username.slice(1) || null,
-          partner: res.locals.user.partner || null,
+          user: res.locals.user.username || null,
+          userName:
+            res.locals.user.firstname.charAt(0).toUpperCase() +
+              res.locals.user.firstname.slice(1) || null,
+          partner: res.locals.partner.username || null,
           partnerName:
-            req.user.partner.charAt(0).toUpperCase() + req.user.partner.slice(1).toLowerCase() ||
-            null
+            res.locals.partner.firstname.charAt(0).toUpperCase() +
+              res.locals.partner.firstname.slice(1).toLowerCase() || null
         }
       });
     }
@@ -384,16 +388,24 @@ app.get('/api/user_data', auth.ensureAuthenticated, (req, res) => {
 });
 
 // Why doesn't this async version work?
-//
+
 // Update: I figured it out! I was using async/await wrong here...
 // we can still update it to work properly
-//
+
 // app.get('/', async (req, res) => {
 //   if (!res.locals.loggedIn) {
 //     res.render('account_login');
 //   } else {
-//     const userEntries = await mongoMiddleware.getSortedEntries(res.locals.user.username, startDate, endDate);
-//     const partnerEntries = await mongoMiddleware.getSortedEntries(res.locals.user.partner, startDate, endDate);
+//     const userEntries = await mongoMiddleware.getSortedEntries(
+//       res.locals.user.username,
+//       startDate,
+//       endDate
+//     );
+//     const partnerEntries = await mongoMiddleware.getSortedEntries(
+//       res.locals.partner.username,
+//       startDate,
+//       endDate
+//     );
 //     res.render('overview', {
 //       userEntries: await userEntries,
 //       partnerEntries: await partnerEntries

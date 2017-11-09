@@ -62,7 +62,7 @@ router.get('/', auth.ensureAuthenticated, (req, res) => {
         $gte: res.locals.twoWeeksAgo.toDate(),
         $lte: res.locals.today.toDate()
       },
-      user: res.locals.user.partner
+      user: res.locals.partner.username
     },
     (err, entries) => {
       if (err) {
@@ -76,12 +76,16 @@ router.get('/', auth.ensureAuthenticated, (req, res) => {
           // Object to send data along with response
           entries: sortedEntries,
           routeInfo: {
-            heroType: res.locals.user.partner,
+            heroType: res.locals.partner.username,
             route: '/partner',
-            user: req.user.username,
-            userName: req.user.username.charAt(0).toUpperCase() + req.user.username.slice(1),
+            user: res.locals.user.username,
+            userName:
+              res.locals.user.firstname.charAt(0).toUpperCase() +
+              res.locals.user.firstname.slice(1),
+            partner: res.locals.partner.username,
             partnerName:
-              req.user.partner.charAt(0).toUpperCase() + req.user.partner.slice(1).toLowerCase()
+              res.locals.partner.firstname.charAt(0).toUpperCase() +
+              res.locals.partner.firstname.slice(1).toLowerCase()
           }
         });
       }
@@ -121,7 +125,7 @@ router.post('/:date', auth.ensureAuthenticated, (req, res) => {
     pythonPath,
     // pythonOptions: ['-u'],
     scriptPath: './data',
-    args: [startDate, endDate, res.locals.user.partner, res.locals.partner.mfp]
+    args: [startDate, endDate, res.locals.partner.username, res.locals.partner.mfp]
   };
 
   // Run python script
