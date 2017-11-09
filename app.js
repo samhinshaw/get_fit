@@ -308,10 +308,8 @@ app.get('/', (req, res) => {
       routeInfo: {
         heroType: 'landing_page',
         route: `/`,
-        user: res.locals.user.username,
         userName:
           res.locals.user.firstname.charAt(0).toUpperCase() + res.locals.user.firstname.slice(1),
-        partner: res.locals.partner.username,
         partnerName:
           res.locals.partner.firstname.charAt(0).toUpperCase() +
           res.locals.partner.firstname.slice(1).toLowerCase()
@@ -322,9 +320,7 @@ app.get('/', (req, res) => {
       routeInfo: {
         heroType: 'landing_page',
         route: `/`,
-        user: null,
         userName: null,
-        partner: null,
         partnerName: null
       }
     });
@@ -361,11 +357,9 @@ app.get('/overview', auth.ensureAuthenticated, (req, res) => {
         routeInfo: {
           heroType: 'dark',
           route: `/overview`,
-          user: res.locals.user.username || null,
           userName:
             res.locals.user.firstname.charAt(0).toUpperCase() +
               res.locals.user.firstname.slice(1) || null,
-          partner: res.locals.partner.username || null,
           partnerName:
             res.locals.partner.firstname.charAt(0).toUpperCase() +
               res.locals.partner.firstname.slice(1).toLowerCase() || null

@@ -12,6 +12,11 @@ block content
     .column.is-8
       .avatar-container.is-pulled-right
         img(src=`/images/${user.username}_avatar.png`, alt=user.username)
-      h4.is-size-4 Account Info
-      br
+      h4.is-size-4 #{routeInfo.userName} #{routeInfo.userLastName} 
+      p Partner: #{routeInfo.partnerName} #{routeInfo.partnerLastName} 
+      p Username: #{user.username}
+      p Email Address: #{user.email}
+      p Current Points: #{user.currentPoints}
+      p Current Calorie Goal:
+      p Current Weight:  
       

@@ -39,14 +39,18 @@ router.get('/', auth.ensureAuthenticated, (req, res) => {
     routeInfo: {
       heroType: 'twitter',
       route: '/account',
-      user: res.locals.user.username || null,
       userName:
         res.locals.user.firstname.charAt(0).toUpperCase() + res.locals.user.firstname.slice(1) ||
         null,
-      partner: res.locals.partner.username,
+      userLastName:
+        res.locals.user.lastname.charAt(0).toUpperCase() + res.locals.user.lastname.slice(1) ||
+        null,
       partnerName:
         res.locals.partner.firstname.charAt(0).toUpperCase() +
-          res.locals.partner.firstname.slice(1).toLowerCase() || null
+          res.locals.partner.firstname.slice(1).toLowerCase() || null,
+      partnerLastName:
+        res.locals.partner.lastname.charAt(0).toUpperCase() +
+          res.locals.partner.lastname.slice(1).toLowerCase() || null
     }
   });
 });
@@ -62,10 +66,8 @@ router.get('/spend', auth.ensureAuthenticated, (req, res) => {
       routeInfo: {
         heroType: 'twitter',
         route: '/account/spend',
-        user: res.locals.user.username,
         userName:
           res.locals.user.firstname.charAt(0).toUpperCase() + res.locals.user.firstname.slice(1),
-        partner: res.locals.partner.username,
         partnerName:
           res.locals.partner.firstname.charAt(0).toUpperCase() +
           res.locals.partner.firstname.slice(1).toLowerCase()
@@ -147,10 +149,8 @@ router.get('/send', auth.ensureAuthenticated, (req, res) => {
       routeInfo: {
         heroType: 'twitter',
         route: '/account/send',
-        user: res.locals.user.username,
         userName:
           res.locals.user.firstname.charAt(0).toUpperCase() + res.locals.user.firstname.slice(1),
-        partner: res.locals.partner.username,
         partnerName:
           res.locals.partner.firstname.charAt(0).toUpperCase() +
           res.locals.partner.firstname.slice(1).toLowerCase()
@@ -170,10 +170,8 @@ router.get('/send', auth.ensureAuthenticated, (req, res) => {
     routeInfo: {
       heroType: 'twitter',
       route: '/account/send',
-      user: res.locals.user.username,
       userName:
         res.locals.user.firstname.charAt(0).toUpperCase() + res.locals.user.firstname.slice(1),
-      partner: res.locals.partner.username,
       partnerName:
         res.locals.partner.firstname.charAt(0).toUpperCase() +
         res.locals.partner.firstname.slice(1).toLowerCase()
@@ -191,7 +189,6 @@ router.get('/requests', auth.ensureAuthenticated, (req, res) => {
     routeInfo: {
       heroType: 'twitter',
       route: '/account/requests',
-      user: res.locals.user.username || null,
       userName:
         res.locals.user.firstname.charAt(0).toUpperCase() + res.locals.user.firstname.slice(1) ||
         null,
@@ -267,7 +264,6 @@ router.get('/history', auth.ensureAuthenticated, (req, res) => {
         routeInfo: {
           heroType: 'twitter',
           route: '/account/history',
-          user: res.locals.user.username || null,
           userName:
             res.locals.user.firstname.charAt(0).toUpperCase() +
               res.locals.user.firstname.slice(1) || null,
