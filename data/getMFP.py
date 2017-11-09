@@ -81,17 +81,11 @@ else:
 ### Import JSON Dictionaries ###
 # This will potentially be replaced by mongoDB entries down the line
 
-#  probably should use os.path.join here
 dictFile = open(os.path.join('data', 'exerciseIconDictionary.json'))
 parsedDict = dictFile.read()
 exerciseDict = json.loads(parsedDict)['exercises']
 iconDict = json.loads(parsedDict)['icons']
 exerTypeDict = json.loads(parsedDict)['exerciseTypes']
-
-## Define Logic to Save Authenticated Session ###
-# def save_object(obj, filename):
-#     with open(filename, 'wb') as output:
-#         pickle.dump(obj, output, pickle.HIGHEST_PROTOCOL)
 
 print('Connecting to MongoDB database...')
 mongoJSON = open(os.path.join('config', 'mongo_config.json')).read()
