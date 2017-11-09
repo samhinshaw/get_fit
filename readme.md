@@ -22,6 +22,8 @@
         + Somehow we should save the totals and know when a value gets updated... (based on lastUpdated entry attribute?) and THEN recalculate if necessary. 
 - Insert blank cards if dates missing. Show dropdown of when last updated?
 - ~~Just use getMFP and pass dates instead of calling getDailyMFP.py~~
+- Make date link to partner's diary entry as well as yours!
+    + Alternatively, make it not link at all if looking at partner
 
 - Change flash messaging location on some pages!
     - Check account/spend (requests) to see the correct implementation

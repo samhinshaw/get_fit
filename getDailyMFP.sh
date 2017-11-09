@@ -15,14 +15,14 @@ fi
 # Differences:
 # - Path to python Scripts
 # - Method for getting yesterday's date from `date`
-
+# - Explicit path to python to make sure we're using python3 from miniconda
 
 if [[ $platform == 'linux' ]]; then
-   python /home/sam/projects/get_fit/data/getMFP.py `TZ=':America/Vancouver' date '+%Y-%m-%d' -d 'yesterday'` `TZ=':America/Vancouver' date '+%Y-%m-%d'` 'sam' 'jetknife'
-   python /home/sam/projects/get_fit/data/getMFP.py `TZ=':America/Vancouver' date '+%Y-%m-%d' -d 'yesterday'` `TZ=':America/Vancouver' date '+%Y-%m-%d'` 'amelia' 'ameliaho'
+   /home/sam/.miniconda3/bin/python /home/sam/projects/get_fit/data/getMFP.py `TZ=':America/Vancouver' date '+%Y-%m-%d' -d 'yesterday'` `TZ=':America/Vancouver' date '+%Y-%m-%d'` 'sam' 'jetknife'
+   /home/sam/.miniconda3/bin/python /home/sam/projects/get_fit/data/getMFP.py `TZ=':America/Vancouver' date '+%Y-%m-%d' -d 'yesterday'` `TZ=':America/Vancouver' date '+%Y-%m-%d'` 'amelia' 'ameliaho'
 elif [[ $platform == 'darwin' ]]; then
-   python /Users/samhinshaw/projects/get_fit/data/getMFP.py `TZ=':America/Vancouver' date -v-1d '+%Y-%m-%d'` `TZ=':America/Vancouver' date '+%Y-%m-%d'` 'sam' 'jetknife'
-   python /Users/samhinshaw/projects/get_fit/data/getMFP.py `TZ=':America/Vancouver' date -v-1d '+%Y-%m-%d'` `TZ=':America/Vancouver' date '+%Y-%m-%d'` 'amelia' 'ameliaho'
+   /Users/samhinshaw/.miniconda3/bin/python /Users/samhinshaw/projects/get_fit/data/getMFP.py `TZ=':America/Vancouver' date -v-1d '+%Y-%m-%d'` `TZ=':America/Vancouver' date '+%Y-%m-%d'` 'sam' 'jetknife'
+   /Users/samhinshaw/.miniconda3/bin/python /Users/samhinshaw/projects/get_fit/data/getMFP.py `TZ=':America/Vancouver' date -v-1d '+%Y-%m-%d'` `TZ=':America/Vancouver' date '+%Y-%m-%d'` 'amelia' 'ameliaho'
 fi
 
 ## Notes
