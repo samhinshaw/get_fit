@@ -187,3 +187,7 @@ a.card-header-title:hover {
 a.navbar-item.is-tab:hover {
   text-decoration: underline;
 }
+
+td.exercise-icon {
+  text-align: center;
+}

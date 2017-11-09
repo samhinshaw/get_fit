@@ -9,8 +9,8 @@ mixin ExerciseCard(entry)
   if weekDay === 'Sun'
     hr
     br
-  .columns.is-desktop
-    .column.is-6.is-offset-3
+  .columns.is-centered.is-desktop
+    .column.is-6-desktop.is-5-fullhd
       .card.exercise-card
         header.card-header
           p.card-header-title
@@ -67,24 +67,29 @@ mixin ExerciseCard(entry)
                     span cals over
               else if entry.netCals === 0
                 span you hit your goal EXACTLY
-              //- Could also check datePretty vs todayPretty
-              //- This will check Date object vs Date object
-              //- It may be more error prone, but also much more specific
-              //- if entry.date === today
-              //-   span.tag.is-dark Today
-              //-   span.tag.is-success #{today.dayOfWeek}
             if entry.exercise.length > 0
-              each exercise, i in entry.exercise
-                article.media.level.exercise
-                  .level-left
-                    .level-item
-                      //- show icons for exercise types!
-                      span.icon
-                        i
-                          img(src='/images/icons/' + exercise.icon, alt='&middot;', height="48" width="48")
-                    .level-item
-                      .content
-                        p #{exercise.points}pts - #{exercise.name}, (#{exercise.minutes}mins, #{exercise.cals}cals)
+              table.table
+                thead
+                  th
+                  th exercise
+                  th points
+                  th mins
+                  th cals
+                tbody
+                  each exercise, i in entry.exercise
+                    tr
+                      td.exercise-icon
+                        .icon
+                          img(src='/images/icons/' + exercise.icon, alt=exercise.name)
+                      td #{exercise.name}
+                      case exercise.points
+                        when -1
+                        when 1
+                          td #{exercise.points}
+                        default 
+                          td #{exercise.points}
+                      td #{exercise.minutes}
+                      td #{exercise.cals}
         footer.card-footer
           a.card-footer-item
             .button.is-fullwidth.is-fullheight.update-entry(data-id=entry._id, data-date=datePretty, href='#!')
