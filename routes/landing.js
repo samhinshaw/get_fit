@@ -16,12 +16,36 @@ const router = express.Router();
 
 // Register Form Route
 router.get('/register', (req, res) => {
-  res.render('register');
+  // If already logged in, reroute to landing_page
+  if (res.locals.loggedIn) {
+    res.redirect('/');
+  } else {
+    res.render('register', {
+      routeInfo: {
+        heroType: 'dark',
+        route: `/register`,
+        userName: null,
+        partnerName: null
+      }
+    });
+  }
 });
 
 // Login Form
 router.get('/login', (req, res) => {
-  res.render('login');
+  // If already logged in, reroute to landing_page
+  if (res.locals.loggedIn) {
+    res.redirect('/');
+  } else {
+    res.render('login', {
+      routeInfo: {
+        heroType: 'dark',
+        route: `/login`,
+        userName: null,
+        partnerName: null
+      }
+    });
+  }
 });
 
 // Login Process

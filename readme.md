@@ -8,6 +8,7 @@
 
 - Edit start date in user prefs
 - Change account options in user prefs
+- Save current calorie goal and weight from MFP in user data
 - Handle signup flow for if no partner yet
 - Styling bulma classes on registering inputs
 - Live-checking of whether usernames, etc are taken
@@ -45,7 +46,7 @@
     + ~~store bool states for 'agreedTo' and 'fulfilled'~~  
     + message through IFTTT prompting the receiver to check the request. 
     + when they're alone, they can check the request and accept or decline
-    + allow for user to respond to request (AJAX or POST?)
+    + ~~allow for user to respond to request (AJAX or POST?)~~
 
 Front End  
 - Transition animations between tabs!  
@@ -54,30 +55,30 @@ Front End
 - Change view engine to pull period database?
 - Display two week period rolling points
 - Display week's points on Sunday (on left of 'feed')
-- Redesign app with Bulma Tiles
 
 Update Sept 30th, 2017
 Design
 - ~~Remove `display: flex` from landing-page hero to allow columns to properly resize~~
 - ~~HOWEVER, need to figure out how to vertically center columns then~~
 
-Perhaps update media elements of 'days' to make them cards or tiles instead of media
-Change all instances of 'purchases' to 'requests' for better semantics
-Format dates of requests with `moment.format()`
+~~Perhaps update media elements of 'days' to make them cards or tiles instead of media~~
+~~Change all instances of 'purchases' to 'requests' for better semantics~~
+~~Format dates of requests with `moment.format()`~~
 
 Sketch out the layout of the app!
 - What will our overview be?
     + How do we make this look really good?
-- Where do we locate a detailed day-by-day breakdown?
-- How do we best display information on the user page?
+- ~~Where do we locate a detailed day-by-day breakdown?~~
+- ~~How do we best display information on the user page?~~
 
 Then we can fix things. 
-- Stop using static 'sam' & 'amelia' routes.
-    + Switch to 'user' and 'partner' instead
+- ~~Stop using static 'sam' & 'amelia' routes.~~
+    + ~~Switch to 'user' and 'partner' instead~~
 
-Switch from using 'is-danger' (etc) classes to style different pages! Instead we should be specifying the page and then we'll style it differently ourselves.  
+~~Switch from using 'is-danger' (etc) classes to style different pages! Instead we should be specifying the page and then we'll style it differently ourselves.~~
+Allow user to pick accent colors in account page. How to we save and implement that??
 
-- Update update-entry buttons to properly correspond to user/partner 
-- Instead of using capitalized username as userName, actually use the user's name from their name field!
-- Stop pulling directly from req.user, always user res.locals.user
-- Then just pull from the partner object, which we'll set to res.locals.partner
+- ~~Update update-entry buttons to properly correspond to user/partner~~
+- ~~Instead of using capitalized username as userName, actually use the user's name from their name field!~~
+- ~~Stop pulling directly from req.user, always user res.locals.user~~
+- ~~Then just pull from the partner object, which we'll set to res.locals.partner~~

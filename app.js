@@ -375,8 +375,27 @@ app.get('/api/user_data', auth.ensureAuthenticated, (req, res) => {
     // The user is not logged in
     res.json({});
   } else {
+    // Sened everything EXCEPT PASSWORD
+    // Blacklist method. Only needs to change if blacklist changes
+    // First define function to omit object keys
+    // const removeProps = (...propsToFilter) => obj => {
+    //   const newObj = Object.assign({}, obj);
+    //   propsToFilter.forEach(key => delete newObj[key]);
+    //   return newObj;
+    // };
+    // However, overinclusive!! Includes properties/keys such as '_maxListeners'
+    // const userJSON = removeProps('_id', 'password', '__v')(req.user);
+    // res.json(userJSON);
+    // Whitelist method--must be updated if user model changes
     res.json({
-      username: req.user
+      username: res.locals.user.username,
+      firstname: res.locals.user.firstname,
+      lastname: res.locals.user.lastname,
+      email: res.locals.user.email,
+      partner: res.locals.user.partner,
+      mfp: res.locals.user.mfp,
+      currentPoints: res.locals.user.currentPoints,
+      fitnessGoal: res.locals.user.fitnessGoal
     });
   }
 });
