@@ -8,7 +8,10 @@ block subnav
 
 block content
   != messages('includes/notification', locals)
-  .columns
-    .column.is-offset-2.is-8
+  .columns.is-centered
+    .column.is-8
       .avatar-container.is-pulled-right
         img(src=`/images/${user.username}_avatar.png`, alt=user.username)
+      h4.is-size-4 Account Info
+      br
+      

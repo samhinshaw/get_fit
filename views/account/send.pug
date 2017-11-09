@@ -15,8 +15,13 @@ block content
   - const now = moment.tz('US/Pacific');
   - const today = now.clone().startOf('day');
   - const todayPretty = today.format('YYYY-MM-DD');
-  .columns.is-fullhd
-    .column.is-6.is-offset-3
+  .columns.is-centered.is-desktop
+    .column.is-7-desktop.is-6-fullhd
+      article.message.is-warning
+        .message-header
+          p Feature in progress
+        .message-body
+          | This feature is currently in development. You can not yet send gifts. 😢
       h4.is-size-4 Send Gifts to Your Partner
       p 
         em All fields are optional.
@@ -25,7 +30,7 @@ block content
         .field
           label.label Send Points
           .control
-            input.input(type="number", name="points", placeholder="10")
+            input.input(type="number", name="points", placeholder="0")
         .field
           label.label Send Rewards
           .control
@@ -45,4 +50,4 @@ block content
         //-     input(type='date', name='dateRequest')
         .field.is-grouped
           .control
-            button.button Send Request
+            button.button Send Gift
