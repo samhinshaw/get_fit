@@ -13,6 +13,7 @@ const expMessages = require('express-messages');
 const passport = require('passport');
 const config = require('./config/database');
 const _ = require('lodash');
+const helmet = require('helmet');
 
 const auth = require('./config/auth.js');
 const mongoConfig = require('./config/mongo_config.json');
@@ -61,6 +62,10 @@ const app = express();
 const Period = require('./models/period');
 const User = require('./models/user');
 const Entry = require('./models/entry');
+
+// Use the helmet middleware to "protect your app from some well-known web
+// vulnerabilities by setting HTTP headers appropriately"
+app.use(helmet());
 
 // Load View Engine
 app.set('views', path.join(__dirname, 'views'));
