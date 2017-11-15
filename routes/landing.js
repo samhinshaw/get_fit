@@ -3,6 +3,18 @@
 const express = require('express');
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
+const mongoose = require('mongoose');
+
+// Setup brute force prevention
+const ExpressBrute = require('express-brute');
+const MongooseStore = require('express-brute-mongoose');
+const bruteForceSchema = require('express-brute-mongoose/dist/schema');
+
+const model = mongoose.model('bruteforce', bruteForceSchema);
+const store = new MongooseStore(model);
+
+const bruteforce = new ExpressBrute(store);
+
 const User = require('../models/user');
 // const auth = require('../config/auth.js');
 
@@ -49,7 +61,7 @@ router.get('/login', (req, res) => {
 });
 
 // Login Process
-router.post('/login', (req, res, next) => {
+router.post('/login', bruteforce.prevent, (req, res, next) => {
   passport.authenticate('local', {
     successRedirect: '/overview',
     failureRedirect: '/login',
@@ -65,7 +77,7 @@ router.get('/logout', (req, res) => {
 });
 
 // Handle Registration POSTS
-router.post('/register', (req, res) => {
+router.post('/register', bruteforce.prevent, (req, res) => {
   const firstname = req.body.firstname.toLowerCase();
   const lastname = req.body.lastname.toLowerCase();
   const username = req.body.username;

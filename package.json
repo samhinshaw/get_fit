@@ -4,14 +4,11 @@
   "description": "Fitness Tracker for Sam & Am",
   "main": "app.js",
   "scripts": {
-    "start":
-      "uglifyjs public/js/client.js --compress --mangle --source-map --output public/js/bundle.min.js && grunt dev && nodemon app.js",
-    "uglifyClient":
-      "uglifyjs public/js/client.js --compress --mangle --source-map --output public/js/bundle.min.js",
+    "start": "uglifyjs public/js/client.js --compress --mangle --source-map --output public/js/bundle.min.js && grunt dev && nodemon app.js",
+    "uglifyClient": "uglifyjs public/js/client.js --compress --mangle --source-map --output public/js/bundle.min.js",
     "format": "prettier --list-different --single-quote --print-width=120 \"public/js/**/*.js\"",
     "lint": "eslint **/*.js --quiet",
-    "prod":
-      "uglifyjs public/js/client.js --compress --mangle --source-map --output public/js/bundle.min.js && grunt dev && pm2 start app.js"
+    "prod": "uglifyjs public/js/client.js --compress --mangle --source-map --output public/js/bundle.min.js && grunt dev && pm2 start app.js"
   },
   "repository": {
     "type": "git",
@@ -33,6 +30,8 @@
     "eslint-config-prettier": "^2.6.0",
     "eslint-plugin-prettier": "^2.3.1",
     "express": "^4.15.4",
+    "express-brute": "^1.0.1",
+    "express-brute-mongoose": "^0.0.9",
     "express-messages": "^1.0.1",
     "express-session": "^1.15.5",
     "express-validator": "^4.1.1",
