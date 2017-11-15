@@ -33,6 +33,7 @@
     "express-brute": "^1.0.1",
     "express-brute-mongoose": "^0.0.9",
     "express-messages": "^1.0.1",
+    "express-sanitizer": "^1.0.2",
     "express-session": "^1.15.5",
     "express-validator": "^4.1.1",
     "lodash": "^4.17.4",

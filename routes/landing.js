@@ -94,14 +94,15 @@ router.get('/logout', (req, res) => {
 
 // Handle Registration POSTS
 router.post('/register', bruteforce.prevent, (req, res) => {
-  const firstname = req.body.firstname.toLowerCase();
-  const lastname = req.body.lastname.toLowerCase();
-  const username = req.body.username;
-  const email = req.body.email;
-  const partner = req.body.partner;
-  const fitnessGoal = req.body.fitnessGoal;
-  const mfp = req.body.mfp;
-  const accessCode = req.body.accessCode;
+  const firstname = req.sanitize(req.body.firstname).toLowerCase();
+  const lastname = req.sanitize(req.body.lastname).toLowerCase();
+  const username = req.sanitize(req.body.username);
+  const email = req.sanitize(req.body.email);
+  const partner = req.sanitize(req.body.partner);
+  const fitnessGoal = req.sanitize(req.body.fitnessGoal);
+  const mfp = req.sanitize(req.body.mfp);
+  const accessCode = req.sanitize(req.body.accessCode);
+  // Not sanitizing password for now, since we're salting & hashing it.
   const password = req.body.password;
   const passwordConfirm = req.body.passwordConfirm;
 

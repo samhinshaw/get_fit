@@ -7,6 +7,7 @@ const session = require('express-session');
 const Moment = require('moment-timezone');
 const MomentRange = require('moment-range');
 const expressValidator = require('express-validator');
+const expressSanitizer = require('express-sanitizer');
 // const flash = require('connect-flash');
 const expMessages = require('express-messages');
 const passport = require('passport');
@@ -68,7 +69,8 @@ app.set('view engine', 'pug');
 // Look up what these are in the bodyParser documentation
 // bodyParser middleware
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(expressSanitizer()); // this line follows bodyParser() instantiations
 
 // Route for static assests such as CSS and JS
 app.use(express.static(path.join(__dirname, 'public')));
