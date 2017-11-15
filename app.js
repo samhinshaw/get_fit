@@ -18,6 +18,8 @@ const helmet = require('helmet');
 const auth = require('./config/auth.js');
 const mongoConfig = require('./config/mongo_config.json');
 
+const MongoStore = require('connect-mongo')(session);
+
 const mongoNodeConfig = mongoConfig.node;
 
 const moment = MomentRange.extendMoment(Moment);
@@ -42,7 +44,10 @@ const mongoURI = `mongodb://${mongoNodeConfig.user}:${mongoNodeConfig.password}@
 
 // mongoose.connect(config.database);
 mongoose.connect(mongoURI);
+// const connection = mongoose.createConnection(mongoURI);
+
 const db = mongoose.connection;
+// const db = connection;
 
 // Check connection
 db.once('open', () => {
@@ -55,6 +60,9 @@ db.on('error', err => {
 
 // initialize app
 const app = express();
+
+// Let Express know it's behind a nginx proxy
+app.set('trust proxy', '127.0.0.1');
 
 // Include document Schemas
 // const Request = require('./models/request');
@@ -85,12 +93,19 @@ const mongoMiddleware = require('./middlewares/mongoMiddleware');
 
 // Middleware for Lesson 8, Messaging & Validation
 // Session Handling Middleware
+// app.use(
+//   session({
+//   })
+// );
+
 app.use(
   session({
-    secret: 'little chessie',
+    secret: mongoConfig.session.secret,
     resave: true,
-    saveUninitialized: true
-    // cookie: { secure: true }
+    saveUninitialized: true,
+    // cookie: { secure: true },
+    // store: new MongoStore({ mongooseConnection: connection })
+    store: new MongoStore({ mongooseConnection: mongoose.connection })
   })
 );
 
