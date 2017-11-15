@@ -4,6 +4,10 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const passport = require('passport');
 const mongoose = require('mongoose');
+const Moment = require('moment-timezone');
+const MomentRange = require('moment-range');
+
+const moment = MomentRange.extendMoment(Moment);
 
 // Setup brute force prevention
 const ExpressBrute = require('express-brute');
@@ -13,7 +17,19 @@ const bruteForceSchema = require('express-brute-mongoose/dist/schema');
 const model = mongoose.model('bruteforce', bruteForceSchema);
 const store = new MongooseStore(model);
 
-const bruteforce = new ExpressBrute(store);
+const failCallback = (req, res, next, nextValidRequestDate) => {
+  req.flash(
+    'danger',
+    `You've made too many failed attempts in a short period of time, please try again ${moment(
+      nextValidRequestDate
+    ).fromNow()}`
+  );
+  res.redirect('/'); // brute force protection triggered, send them back to the main page
+};
+
+const bruteforce = new ExpressBrute(store, {
+  failCallback
+});
 
 const User = require('../models/user');
 // const auth = require('../config/auth.js');
