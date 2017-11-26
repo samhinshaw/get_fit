@@ -88,22 +88,22 @@ iconDict = json.loads(parsedDict)['icons']
 exerTypeDict = json.loads(parsedDict)['exerciseTypes']
 
 print('Connecting to MongoDB database...')
-mongoJSON = open(os.path.join('config', 'mongo_config.json')).read()
-mongoConfig = json.loads(mongoJSON)
-mongoPyConfig = mongoConfig['python']
+secretJSON = open(os.path.join('config', 'secret_config.json')).read()
+secretConfig = json.loads(secretJSON)
+secretPyConfig = secretConfig['python']
 
 # For some reason, this method of authentication does not work!
 # client = MongoClient(
-#     host=mongoConfig['host'],
-#     port=mongoConfig['port'],
-#     user=mongoConfig['user'],
-#     password=mongoConfig['password'],
-#     authSource=mongoConfig['authSource'],
-#     authMechanism=mongoConfig['authMechanism'])
+#     host=secretConfig['host'],
+#     port=secretConfig['port'],
+#     user=secretConfig['user'],
+#     password=secretConfig['password'],
+#     authSource=secretConfig['authSource'],
+#     authMechanism=secretConfig['authMechanism'])
 
 # However, we can manually construct the URI and connect that way.
 # It's uglier, but it still works.
-mongoURI = "mongodb://" + mongoPyConfig['user'] + ":" + mongoPyConfig['password'] + "@" + mongoPyConfig['host'] + ":" + mongoPyConfig['port'] + "/" + mongoPyConfig['authSource'] + "?authMechanism=" + mongoPyConfig['authMechanism']
+mongoURI = "mongodb://" + secretPyConfig['user'] + ":" + secretPyConfig['password'] + "@" + secretPyConfig['host'] + ":" + secretPyConfig['port'] + "/" + secretPyConfig['authSource'] + "?authMechanism=" + secretPyConfig['authMechanism']
 
 client = MongoClient(mongoURI)
 

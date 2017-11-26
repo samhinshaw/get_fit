@@ -7,3 +7,4 @@ samGStoken.rds
 *.pkl
 .sass-cache
 mongo_config.json
+secret_config.json

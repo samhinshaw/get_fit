@@ -11,17 +11,14 @@ const expressSanitizer = require('express-sanitizer');
 // const flash = require('connect-flash');
 const expMessages = require('express-messages');
 const passport = require('passport');
-const config = require('./config/database');
 const _ = require('lodash');
 const helmet = require('helmet');
-
+const config = require('./config/database');
+const secretConfig = require('./config/secret_config.json');
 const auth = require('./config/auth.js');
-const mongoConfig = require('./config/mongo_config.json');
-
 const MongoStore = require('connect-mongo')(session);
 
-const mongoNodeConfig = mongoConfig.node;
-
+const nodeConfig = secretConfig.node;
 const moment = MomentRange.extendMoment(Moment);
 // moment().format(); // required by package entirely
 
@@ -40,7 +37,7 @@ const asyncMiddleware = fn => (req, res, next) => {
 //   useMongoClient: true,
 // });
 
-const mongoURI = `mongodb://${mongoNodeConfig.user}:${mongoNodeConfig.password}@${mongoNodeConfig.host}:${mongoNodeConfig.port}/${mongoNodeConfig.authSource}?authMechanism=${mongoNodeConfig.authMechanism}`;
+const mongoURI = `mongodb://${nodeConfig.user}:${nodeConfig.password}@${nodeConfig.host}:${nodeConfig.port}/${nodeConfig.authSource}?authMechanism=${nodeConfig.authMechanism}`;
 
 // mongoose.connect(config.database);
 mongoose.connect(mongoURI);
@@ -100,7 +97,7 @@ const mongoMiddleware = require('./middlewares/mongoMiddleware');
 
 app.use(
   session({
-    secret: mongoConfig.session.secret,
+    secret: secretConfig.session.secret,
     resave: true,
     saveUninitialized: true,
     // cookie: { secure: true },

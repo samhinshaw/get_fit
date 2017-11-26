@@ -33,6 +33,7 @@ const bruteforce = new ExpressBrute(store, {
 
 const User = require('../models/user');
 // const auth = require('../config/auth.js');
+const secretConfig = require('../config/secret_config.json');
 
 const router = express.Router();
 
@@ -132,7 +133,7 @@ router.post('/register', bruteforce.prevent, (req, res) => {
 
     res.redirect('#');
     // temporarily hard-wiring adding access code
-  } else if (accessCode !== '44829 cats fly over the Belgian moon on a Tuesday evening') {
+  } else if (accessCode !== secretConfig.registrationSecret) {
     req.flash('danger', 'Incorrect Access Code');
     res.redirect('#');
   } else {
