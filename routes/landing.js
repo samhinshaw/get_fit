@@ -122,6 +122,8 @@ router.post('/register', bruteforce.prevent, (req, res) => {
   req.checkBody('accessCode', 'Access code is required').notEmpty();
   req.checkBody('password', 'Password is required').notEmpty();
   req.checkBody('passwordConfirm', 'Passwords do not match').equals(req.body.password);
+  console.log('You provided: ', accessCode);
+  console.log('Store code is: ', secretConfig.registrationSecret);
 
   const errors = req.validationErrors();
 
