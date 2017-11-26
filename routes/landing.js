@@ -95,8 +95,8 @@ router.get('/logout', (req, res) => {
 
 // Handle Registration POSTS
 router.post('/register', bruteforce.prevent, (req, res) => {
-  const firstname = req.sanitize(req.body.firstname).toLowerCase();
-  const lastname = req.sanitize(req.body.lastname).toLowerCase();
+  const firstname = req.sanitize(req.body.firstname);
+  const lastname = req.sanitize(req.body.lastname);
   const username = req.sanitize(req.body.username);
   const email = req.sanitize(req.body.email);
   const partner = req.sanitize(req.body.partner);
