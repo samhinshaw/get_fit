@@ -95,17 +95,18 @@ router.get('/logout', (req, res) => {
 
 // Handle Registration POSTS
 router.post('/register', bruteforce.prevent, (req, res) => {
-  const firstname = req.sanitize(req.body.firstname);
-  const lastname = req.sanitize(req.body.lastname);
-  const username = req.sanitize(req.body.username);
-  const email = req.sanitize(req.body.email);
-  const partner = req.sanitize(req.body.partner);
-  const fitnessGoal = req.sanitize(req.body.fitnessGoal);
-  const mfp = req.sanitize(req.body.mfp);
-  const accessCode = req.sanitize(req.body.accessCode);
+  // express-validator sanitizes in-place (mutable), and works by
+  const firstname = req.sanitize('firstname').trim();
+  const lastname = req.sanitize('lastname').trim();
+  const username = req.sanitize('username').trim();
+  const email = req.sanitize('email').trim();
+  const partner = req.sanitize('partner').trim();
+  const fitnessGoal = req.sanitize('fitnessGoal').trim();
+  const mfp = req.sanitize('mfp').trim();
+  const accessCode = req.sanitize('accessCode').trim();
   // Not sanitizing password for now, since we're salting & hashing it.
   const password = req.body.password;
-  const passwordConfirm = req.body.passwordConfirm;
+  // const passwordConfirm = req.body.passwordConfirm;
 
   req.checkBody('firstname', 'Name is required').notEmpty();
   req.checkBody('lastname', 'Name is required').notEmpty();

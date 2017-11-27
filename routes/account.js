@@ -80,7 +80,7 @@ router.post(
   '/spend',
   auth.ensureAuthenticated,
   asyncMiddleware(async (req, res) => {
-    const rewardKey = req.sanitize(req.body.reward);
+    const rewardKey = req.sanitize('reward').trim();
 
     const query = {
       key: rewardKey
@@ -104,7 +104,7 @@ router.post(
       displayName: rewardEntry.displayName,
       pointCost: rewardEntry.cost,
       requester: res.locals.user.username, // replace with session
-      requestMessage: req.sanitize(req.body.message),
+      requestMessage: req.sanitize('message').trim(),
       timeRequested: moment.tz('US/Pacific').toDate(),
       status: 'unapproved'
     });
@@ -205,11 +205,11 @@ router.post('/requests/respond', auth.ensureAuthenticated, (req, res) => {
   // Note: Model.findByIdAndUpdate() is specifically for when we need the found
   // document returned as well.
   Request.update(
-    { _id: req.sanitize(req.body.id) },
+    { _id: req.sanitize('id').trim() },
     {
       $set: {
-        status: req.sanitize(req.body.type),
-        responseMessage: req.sanitize(req.body.message),
+        status: req.sanitize('type').trim(),
+        responseMessage: req.sanitize('message').trim(),
         timeResponded: moment.tz('US/Pacific').toDate()
       }
     },
