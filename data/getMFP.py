@@ -239,7 +239,7 @@ for date in arrow.Arrow.range(
                 exerIcon = 'exercise.png'
 
             # award points based on workout type
-            if renamedEx in exerTypeDict["coolDown"]:
+            if renamedEx in exerTypeDict["lightExercise"]:
                 points = (exerMins / 60)
             elif renamedEx in exerTypeDict["cardio"]:
                 points = (exerMins / 30)

@@ -1,7 +1,7 @@
 {
   "exerciseTypes": {
     "cardio": ["jogging", "running", "dancing", "paddleboarding"],
-    "coolDown": ["yoga", "stretching"],
+    "lightExercise": ["yoga", "stretching", "hiking"],
     "crossTrain": [
       "low intensity strength training",
       "high intensity strength training",
@@ -21,7 +21,8 @@
     "paddleboarding": "paddleboarding",
     "kelly": "kelly tape",
     "fitstar": "bodyweight training",
-    "walk": "walking"
+    "walk": "walking",
+    "hiking": "hiking"
   },
   "icons": {
     "abs": "abs.png",
