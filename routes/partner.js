@@ -38,7 +38,7 @@ const router = express.Router();
 // Bring in user model
 const Entry = require('../models/entry');
 
-// Route to Sam's Data
+// Route to User's Calorie & Exercise Data
 router.get('/', auth.ensureAuthenticated, (req, res) => {
   // NOTE, we can also query an array of dates, as I did see a StackOverflow
   // post mentioning that the $gte and $lte operators can be a bit wonky with
@@ -89,6 +89,21 @@ router.get('/', auth.ensureAuthenticated, (req, res) => {
       }
     }
   );
+});
+
+// Route to Weight Data
+router.get('/weight', auth.ensureAuthenticated, (req, res) => {
+  res.render('partner/weight', {
+    routeInfo: {
+      heroType: res.locals.partner.username,
+      route: '/partner/weight',
+      userName:
+        res.locals.user.firstname.charAt(0).toUpperCase() + res.locals.user.firstname.slice(1),
+      partnerName:
+        res.locals.partner.firstname.charAt(0).toUpperCase() +
+        res.locals.partner.firstname.slice(1).toLowerCase()
+    }
+  });
 });
 
 router.post('/:date', auth.ensureAuthenticated, (req, res) => {

@@ -1,0 +1,21 @@
+extends ../partials/layout
+
+block header
+  include ../includes/user_header
+
+block subnav
+  include ../includes/user_subnav
+
+block content
+  //- Bring in custom stylesheet for D3 chart
+  link(rel='stylesheet', href='/css/d3.css')
+  //- D3 Chart Placeholder
+  #chart
+    div
+    div
+    div
+    div
+    div
+  //- Load D3 library and my D3 script
+  script(type='text/javascript', src='/bower_components/d3/d3.min.js')
+  script(type='text/javascript', src='/js/data.js')

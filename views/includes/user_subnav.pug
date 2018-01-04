@@ -1,10 +1,15 @@
 .navbar-tabs
-  a.navbar-item.is-tab(href=`/user`, class=(['/user', '/partner'].includes(routeInfo.route) ? 'is-active' : false))
+  a.navbar-item.is-tab(href=`/user`, class=(['/user'].includes(routeInfo.route) ? 'is-active' : false))
     .field.is-grouped
       .control
         span.icon.is-small
           i.mdi.mdi-view-list 
       .control
-        | Overview
-  //- a.navbar-item.is-tab(href='#')
-    | Weight
+        | Calories & Exercise
+  a.navbar-item.is-tab(href=`/user/weight`, class=(['/user/weight'].includes(routeInfo.route) ? 'is-active' : false))
+    .field.is-grouped
+      .control
+        span.icon.is-small
+          i.mdi.mdi-scale-bathroom
+      .control
+        | Weight
