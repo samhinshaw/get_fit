@@ -60,7 +60,7 @@ const dateRange = false;
 //   shortMonths: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 // });
 
-$.getJSON('/api/user_weight.json/', json => {
+$.getJSON('/api/user_weight/', json => {
   // Pre-parse date
   const data = [];
   // const parseDate = locale.parse('%B %d, %Y at %I:%M%p%Z');

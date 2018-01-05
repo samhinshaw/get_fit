@@ -392,7 +392,7 @@ app.get('/overview', auth.ensureAuthenticated, (req, res) => {
 });
 
 // Send user data to client side (via cookie) when user is logged in
-app.get('/api/user_data.json', auth.ensureAuthenticated, (req, res) => {
+app.get('/api/user_data', auth.ensureAuthenticated, (req, res) => {
   if (req.user === undefined) {
     // The user is not logged in
     res.json({});
@@ -423,8 +423,8 @@ app.get('/api/user_data.json', auth.ensureAuthenticated, (req, res) => {
 });
 
 // Send user data to client side (via cookie) when user is logged in
-app.get('/api/user_weight.json', auth.ensureAuthenticated, (req, res) => {
-  if (req.user.username != 'sam') {
+app.get('/api/user_weight', auth.ensureAuthenticated, (req, res) => {
+  if (req.user.username !== 'sam') {
     // The user is not logged in
     res.json({});
   } else {
