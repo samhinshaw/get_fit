@@ -1,80 +1,145 @@
 /* global d3 */
 
-const data = [
-  { name: 'Alice', math: 93, science: 84 },
-  { name: 'Bobby', math: 81, science: 97 },
-  { name: 'Carol', math: 74, science: 88 },
-  { name: 'David', math: 64, science: 76 },
-  { name: 'Emily', math: 80, science: 94 }
-];
+// async function asyncQuery() {
+//   const response = await $.getJSON('/api/user_weight/', json => json);
+//   return response;
+// }
 
-// reserve space for the axes and subtract that space
-// from the width and height properties so their values
-// accurately reflect the space available to the chart itself
-const margin = { top: 10, right: 10, bottom: 20, left: 50 };
-const width = 600 - margin.left - margin.right;
-const height = 400 - margin.top - margin.bottom;
+// asyncQuery('/api/user_weight')
+//   .then(data => console.log(data))
+//   .catch(reason => console.log(reason.message));
 
-// create a scale to map scores to widths
-const xScale = d3
-  .scaleLinear()
-  .domain([0, 100])
-  .range([0, width]);
+// const data = [
+//   { name: 'Alice', math: 93, science: 84 },
+//   { name: 'Bobby', math: 81, science: 97 },
+//   { name: 'Carol', math: 74, science: 88 },
+//   { name: 'David', math: 64, science: 76 },
+//   { name: 'Emily', math: 80, science: 94 }
+// ];
 
-// create a scale to calculate bar height
-const yScale = d3
-  .scaleBand()
-  .domain(data.map(d => d.name))
-  .range([0, height]);
+// Set D3 locale
 
-// this is just a condensed version of render()
-// from the previous example at http://bit.ly/2t2RJ0S
-// the commented lines are the only substantive changes
-function render(subject) {
-  const bars = d3
+const locale = d3.timeFormatLocale({
+  dateTime: '%x, %X',
+  date: '%-m/%-d/%Y',
+  time: '%-I:%M:%S %p',
+  periods: ['AM', 'PM'],
+  days: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+  shortDays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+  months: [
+    'January',
+    'February',
+    'March',
+    'April',
+    'May',
+    'June',
+    'July',
+    'August',
+    'September',
+    'October',
+    'November',
+    'December'
+  ],
+  shortMonths: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+});
+
+$.getJSON('/api/user_weight.json/', json => {
+  // Pre-parse date
+  const data = [];
+  const parseDate = locale.parse('%B %d, %Y at %I:%M%p%Z');
+  // const formatDate = locale.format('%s');
+  // example: June 07, 2017 at 09:01AM
+  // dateFormat('June 07, 2017 at 09:01AM-0700');
+
+  // const map = d3.map(json.rows, d => formatDate(parseDate(`${d.date}-0700`)));
+  // console.log(map);
+
+  json.rows.forEach(d => {
+    data.push({
+      date: parseDate(`${d.date}-0700`),
+      weight: +d.weight
+    });
+  });
+  // console.log(data);
+
+  // const nestedData = d3
+  //   .nest()
+  //   .key(d => parseDate(`${d.date}-0700`)) // tack on pacific TZ
+  //   .entries(data);
+
+  const margin = { top: 20, right: 80, bottom: 60, left: 50 };
+  const width = 960 - margin.left - margin.right;
+  const height = 500 - margin.top - margin.bottom;
+
+  const x = d3
+    .scaleTime()
+    // .domain([new Date(2016, 11, 1), new Date(2018, 6, 30)])
+    .range([0, width]);
+
+  const y = d3
+    .scaleLinear()
+    // .domain([150, 190])
+    .range([height, 0]);
+
+  const xAxis = d3.axisBottom().scale(x);
+  const yAxis = d3.axisLeft().scale(y);
+
+  // const color = d3.scale.category10();
+
+  const svg = d3
     .select('#chart')
-    .selectAll('div')
-    .data(data, d => d.name);
+    .append('svg')
+    .attr('width', width + margin.left + margin.right)
+    .attr('height', height + margin.top + margin.bottom)
+    .append('g')
+    .attr('transform', `translate(${margin.left},${margin.top})`);
 
-  bars
-    .enter()
-    .append('div')
-    .attr('class', 'bar')
-    .style('width', 0)
-    .style(
-      'height',
-      () =>
-        // use the height calculated by the band scale
-        `${yScale.bandwidth() - 2}px`
-    )
-    .merge(bars)
-    .transition()
-    .style(
-      'width',
-      d =>
-        // pass the score through the linear scale function
-        `${xScale(d[subject])}px`
-    );
-}
+  function drawMainGraph() {
+    const line = d3
+      .line()
+      .x(d => x(d.date))
+      .y(d => y(d.weight));
 
-render('math');
+    x.domain(d3.extent(data, d => d.date));
+    y.domain(d3.extent(data, d => d.weight));
+    // y.domain([150, 190]);
 
-const svg = d3
-  .select('#chart')
-  .append('svg')
-  .attr('width', width + margin.left + margin.right)
-  .attr('height', height + margin.top + margin.bottom)
-  .style('position', 'absolute')
-  .style('top', 0)
-  .style('left', 0);
+    svg
+      .append('g')
+      .style(
+        'font-family',
+        "'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif"
+      )
+      .style('font-size', '12px')
+      .attr('class', 'x axis')
+      .attr('transform', `translate(0,${height})`)
+      .call(xAxis.tickFormat(d3.timeFormat('%b %Y')))
+      .selectAll('text')
+      .style('text-anchor', 'end')
+      .attr('dx', '-.8em')
+      .attr('dy', '.15em')
+      .attr('transform', 'rotate(-45)');
 
-// create a group container and position it according to the margins
-// so subsequent commands are run from the correct coordinates
-const axisContainer = svg.append('g').attr('transform', `translate(${margin.left}, ${margin.top})`);
+    svg
+      .append('g')
+      .style(
+        'font-family',
+        "'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif"
+      )
+      .style('font-size', '12px')
+      .attr('class', 'y axis')
+      .call(yAxis);
 
-axisContainer
-  .append('g')
-  .attr('transform', `translate(0, ${height})`)
-  .call(d3.axisBottom(xScale));
+    svg
+      .append('path')
+      .datum(data)
+      .attr('fill', 'none')
+      .attr('stroke', 'steelblue')
+      .attr('stroke-linejoin', 'round')
+      .attr('stroke-linecap', 'round')
+      .attr('stroke-width', 1.5)
+      .attr('d', line);
+  }
 
-axisContainer.append('g').call(d3.axisLeft(yScale));
+  drawMainGraph();
+});

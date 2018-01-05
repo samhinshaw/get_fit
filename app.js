@@ -13,9 +13,12 @@ const expMessages = require('express-messages');
 const passport = require('passport');
 const _ = require('lodash');
 const helmet = require('helmet');
+const GoogleSpreadsheet = require('google-spreadsheet');
+
 const config = require('./config/database');
 const secretConfig = require('./config/secret_config.json');
 const auth = require('./config/auth.js');
+const googleCreds = require('./config/client_secret.json');
 const MongoStore = require('connect-mongo')(session);
 
 const nodeConfig = secretConfig.node;
@@ -389,7 +392,7 @@ app.get('/overview', auth.ensureAuthenticated, (req, res) => {
 });
 
 // Send user data to client side (via cookie) when user is logged in
-app.get('/api/user_data', auth.ensureAuthenticated, (req, res) => {
+app.get('/api/user_data.json', auth.ensureAuthenticated, (req, res) => {
   if (req.user === undefined) {
     // The user is not logged in
     res.json({});
@@ -415,6 +418,51 @@ app.get('/api/user_data', auth.ensureAuthenticated, (req, res) => {
       mfp: res.locals.user.mfp,
       currentPoints: res.locals.user.currentPoints,
       fitnessGoal: res.locals.user.fitnessGoal
+    });
+  }
+});
+
+// Send user data to client side (via cookie) when user is logged in
+app.get('/api/user_weight.json', auth.ensureAuthenticated, (req, res) => {
+  if (req.user === undefined) {
+    // The user is not logged in
+    res.json({});
+  } else {
+    const weightDoc = new GoogleSpreadsheet('1q15E449k_0KP_elfptM7oyVx_qXsss9_K4ESExlM2MI');
+
+    weightDoc.useServiceAccountAuth(googleCreds, authErr => {
+      console.log('auth error: ', authErr);
+      // Get all of the rows from the spreadsheet.
+      weightDoc.getRows(
+        1,
+        // {
+        //   limit: 30,
+        //   orderby: 'date',
+        //   reverse: true
+        // },
+        (getErr, rows) => {
+          console.log('row fetch error: ', getErr);
+          // initialize empty array for us to gather pruned rows
+          const prunedRows = [];
+          // For each row in the array of rows, return just the weight & date
+          rows.forEach(row => {
+            const prunedRow = {
+              date: row.date,
+              weight: row.weight
+            };
+            prunedRows.push(prunedRow);
+          });
+
+          res.json({
+            rows: prunedRows
+          });
+          // return rows;
+          // rows.forEach(row => {
+          //   console.log('date: ', row.date);
+          //   console.log('weight: ', row.weight);
+          // });
+        }
+      );
     });
   }
 });

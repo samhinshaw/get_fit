@@ -2,11 +2,9 @@
 const PythonShell = require('python-shell');
 const express = require('express');
 const _ = require('lodash');
-const GoogleSpreadsheet = require('google-spreadsheet');
 
 // const request = require('request');
 const auth = require('../config/auth.js');
-const creds = require('../config/client_secret.json');
 
 // datetime functions
 // const moment = require('moment');
@@ -98,41 +96,16 @@ router.get('/', auth.ensureAuthenticated, (req, res) => {
 
 // Route to Weight Data
 router.get('/weight', auth.ensureAuthenticated, (req, res) => {
-  const doc = new GoogleSpreadsheet('1q15E449k_0KP_elfptM7oyVx_qXsss9_K4ESExlM2MI');
-
-  doc.useServiceAccountAuth(creds, authErr => {
-    console.log('auth error: ', authErr);
-    // Get all of the rows from the spreadsheet.
-    doc.getRows(
-      1,
-      // {
-      //   limit: 30,
-      //   orderby: 'date',
-      //   reverse: true
-      // },
-      (getErr, rows) => {
-        console.log('row fetch error: ', getErr);
-
-        res.render('user/weight', {
-          sheetRows: rows,
-          routeInfo: {
-            heroType: res.locals.user.username,
-            route: '/user/weight',
-            userName:
-              res.locals.user.firstname.charAt(0).toUpperCase() +
-              res.locals.user.firstname.slice(1),
-            partnerName:
-              res.locals.partner.firstname.charAt(0).toUpperCase() +
-              res.locals.partner.firstname.slice(1).toLowerCase()
-          }
-        });
-        // return rows;
-        // rows.forEach(row => {
-        //   console.log('date: ', row.date);
-        //   console.log('weight: ', row.weight);
-        // });
-      }
-    );
+  res.render('user/weight', {
+    routeInfo: {
+      heroType: res.locals.user.username,
+      route: '/user/weight',
+      userName:
+        res.locals.user.firstname.charAt(0).toUpperCase() + res.locals.user.firstname.slice(1),
+      partnerName:
+        res.locals.partner.firstname.charAt(0).toUpperCase() +
+        res.locals.partner.firstname.slice(1).toLowerCase()
+    }
   });
 });
 
