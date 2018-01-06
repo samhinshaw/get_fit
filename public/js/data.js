@@ -113,8 +113,19 @@ $.getJSON('/api/user_weight/', json => {
   const svg = d3
     .select('#chart')
     .append('svg')
-    .attr('width', width + margin.left + margin.right)
-    .attr('height', height + margin.top + margin.bottom)
+    .classed('svg-container', true) // container class to make it responsive
+    // responsive SVG needs these 2 attributes and no width and height attr
+    .attr('preserveAspectRatio', 'xMinYMin meet')
+    // Viewbox is [min-x, min-y, width, height]
+    .attr(
+      'viewBox',
+      `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`
+    )
+    // class to make it responsive
+    .classed('svg-content-responsive', true)
+    // INSTEAD of setting height & width, use viewbox
+    // .attr('width', width + margin.left + margin.right)
+    // .attr('height', height + margin.top + margin.bottom)
     .append('g')
     .attr('transform', `translate(${margin.left},${margin.top})`);
 
