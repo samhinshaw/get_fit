@@ -29,10 +29,10 @@ const twoWeeksFromNow = today.clone().add(14, 'days');
 const oneMonthAgo = today.clone().subtract(1, 'months');
 
 // Enable custom domain?
-// const dateRange = [oneMonthAgo.toDate(), twoWeeksFromNow.toDate()];
-// const momentRange = moment.range(oneMonthAgo, twoWeeksFromNow);
+const dateRange = [oneMonthAgo.toDate(), twoWeeksFromNow.toDate()];
+const momentRange = moment.range(oneMonthAgo, twoWeeksFromNow);
 // const dateRange = [new Date(2017, 10, 1), new Date(2018, 6, 30)];
-const dateRange = false;
+// const dateRange = false;
 
 // Set D3 locale
 
@@ -98,7 +98,7 @@ $.getJSON('/api/user_weight/', json => {
   //   .key(d => parseDate(`${d.date}-0700`)) // tack on pacific TZ
   //   .entries(data);
 
-  const margin = { top: 20, right: 80, bottom: 60, left: 50 };
+  const margin = { top: 40, right: 80, bottom: 80, left: 50 };
   const width = 960 - margin.left - margin.right;
   const height = 500 - margin.top - margin.bottom;
 
@@ -106,14 +106,18 @@ $.getJSON('/api/user_weight/', json => {
   const y = d3.scaleLinear().range([height, 0]);
 
   const xAxis = d3.axisBottom().scale(x);
-  const yAxis = d3.axisLeft().scale(y);
+  const yAxis = d3
+    .axisLeft()
+    .scale(y)
+    .tickSize(-width);
 
   // const color = d3.scale.category10();
 
   const svg = d3
     .select('#chart')
-    .append('svg')
+    .append('div')
     .classed('svg-container', true) // container class to make it responsive
+    .append('svg')
     // responsive SVG needs these 2 attributes and no width and height attr
     .attr('preserveAspectRatio', 'xMinYMin meet')
     // Viewbox is [min-x, min-y, width, height]
@@ -146,13 +150,10 @@ $.getJSON('/api/user_weight/', json => {
       y.domain([d3.min(data, d => d.weight) - 1, d3.max(data, d => d.weight) + 1]);
     }
 
+    // Create the x-axis and its ticks
     svg
       .append('g')
-      .style(
-        'font-family',
-        "'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif"
-      )
-      .style('font-size', '12px')
+      .style('font-size', '11px')
       .attr('class', 'x axis')
       .attr('transform', `translate(0,${height})`)
       .call(xAxis.tickFormat(d3.timeFormat('%d %b %Y')))
@@ -162,16 +163,14 @@ $.getJSON('/api/user_weight/', json => {
       .attr('dy', '.15em')
       .attr('transform', 'rotate(-45)');
 
+    // Create the y-axis and its ticks
     svg
       .append('g')
-      .style(
-        'font-family',
-        "'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', 'Helvetica', 'Arial', sans-serif"
-      )
-      .style('font-size', '12px')
+      .style('font-size', '11px')
       .attr('class', 'y axis')
       .call(yAxis);
 
+    // Draw the actual data!
     svg
       .append('path')
       .datum(data)
@@ -182,6 +181,48 @@ $.getJSON('/api/user_weight/', json => {
       .attr('stroke-width', 1.5)
       .attr('d', line);
   }
+
+  // Chart Title
+  svg
+    .append('text')
+    .attr('x', width / 2)
+    .attr('y', 0 - margin.top / 2)
+    .attr('text-anchor', 'middle')
+    .style('font-size', '18px')
+    // .style('text-decoration', 'underline')
+    .text('Weight Change');
+
+  // x-axis
+  svg
+    .append('text')
+    .attr('transform', `translate(${width / 2} ,${height + margin.top + 40})`)
+    .style('text-anchor', 'middle')
+    .style('font-size', '14px')
+    .text('Date');
+
+  // y-axis
+  svg
+    .append('text')
+    .attr('transform', 'rotate(-90)')
+    .attr('y', 0 - margin.left)
+    .attr('x', 0 - height / 2)
+    .attr('dy', '1em')
+    .style('text-anchor', 'middle')
+    .style('font-size', '14px')
+    .text('Weight (lbs)');
+
+  // add the x-axis grid lines
+  svg
+    .append('g')
+    .attr('class', 'grid')
+    .attr('transform', `translate(0,${height})`)
+    .call(
+      d3
+        .axisBottom(x)
+        .ticks(1)
+        .tickSize(-height)
+        .tickFormat('')
+    );
 
   drawMainGraph();
 });
