@@ -9,3 +9,4 @@ samGStoken.rds
 mongo_config.json
 secret_config.json
 config/client_secret.json
+config/ifttt.json

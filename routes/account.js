@@ -10,6 +10,9 @@ const Request = require('../models/request');
 const Reward = require('../models/reward');
 // const flash = require('connect-flash');
 
+// Bring in config files
+const iftttToken = require('../config/ifttt.json');
+
 // moment().format(); // required by package entirely
 
 const router = express.Router();
@@ -19,9 +22,13 @@ const asyncMiddleware = fn => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch(next);
 };
 
-const configureIFTTT = (user, requestType) => {
+// Call this function with 3 options:
+// user: the currently logged in user sending the request
+// partnerToken: your partner's IFTTT token (to send THEM an SMS)
+// messageType: is this a request or a response to a request?
+const configureIFTTT = ({ user, partnerToken, messageType }) => {
   const configOptions = {
-    url: `https://maker.ifttt.com/trigger/${requestType}/with/key/JCavOg5Om_uGsh0R6McOC`,
+    url: `https://maker.ifttt.com/trigger/${messageType}/with/key/${partnerToken}`,
     method: 'POST',
     headers: {
       // 'User-Agent': 'Super Agent/0.0.1',
@@ -116,10 +123,13 @@ router.post(
         // If saved, send request via IFTTT
         request(
           // this function will return our configuration object with
-          configureIFTTT(
-            res.locals.user.firstname.charAt(0).toUpperCase() + res.locals.user.firstname.slice(1),
-            'reward_request'
-          ),
+          configureIFTTT({
+            user:
+              res.locals.user.firstname.charAt(0).toUpperCase() +
+              res.locals.user.firstname.slice(1),
+            partnerToken: iftttToken[res.locals.partner.username].token,
+            messageType: 'reward_request'
+          }),
           (error, response) => {
             // (error, response, body)
             if (error) {
@@ -222,10 +232,13 @@ router.post('/requests/respond', auth.ensureAuthenticated, (req, res) => {
         // If saved, send request via IFTTT
         request(
           // this function will return our configuration object with
-          configureIFTTT(
-            res.locals.user.firstname.charAt(0).toUpperCase() + res.locals.user.firstname.slice(1),
-            'request_response'
-          ),
+          configureIFTTT({
+            user:
+              res.locals.user.firstname.charAt(0).toUpperCase() +
+              res.locals.user.firstname.slice(1),
+            partnerToken: iftttToken[res.locals.partner.username].token,
+            messageType: 'request_response'
+          }),
           (error, response) => {
             // (error, response, body)
             if (error) {
