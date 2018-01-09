@@ -171,7 +171,8 @@
   color: #b5b5b5;
 }
 
-/* Card colors for overview page because apparently color scehems don't work for bulma cards! */
+/* Card colors for overview page because apparently color scehemes don't work
+for bulma cards! */
 .overview-card .card-header.is-sam {
   background-color: #0f9d58;
 }
@@ -190,4 +191,18 @@ a.navbar-item.is-tab:hover {
 
 td.exercise-icon {
   text-align: center;
+}
+
+/* Exercise Card Table Options */
+
+/* Make table scroll on overflow */
+.exercise-card .table-container {
+  overflow-x: auto;
+}
+
+/* Shrink exercise-card table text a smidge */
+/* Also, remove the bottom margin from the table */
+.exercise-card table {
+  font-size: 0.875rem;
+  margin-bottom: 0;
 }
