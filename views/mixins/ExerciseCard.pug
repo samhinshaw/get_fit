@@ -4,7 +4,7 @@ mixin ExerciseCard(entry)
   - const weekDay = entryDate.format('ddd');
   - const datePretty = entryDate.format('YYYY-MM-DD');
   - const dateHuman = entryDate.format('MM-DD-YYYY');
-  - const fullDate = entryDate.format('dddd, MMMM Do, YYYY')
+  - const fullDate = entryDate.format('ddd, MMM Do, YYYY')
   //- Break up into weeks and we'll come back to this for a weekly point total
   if weekDay === 'Sun'
     hr
@@ -19,8 +19,9 @@ mixin ExerciseCard(entry)
                 i.mdi.mdi-checkbox-marked-circle-outline
               else
                 i.mdi.mdi-checkbox-blank-circle-outline
+            span &nbsp;&nbsp;
             a(href=`http://www.myfitnesspal.com/food/diary?date=${datePretty}`, target='_blank')
-              | &nbsp;&nbsp;#{fullDate}
+              | #{fullDate}
           a.card-header-icon(href='#!', aria-label='more options')
             if entry.points < 0 
               span.tag.is-danger
@@ -68,28 +69,29 @@ mixin ExerciseCard(entry)
               else if entry.netCals === 0
                 span you hit your goal EXACTLY
             if entry.exercise.length > 0
-              table.table
-                thead
-                  th
-                  th exercise
-                  th points
-                  th mins
-                  th cals
-                tbody
-                  each exercise, i in entry.exercise
-                    tr
-                      td.exercise-icon
-                        .icon
-                          img(src='/images/icons/' + exercise.icon, alt=exercise.name)
-                      td #{exercise.name}
-                      case exercise.points
-                        when -1
-                        when 1
-                          td #{exercise.points}
-                        default 
-                          td #{exercise.points}
-                      td #{exercise.minutes}
-                      td #{exercise.cals}
+              .table-container(style="overflow-x: auto;")
+                table.table.is-striped
+                  thead
+                    th
+                    th exercise
+                    th points
+                    th mins
+                    th cals
+                  tbody
+                    each exercise, i in entry.exercise
+                      tr
+                        td.exercise-icon
+                          .icon
+                            img(src='/images/icons/' + exercise.icon, alt=exercise.name)
+                        td #{exercise.name}
+                        case exercise.points
+                          when -1
+                          when 1
+                            td #{exercise.points}
+                          default 
+                            td #{exercise.points}
+                        td #{exercise.minutes}
+                        td #{exercise.cals}
         footer.card-footer
           a.card-footer-item
             .button.is-fullwidth.is-fullheight.update-entry(data-id=entry._id, data-date=datePretty, href='#!')
