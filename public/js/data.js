@@ -25,12 +25,18 @@ window['moment-range'].extendMoment(moment);
 const now = moment.tz('US/Pacific');
 const today = now.clone().startOf('day');
 // const twoWeeksAgo = today.clone().subtract(14, 'days');
+
+const twoMonthsAgo = today.clone().subtract(2, 'months');
 const twoWeeksFromNow = today.clone().add(14, 'days');
-const oneMonthAgo = today.clone().subtract(1, 'months');
+const oneWeekFromNow = today.clone().add(7, 'days');
+
+const startDate = twoMonthsAgo;
+const endDate = oneWeekFromNow;
 
 // Enable custom domain?
-const dateRange = [oneMonthAgo.toDate(), twoWeeksFromNow.toDate()];
-const momentRange = moment.range(oneMonthAgo, twoWeeksFromNow);
+const dateRange = [startDate.toDate(), endDate.toDate()];
+const momentArray = [startDate, endDate];
+const momentRange = moment.range(startDate, twoWeeksFromNow);
 // const dateRange = [new Date(2017, 10, 1), new Date(2018, 6, 30)];
 // const dateRange = false;
 
@@ -142,18 +148,18 @@ $.getJSON('/api/user_weight/', json => {
     if (dateRange) {
       // Custom Domains
       x.domain(dateRange).clamp(true);
-      y.domain([150, 190]);
+      y.domain([d3.min(data, d => d.weight) - 1, d3.max(data, d => d.weight) + 1]);
     } else {
       // Automatic Domains
       x.domain(d3.extent(data, d => d.date));
+      y.domain([150, 190]);
       // y.domain(d3.extent(data, d => d.weight));
-      y.domain([d3.min(data, d => d.weight) - 1, d3.max(data, d => d.weight) + 1]);
     }
 
     // Create the x-axis and its ticks
     svg
       .append('g')
-      .style('font-size', '11px')
+      .style('font-size', '0.9rem')
       .attr('class', 'x axis')
       .attr('transform', `translate(0,${height})`)
       .call(xAxis.tickFormat(d3.timeFormat('%d %b %Y')))
@@ -161,12 +167,13 @@ $.getJSON('/api/user_weight/', json => {
       .style('text-anchor', 'end')
       .attr('dx', '-.8em')
       .attr('dy', '.15em')
-      .attr('transform', 'rotate(-45)');
+      // .attr('transform', 'translate(-20,0)')
+      .attr('transform', 'rotate(-25)');
 
     // Create the y-axis and its ticks
     svg
       .append('g')
-      .style('font-size', '11px')
+      .style('font-size', '0.9rem')
       .attr('class', 'y axis')
       .call(yAxis);
 
@@ -188,19 +195,19 @@ $.getJSON('/api/user_weight/', json => {
     .attr('x', width / 2)
     .attr('y', 0 - margin.top / 2)
     .attr('text-anchor', 'middle')
-    .style('font-size', '18px')
+    .style('font-size', '1.5rem')
     // .style('text-decoration', 'underline')
-    .text('Weight Change');
+    .text(`Weight Change (${momentArray[0].format('MMM Do')} to ${today.format('MMM Do')})`);
 
-  // x-axis
+  // x-axis labels
   svg
     .append('text')
     .attr('transform', `translate(${width / 2} ,${height + margin.top + 40})`)
     .style('text-anchor', 'middle')
-    .style('font-size', '14px')
+    .style('font-size', '1.15rem')
     .text('Date');
 
-  // y-axis
+  // y-axis labels
   svg
     .append('text')
     .attr('transform', 'rotate(-90)')
@@ -208,7 +215,7 @@ $.getJSON('/api/user_weight/', json => {
     .attr('x', 0 - height / 2)
     .attr('dy', '1em')
     .style('text-anchor', 'middle')
-    .style('font-size', '14px')
+    .style('font-size', '1.15rem')
     .text('Weight (lbs)');
 
   // add the x-axis grid lines
