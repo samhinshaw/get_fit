@@ -160,7 +160,7 @@ $.getJSON('/api/user_weight/', json => {
     svg
       .append('g')
       .style('font-size', '0.9rem')
-      .attr('class', 'x axis')
+      .attr('class', 'x-axis')
       .attr('transform', `translate(0,${height})`)
       .call(xAxis.tickFormat(d3.timeFormat('%d %b %Y')))
       .selectAll('text')
@@ -174,7 +174,7 @@ $.getJSON('/api/user_weight/', json => {
     svg
       .append('g')
       .style('font-size', '0.9rem')
-      .attr('class', 'y axis')
+      .attr('class', 'y-axis')
       .call(yAxis);
 
     // Draw the actual data!
