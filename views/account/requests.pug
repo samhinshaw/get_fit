@@ -23,7 +23,7 @@ block content
           header.card-header
             p.card-header-title
               | #{request.displayName}
-            .card-header-icon.dropdown.is-hoverable(href='#', aria-label='more options')
+            .card-header-icon.dropdown.is-hoverable.is-right(href='#', aria-label='more options')
               .dropdown-trigger
                 span.icon
                   i.mdi.mdi-chevron-down(aria-hidden='true')
@@ -40,10 +40,12 @@ block content
                       time #{moment(request.timeRequested).format('ddd, MMM Do, h:ma')}
           .card-content
             .content
-              if request.message
+              if request.requestMessage
                 article.message
+                  .message-header
+                    p #{routeInfo.partnerName}'s Request
                   .message-body
-                    | #{request.requestMessage}
+                    p #{request.requestMessage}
               else 
                 article.message.is-warning
                   .message-body

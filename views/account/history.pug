@@ -19,7 +19,7 @@ block content
             | You have yet to win any rewards, keep at it!
       else
        each request, i in approvedRequests
-        +HistoryCard(request)
+        +HistoryCard(request, routeInfo.userName, routeInfo.partnerName)
         br
   //- Modal for copyright info. Hidden until JS click event received.
   .modal#request-modal

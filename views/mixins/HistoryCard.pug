@@ -1,10 +1,10 @@
 //- Mixins included in partials/header.pug
-mixin HistoryCard(request)
+mixin HistoryCard(request, userName, partnerName)
   .card(data-id=request._id)
     header.card-header
       p.card-header-title
         | #{request.displayName}
-      .card-header-icon.dropdown.is-hoverable(href='#', aria-label='more options')
+      .card-header-icon.dropdown.is-hoverable.is-right(href='#', aria-label='more options')
         .dropdown-trigger
           span.icon
             i.mdi.mdi-chevron-down(aria-hidden='true')
@@ -20,25 +20,59 @@ mixin HistoryCard(request)
         case request.status
           when 'approved'
             article.message.is-success
+              .message-header
+                p Your Request
               .message-body
                 if request.requestMessage
-                  | #{request.requestMessage}
+                  p #{request.requestMessage}
                 else 
-                  em You did not provide a message.
+                  p
+                    em You did not provide a message.
+            article.message.is-success
+              .message-header
+                p #{partnerName}'s Response
+              .message-body
+                if request.responseMessage
+                  p #{request.responseMessage}
+                else 
+                  p
+                    em #{partnerName} did not provide a message.
           when 'denied'
             article.message.is-danger
+              .message-header
+                p Your Request
               .message-body
                 if request.requestMessage
-                  | #{request.requestMessage}
+                  p #{request.requestMessage}
                 else 
-                  em You did not provide a message.
+                  p
+                    em You did not provide a message.
+            article.message.is-danger
+              .message-header
+                p #{partnerName}'s Response
+              .message-body
+                if request.responseMessage
+                  p #{request.responseMessage}
+                else 
+                  p
+                    em #{partnerName} did not provide a message.
           default
             article.message
               .message-body
                 if request.requestMessage
-                  | #{request.requestMessage}
+                  p #{request.requestMessage}
                 else 
-                  em You did not provide a message.
+                  p Your Request
+                    em You did not provide a message.
+            article.message
+              .message-header
+                p #{partnerName}'s Response
+              .message-body
+                if request.responseMessage
+                  p #{request.responseMessage}
+                else 
+                  p
+                    em #{partnerName} did not provide a message.
     footer.card-footer
       p.card-footer-item
         em Sent:&nbsp;

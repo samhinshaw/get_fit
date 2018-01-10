@@ -19,7 +19,7 @@ block content
         .card.overview-card
           header.card-header(class=`is-${user.username}`)
             a.card-header-title.is-size-4(href='/user') #{routeInfo.userName}
-            .card-header-icon.dropdown.is-hoverable(href='#', aria-label='more options')
+            .card-header-icon.dropdown.is-hoverable.is-right(href='#', aria-label='more options')
               .dropdown-trigger
                 span.icon
                   i.mdi.mdi-chevron-down(aria-hidden='true')
@@ -46,7 +46,7 @@ block content
         .card.overview-card
           header.card-header(class=`is-${user.partner}`)
             a.card-header-title.is-size-4(href='/partner') #{routeInfo.partnerName}
-            .card-header-icon.dropdown.is-hoverable(href='#', aria-label='more options')
+            .card-header-icon.dropdown.is-hoverable.is-right(href='#', aria-label='more options')
               .dropdown-trigger
                 span.icon
                   i.mdi.mdi-chevron-down(aria-hidden='true')
