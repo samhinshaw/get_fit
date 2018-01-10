@@ -41,7 +41,7 @@ block content
           .card-content
             .content
               if request.requestMessage
-                article.message
+                article.message(class=`is-${partner.username}`)
                   .message-header
                     p #{routeInfo.partnerName}'s Request
                   .message-body

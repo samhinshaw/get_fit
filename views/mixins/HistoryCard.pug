@@ -19,7 +19,7 @@ mixin HistoryCard(request, userName, partnerName)
       .content
         case request.status
           when 'approved'
-            article.message.is-success
+            article.message(class=`is-${user.username}`)
               .message-header
                 p Your Request
               .message-body
@@ -38,7 +38,7 @@ mixin HistoryCard(request, userName, partnerName)
                   p
                     em #{partnerName} did not provide a message.
           when 'denied'
-            article.message.is-danger
+            article.message(class=`is-${user.username}`)
               .message-header
                 p Your Request
               .message-body
@@ -57,7 +57,7 @@ mixin HistoryCard(request, userName, partnerName)
                   p
                     em #{partnerName} did not provide a message.
           default
-            article.message
+            article.message(class=`is-${user.username}`)
               .message-body
                 if request.requestMessage
                   p #{request.requestMessage}

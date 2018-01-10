@@ -8,6 +8,8 @@ block subnav
 
 block content
   - const moment = require('moment-timezone');
+  - const userName = user.firstname.charAt(0).toUpperCase() + user.firstname.slice(1)
+  - const partnerName = partner.firstname.charAt(0).toUpperCase() + partner.firstname.slice(1)
   //- - moment().format();
   .columns.is-centered.is-desktop
     .column.is-7-desktop.is-6-fullhd
@@ -19,9 +21,9 @@ block content
             | You have yet to win any rewards, keep at it!
       else
        each request, i in approvedRequests
-        +HistoryCard(request, routeInfo.userName, routeInfo.partnerName)
+        +HistoryCard(request, userName, partnerName)
         br
-  //- Modal for copyright info. Hidden until JS click event received.
+  //- Request Modal. Hidden until JS click event received.
   .modal#request-modal
     .modal-background
     .modal-card
