@@ -184,7 +184,7 @@ for date in arrow.Arrow.range(
         exerEntries = MFPexer[0].entries
 
     except:
-        sys.exit('We were not able to retrieve your exercise for this date!')
+        print('We were not able to retrieve your exercise for this date!')
 
     print('Processing MyFitnessPal data...')
 
