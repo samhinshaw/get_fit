@@ -252,13 +252,15 @@ for date in arrow.Arrow.range(
             points = round(points, 1)
             totExerPoints += points
 
-            exercises.append({
-                'name': renamedEx,
-                'minutes': exerMins,
-                'cals': exerCals,
-                'points': points,
-                'icon': exerIcon
-            })
+            # Leave out step-counting for now
+            if renamedEx != "steps":
+                exercises.append({
+                    'name': renamedEx,
+                    'minutes': exerMins,
+                    'cals': exerCals,
+                    'points': points,
+                    'icon': exerIcon
+                })
 
     # Double check everything got rounded properly
     totExerPoints = round(totExerPoints, 1)
