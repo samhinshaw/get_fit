@@ -6,14 +6,15 @@ const passport = require('passport');
 const mongoose = require('mongoose');
 const Moment = require('moment-timezone');
 const MomentRange = require('moment-range');
-
-const moment = MomentRange.extendMoment(Moment);
-
 // Setup brute force prevention
 const ExpressBrute = require('express-brute');
 const MongooseStore = require('express-brute-mongoose');
+// euthentication assurance
+const auth = require('../config/auth');
+
 const bruteForceSchema = require('express-brute-mongoose/dist/schema');
 
+const moment = MomentRange.extendMoment(Moment);
 const model = mongoose.model('bruteforce', bruteForceSchema);
 const store = new MongooseStore(model);
 
@@ -91,6 +92,21 @@ router.get('/logout', (req, res) => {
   req.logout();
   req.flash('info', 'Logged out');
   res.redirect('/');
+});
+
+router.get('/overview', auth.ensureAuthenticated, (req, res) => {
+  res.render('overview', {
+    routeInfo: {
+      heroType: 'dark',
+      route: `/overview`,
+      userName:
+        res.locals.user.firstname.charAt(0).toUpperCase() + res.locals.user.firstname.slice(1) ||
+        null,
+      partnerName:
+        res.locals.partner.firstname.charAt(0).toUpperCase() +
+          res.locals.partner.firstname.slice(1).toLowerCase() || null
+    }
+  });
 });
 
 // Handle Registration POSTS

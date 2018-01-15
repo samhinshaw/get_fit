@@ -357,46 +357,46 @@ app.get('/', (req, res) => {
 });
 
 // Bring in User Data!
-app.get('/overview', auth.ensureAuthenticated, (req, res) => {
-  // Otherwise, query DB for entries to display!
-  const user = res.locals.user.username;
-  const partner = res.locals.partner.username;
-  Entry.find(
-    {
-      date: {
-        $gte: res.locals.twoWeeksAgo.toDate(),
-        $lte: res.locals.today.toDate()
-      }
-    },
-    (err, entries) => {
-      if (err) {
-        console.log(err);
-      }
-      // If we get the results back, split by user
-      const userEntries = entries.filter(entry => entry.user === user);
-      const partnerEntries = entries.filter(entry => entry.user === partner);
+// app.get('/overview', auth.ensureAuthenticated, (req, res) => {
+//   // Otherwise, query DB for entries to display!
+//   const user = res.locals.user.username;
+//   const partner = res.locals.partner.username;
+//   Entry.find(
+//     {
+//       date: {
+//         $gte: res.locals.twoWeeksAgo.toDate(),
+//         $lte: res.locals.today.toDate()
+//       }
+//     },
+//     (err, entries) => {
+//       if (err) {
+//         console.log(err);
+//       }
+//       // If we get the results back, split by user
+//       const userEntries = entries.filter(entry => entry.user === user);
+//       const partnerEntries = entries.filter(entry => entry.user === partner);
 
-      // ...and order by date
-      const sortedUserEntries = _.orderBy(userEntries, 'date', 'desc');
-      const sortedPartnerEntries = _.orderBy(partnerEntries, 'date', 'desc');
+//       // ...and order by date
+//       const sortedUserEntries = _.orderBy(userEntries, 'date', 'desc');
+//       const sortedPartnerEntries = _.orderBy(partnerEntries, 'date', 'desc');
 
-      res.render('overview', {
-        userEntries: sortedUserEntries,
-        partnerEntries: sortedPartnerEntries,
-        routeInfo: {
-          heroType: 'dark',
-          route: `/overview`,
-          userName:
-            res.locals.user.firstname.charAt(0).toUpperCase() +
-              res.locals.user.firstname.slice(1) || null,
-          partnerName:
-            res.locals.partner.firstname.charAt(0).toUpperCase() +
-              res.locals.partner.firstname.slice(1).toLowerCase() || null
-        }
-      });
-    }
-  );
-});
+//       res.render('overview', {
+//         userEntries: sortedUserEntries,
+//         partnerEntries: sortedPartnerEntries,
+//         routeInfo: {
+//           heroType: 'dark',
+//           route: `/overview`,
+//           userName:
+//             res.locals.user.firstname.charAt(0).toUpperCase() +
+//               res.locals.user.firstname.slice(1) || null,
+//           partnerName:
+//             res.locals.partner.firstname.charAt(0).toUpperCase() +
+//               res.locals.partner.firstname.slice(1).toLowerCase() || null
+//         }
+//       });
+//     }
+//   );
+// });
 
 // Send user data to client side (via cookie) when user is logged in
 app.get('/api/user_data', auth.ensureAuthenticated, (req, res) => {
