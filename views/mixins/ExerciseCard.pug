@@ -14,8 +14,10 @@ mixin ExerciseCard(entry)
       .card.exercise-card
         header.card-header
           p.card-header-title
-            a.icon.is-small(href=`http://www.myfitnesspal.com/food/diary?date=${datePretty}#complete_day`, target='_blank')
-              if entry.complete
+            a.icon.is-small(href=`http://www.myfitnesspal.com/food/diary?date=${datePretty}#complete_day`, target='_blank' class=(entry.isEmpty  ? 'has-text-danger' : false))
+              if entry.isEmpty
+                i.mdi.mdi-alert-circle-outline
+              else if entry.complete
                 i.mdi.mdi-checkbox-marked-circle-outline
               else
                 i.mdi.mdi-checkbox-blank-circle-outline
@@ -45,7 +47,8 @@ mixin ExerciseCard(entry)
               //- span  &middot; 
               //- First check to see if this entry was reported empty
               if entry.isEmpty
-                span No data yet!
+                p.has-text-centered
+                  | Hmm, nothing here yet! 🧐
               //- Then, if left over calories, report remaining!
               else if entry.netCals > 0
                 span #{entry.netCals} 
@@ -68,30 +71,30 @@ mixin ExerciseCard(entry)
                     span cals over
               else if entry.netCals === 0
                 span you hit your goal EXACTLY
-            if entry.exercise.length > 0
-              .table-container
-                table.table.is-striped
-                  thead
-                    th
-                    th exercise
-                    th points
-                    th mins
-                    th cals
-                  tbody
-                    each exercise, i in entry.exercise
-                      tr
-                        td.exercise-icon
-                          .icon
-                            img(src='/images/icons/' + exercise.icon, alt=exercise.name)
-                        td #{exercise.name}
-                        case exercise.points
-                          when -1
-                          when 1
-                            td #{exercise.points}
-                          default 
-                            td #{exercise.points}
-                        td #{exercise.minutes}
-                        td #{exercise.cals}
+              if entry.exercise.length > 0
+                .table-container
+                  table.table
+                    thead
+                      th
+                      th exercise
+                      th points
+                      th mins
+                      th cals
+                    tbody
+                      each exercise, i in entry.exercise
+                        tr
+                          td.exercise-icon
+                            .icon
+                              img(src='/images/icons/' + exercise.icon, alt=exercise.name)
+                          td #{exercise.name}
+                          case exercise.points
+                            when -1
+                            when 1
+                              td #{exercise.points}
+                            default 
+                              td #{exercise.points}
+                          td #{exercise.minutes}
+                          td #{exercise.cals}
         footer.card-footer
           a.card-footer-item
             .button.is-fullwidth.is-fullheight.update-entry(data-id=entry._id, data-date=datePretty, href='#!')

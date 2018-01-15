@@ -17,8 +17,9 @@ const GoogleSpreadsheet = require('google-spreadsheet');
 
 const config = require('./config/database');
 const secretConfig = require('./config/secret_config.json');
-const auth = require('./config/auth.js');
+const auth = require('./config/auth');
 const googleCreds = require('./config/client_secret.json');
+
 const MongoStore = require('connect-mongo')(session);
 
 const nodeConfig = secretConfig.node;
