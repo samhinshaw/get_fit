@@ -1,9 +1,14 @@
-// This will contain all '/data/' routes
+// This will contain all '/partner/' routes
 const PythonShell = require('python-shell');
 const express = require('express');
 const _ = require('lodash');
+const Moment = require('moment-timezone');
+const MomentRange = require('moment-range');
+
+const moment = MomentRange.extendMoment(Moment);
+
 // const request = require('request');
-const auth = require('../config/auth.js');
+const auth = require('../config/auth');
 
 // datetime functions
 // const moment = require('moment');
@@ -53,6 +58,9 @@ router.get('/', auth.ensureAuthenticated, (req, res) => {
   //   day = day.clone().add(1, 'd');
   // }
 
+  const displayRange = moment.range(res.locals.twoWeeksAgo, res.locals.today);
+  const displayRangeArray = Array.from(displayRange.by('day'));
+
   Entry.find(
     {
       // date: {
@@ -68,8 +76,25 @@ router.get('/', auth.ensureAuthenticated, (req, res) => {
       if (err) {
         console.log(err);
       } else {
+        const displayRangeFilled = displayRangeArray.map(emptyDate => {
+          const dateIndex = entries.findIndex(entry => moment(entry.date).isSame(emptyDate));
+          if (dateIndex > -1) {
+            return entries[dateIndex];
+          }
+          return {
+            date: emptyDate.toDate(),
+            exercise: [],
+            totalCals: 0,
+            goalCals: 0,
+            netCals: 0,
+            isEmpty: true,
+            complete: false,
+            points: -1,
+            user: res.locals.partner.username
+          };
+        });
         // If we get the results back, reorder the dates
-        const sortedEntries = _.orderBy(entries, 'date', 'desc');
+        const sortedEntries = _.orderBy(displayRangeFilled, 'date', 'desc');
 
         // render page
         res.render('partner/index', {

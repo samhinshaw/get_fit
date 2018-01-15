@@ -1,5 +1,4 @@
-// This will contain all '/data/' routes
-
+// This will contain all '/user/' routes
 const PythonShell = require('python-shell');
 const express = require('express');
 const _ = require('lodash');

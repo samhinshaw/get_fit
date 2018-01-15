@@ -47,8 +47,9 @@ mixin ExerciseCard(entry)
               //- span  &middot; 
               //- First check to see if this entry was reported empty
               if entry.isEmpty
-                p.has-text-centered
-                  | Hmm, nothing here yet! 🧐
+                if entry.exercise.length === 0
+                  p.has-text-centered
+                    | Hmm, nothing here yet!
               //- Then, if left over calories, report remaining!
               else if entry.netCals > 0
                 span #{entry.netCals} 
