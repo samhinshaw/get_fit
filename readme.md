@@ -1,5 +1,21 @@
 # Get Fit!
 
+## Notes
+
+To get a url with authentication, we just need to pass the authentication cookie! Get the authentication cookie from an authenticated session with browser dev tools: [Application] -> [Cookies], and replace `<cookie string>` with the value, and (if necessary), `connect.sid` with the cookie name. 
+
+For `curl`:
+
+```
+curl --cookie "connect.sid=<cookie string>" http://localhost:8005/user
+```
+
+For ApacheBench (`ab`):
+
+```
+ab -k -c 20 -n 250 -C "connect.sid=<cookie string>" "http://localhost:8005/user"
+```
+
 ## Important!!
 
 - Change Flash Messaging Placeholder on Register Page

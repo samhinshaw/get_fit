@@ -219,18 +219,24 @@ app.use(
       // handling async errors
 
       // Get and concat all point tallies
-      const userWeeks = await mongoMiddleware.queryWeeksFromMongo(res.locals.user.username);
+      // const userWeeks = await mongoMiddleware.queryWeeksFromMongo(res.locals.user.username);
       const userCustom = await mongoMiddleware.queryCustomPeriodsFromMongo(
         res.locals.user.username,
         res.locals.customRanges
       );
-      const partnerWeeks = await mongoMiddleware.queryWeeksFromMongo(res.locals.partner.username);
+      // const partnerWeeks = await mongoMiddleware.queryWeeksFromMongo(res.locals.partner.username);
       const partnerCustom = await mongoMiddleware.queryCustomPeriodsFromMongo(
         res.locals.partner.username,
         res.locals.customRanges
       );
 
-      const periods = _.union(userWeeks, userCustom, partnerWeeks, partnerCustom);
+      // NOTE: as of 2018-01-14, not using week tallies, since it turned out we
+      // weren't rendering these anywhere or using them in any calculations.
+      // It'd be nice to have them added up in the UI, but for now just cutting
+      // them out. Next up is intelligent caching of point tallies!
+
+      // const periods = _.union(userWeeks, userCustom, partnerWeeks, partnerCustom);
+      const periods = _.union(userCustom, partnerCustom);
 
       // make the points array available to the view engine
       res.locals.pointTotals = periods;
