@@ -192,7 +192,25 @@ for date in arrow.Arrow.range(
     exercises = []
     totExerPoints = 0
 
-    # loop through all of the exercises in a day (if more than 0)
+    # set up empty array especially to handle walking (via RunKeeper pocket track)
+    walking = {
+        'name': 'walking',
+        'minutes': 0,
+        'cals': 0,
+        'points': 0,
+        'icon': 'walking.png'
+    }
+    steps = {
+        'name': 'steps',
+        'minutes': 0,
+        'cals': 0,
+        'points': 0,
+        'icon': 'walking.png'
+    }
+
+    # loop through all of the exercises in a day (if more than 0) This might be
+    # ideal as a while loop, but this works fine too. I like it because we can
+    # use n without manually counting.
     if len(exerEntries) > 0:
         for n in range(0, len(exerEntries)):
 
@@ -239,7 +257,9 @@ for date in arrow.Arrow.range(
                 exerIcon = 'exercise.png'
 
             # award points based on workout type
-            if renamedEx in exerTypeDict["lightExercise"]:
+            if renamedEx in exerTypeDict["veryLightExercise"]:
+                points = (exerMins / 120)
+            elif renamedEx in exerTypeDict["lightExercise"]:
                 points = (exerMins / 60)
             elif renamedEx in exerTypeDict["cardio"]:
                 points = (exerMins / 30)
@@ -248,12 +268,25 @@ for date in arrow.Arrow.range(
             else:
                 points = 0
 
-            # Then round to 2 decimal places
-            points = round(points, 1)
-            totExerPoints += points
+            # NOW, if this is walking or step-counting, let's concatenate the values
+            if renamedEx == "walking":
+                # let's use 2 decimal places for now, and then shorten to 1 after concat
+                points = round(points, 2)
+                walking['points'] += points
+                walking['minutes'] += exerMins
+                walking['cals'] += exerCals
+            elif renamedEx == "steps":
+                # let's use 2 decimal places for now, and then shorten to 1 after concat
+                points = round(points, 2)
+                steps['points'] += points
+                steps['minutes'] += exerMins
+                steps['cals'] += exerCals
+            else:
+                # Round to 1 decimal place
+                points = round(points, 1)
+                totExerPoints += points
 
-            # Leave out step-counting for now
-            if renamedEx != "steps":
+                # Leave out step-counting for now
                 exercises.append({
                     'name': renamedEx,
                     'minutes': exerMins,
@@ -261,6 +294,17 @@ for date in arrow.Arrow.range(
                     'points': points,
                     'icon': exerIcon
                 })
+
+    # Briefly, add the concatenated steps and walking to the exercise list if
+    # they are non-zero.
+    if walking['points'] > 0:
+        # take the total number of points from walking and round them before saving
+        walking['points'] = round(walking['points'], 1)
+        exercises.append(walking)
+    if steps['points'] > 0:
+        # take the total number of points from walking and round them before saving
+        steps['points'] = round(steps['points'], 1)
+        exercises.append(steps)
 
     # Double check everything got rounded properly
     totExerPoints = round(totExerPoints, 1)
