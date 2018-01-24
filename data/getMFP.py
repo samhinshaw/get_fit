@@ -88,7 +88,8 @@ iconDict = json.loads(parsedDict)['icons']
 exerTypeDict = json.loads(parsedDict)['exerciseTypes']
 
 print('Connecting to MongoDB database...')
-secretJSON = open(os.path.join('config', 'secret_config.json')).read()
+secretJSON = open(os.path.join('config', 'secret',
+                               'secret_config.json')).read()
 secretConfig = json.loads(secretJSON)
 secretPyConfig = secretConfig['python']
 

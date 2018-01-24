@@ -29,7 +29,7 @@ module.exports = {
       path: '/home/sam/serve/get_fit',
       ssh_options: 'ForwardAgent=yes',
       'post-deploy':
-        'yarn install && yarn build && pm2 startOrRestart getfit.config.js --env production'
+        'ln -s ~/secret/get_fit/* ./config/secret && yarn install && yarn build && pm2 startOrRestart getfit.config.js --env production'
     }
     // dev: {
     //   user: 'node',
