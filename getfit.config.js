@@ -32,8 +32,7 @@ module.exports = {
         'ln -sf ~/secret/get_fit/* ./config/secret && yarn install && yarn clean && yarn build && pm2 startOrRestart getfit.config.js --env production',
       env: {
         PATH:
-          '/home/sam/.yarn/bin:/home/sam/.npm-global/bin:/home/sam/.miniconda3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/home/sam/.local/bin',
-        NODE_ENV: 'production'
+          '/home/sam/.yarn/bin:/home/sam/.npm-global/bin:/home/sam/.miniconda3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/home/sam/.local/bin'
       }
     }
     // dev: {
