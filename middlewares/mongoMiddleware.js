@@ -10,86 +10,89 @@ const MomentRange = require('moment-range');
 const moment = MomentRange.extendMoment(Moment);
 
 // Initialize Moment & Today Object
-// moment().format();
+moment().format();
 
 // Bring in user models
 const Entry = require('../models/entry');
 
 const Request = require('../models/request');
 
-async function queryWeeksFromMongo(user) {
+// async function queryWeeksFromMongo(user) {
+//   // First get all db entries for that user
+
+//   const entries = await Entry.find({ user }, (err, res) => {
+//     if (err) {
+//       console.log(err);
+//     }
+//     return res;
+//   });
+
+//   // or remove redundancies in-line
+//   const weekMondays = await entries.reduce((weeks, entry) => {
+//     const monday = moment.tz(entry.date, 'US/Pacific').startOf('isoweek');
+
+//     // const weekPeriod = entry.reduce;
+//     // can't compare moments directly, so we have to use moment's
+//     // built in comparisons
+//     if (weeks.length === 0) {
+//       weeks.push(monday);
+//     } else if (weeks.length === 1) {
+//       if (!weeks[0].isSame(monday, 'day')) {
+//         weeks.push(monday);
+//       }
+//     } else {
+//       const min = moment.min(weeks);
+//       const max = moment.max(weeks);
+//       if (!monday.isBetween(min, max, 'day', '[]')) {
+//         weeks.push(monday);
+//       }
+//     }
+//     return weeks;
+//   }, []);
+
+//   const weekPeriods = await weekMondays.reduce((weekPeriodResult, monday, index) => {
+//     const sunday = monday
+//       .clone()
+//       .endOf('week')
+//       .startOf('day');
+
+//     // For each date that exists in this period, sum the points
+//     const weekPoints = entries.reduce((points, entry) => {
+//       const date = moment.tz(entry.date, 'US/Pacific');
+//       if (date.isBetween(monday, sunday, 'day', '[]')) {
+//         return points + entry.points;
+//       }
+//       return points;
+//     }, 0);
+
+//     weekPeriodResult.push({
+//       key: `Week ${index + 1}`,
+//       startDate: monday,
+//       endDate: sunday,
+//       points: weekPoints.toFixed(1),
+//       user
+//     });
+
+//     return weekPeriodResult;
+//   }, []);
+
+//   return weekPeriods;
+// }
+
+// Old method would pass in all custom periods. New method passes in one custom
+// period at a time
+async function queryCustomPeriodsFromMongo(user, customRange) {
   // First get all db entries for that user
-
-  const entries = await Entry.find({ user }, (err, res) => {
-    if (err) {
-      console.log(err);
-    }
-    return res;
-  });
-
-  // or remove redundancies in-line
-  const weekMondays = await entries.reduce((weeks, entry) => {
-    const monday = moment.tz(entry.date, 'US/Pacific').startOf('isoweek');
-
-    // const weekPeriod = entry.reduce;
-    // can't compare moments directly, so we have to use moment's
-    // built in comparisons
-    if (weeks.length === 0) {
-      weeks.push(monday);
-    } else if (weeks.length === 1) {
-      if (!weeks[0].isSame(monday, 'day')) {
-        weeks.push(monday);
-      }
-    } else {
-      const min = moment.min(weeks);
-      const max = moment.max(weeks);
-      if (!monday.isBetween(min, max, 'day', '[]')) {
-        weeks.push(monday);
-      }
-    }
-    return weeks;
-  }, []);
-
-  const weekPeriods = await weekMondays.reduce((weekPeriodResult, monday, index) => {
-    const sunday = monday
-      .clone()
-      .endOf('week')
-      .startOf('day');
-
-    // For each date that exists in this period, sum the points
-    const weekPoints = entries.reduce((points, entry) => {
-      const date = moment.tz(entry.date, 'US/Pacific');
-      if (date.isBetween(monday, sunday, 'day', '[]')) {
-        return points + entry.points;
-      }
-      return points;
-    }, 0);
-
-    weekPeriodResult.push({
-      key: `Week ${index + 1}`,
-      startDate: monday,
-      endDate: sunday,
-      points: weekPoints.toFixed(1),
+  const entries = await Entry.find(
+    {
+      date: {
+        $gte: customRange.startDate.toDate(),
+        $lte: customRange.endDate.toDate()
+      },
       user
-    });
-
-    return weekPeriodResult;
-  }, []);
-
-  return weekPeriods;
-}
-
-async function queryCustomPeriodsFromMongo(user, customRanges) {
-  // First get all db entries for that user
-  const entries = await Entry.find({ user }, (err, res) => {
-    if (err) {
-      console.log(err);
-    }
-    return res;
-  });
-
-  const requests = await Request.find(
-    { requester: user, status: ['approved', 'unapproved'] },
+    },
+    // for now JUST return the number of points!
+    { points: 1 },
     (err, res) => {
       if (err) {
         console.log(err);
@@ -98,46 +101,52 @@ async function queryCustomPeriodsFromMongo(user, customRanges) {
     }
   );
 
-  const customPeriods = await customRanges.reduce((customPeriodResult, customPeriod) => {
-    // For each date that exists in this period, sum the points
-    const customPeriodPoints = entries.reduce((points, entry) => {
-      const date = moment.tz(entry.date, 'US/Pacific');
-      if (date.isBetween(customPeriod.startDate, customPeriod.endDate, 'day', '[]')) {
-        return points + entry.points;
+  const requests = await Request.find(
+    {
+      timeRequested: {
+        $gte: customRange.startDate.toDate(),
+        $lte: customRange.endDate.toDate()
+      },
+      requester: user,
+      status: ['approved', 'unapproved']
+    },
+    // just return the number of points
+    { pointCost: 1 },
+    (err, res) => {
+      if (err) {
+        console.log(err);
       }
-      return points;
-    }, 0);
-
-    let totalForPeriod;
-
-    // IF we're counting from the start, subtract requests, since that's our running TOTAL.
-    // Otherwise, we just want to know the number of points EARNED in that period.
-    if (customPeriod.key === 'sinceStart') {
-      const customPeriodRequests = requests.reduce((points, request) => {
-        const date = moment.tz(request.timeRequested, 'US/Pacific');
-        if (date.isBetween(customPeriod.startDate, customPeriod.endDate, 'day', '[]')) {
-          return points + request.pointCost;
-        }
-        return points;
-      }, 0);
-
-      totalForPeriod = customPeriodPoints - customPeriodRequests;
-    } else {
-      totalForPeriod = customPeriodPoints;
+      return res;
     }
+  );
 
-    customPeriodResult.push({
-      key: customPeriod.key,
-      startDate: customPeriod.startDate,
-      endDate: customPeriod.endDate,
-      points: totalForPeriod.toFixed(1),
-      user
-    });
+  // For each date that exists in this period, sum the points
+  const customPeriodPoints = entries.reduce((points, entry) => points + entry.points, 0);
 
-    return customPeriodResult;
-  }, []);
+  let totalForPeriod;
 
-  return customPeriods;
+  // IF we're counting from the start, subtract requests, since that's our
+  // running TOTAL. Otherwise, we just want to know the number of points EARNED
+  // in that period. Note to self: this should probably NOT BE HARDCODED. Could
+  // be another argument passed, like a boolean value on whether to subtract
+  // requests
+  if (customRange.key === 'sinceStart') {
+    const customPeriodRequests = requests.reduce(
+      (points, request) => points + request.pointCost,
+      0
+    );
+    totalForPeriod = customPeriodPoints - customPeriodRequests;
+  } else {
+    totalForPeriod = customPeriodPoints;
+  }
+
+  return {
+    key: customRange.key,
+    startDate: customRange.startDate,
+    endDate: customRange.endDate,
+    points: totalForPeriod.toFixed(1),
+    user
+  };
 }
 
 // async function getSortedEntries(user, startDate, endDate) {
@@ -179,7 +188,7 @@ async function getPendingRequests(partner) {
 }
 
 module.exports = {
-  queryWeeksFromMongo,
+  // queryWeeksFromMongo,
   queryCustomPeriodsFromMongo,
   // getSortedEntries,
   getPendingRequests

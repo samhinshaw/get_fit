@@ -219,6 +219,9 @@ for date in arrow.Arrow.range(
             exerMins = exerEntries[n]['minutes']
             exerCals = exerEntries[n]['calories burned']
 
+            if exerMins is None:
+                exerMins = 0
+
             exerciseHits = []
             # check for exercises and set name to key
             for key in exerciseDict:
@@ -253,7 +256,7 @@ for date in arrow.Arrow.range(
             try:
                 exerIcon = iconDict[renamedEx]
             # if no hits, use generic exercise icons
-            except:
+            except KeyError:
                 exerIcon = 'exercise.png'
 
             # award points based on workout type
@@ -276,11 +279,14 @@ for date in arrow.Arrow.range(
                 walking['minutes'] += exerMins
                 walking['cals'] += exerCals
             elif renamedEx == "steps":
-                # let's use 2 decimal places for now, and then shorten to 1 after concat
-                points = round(points, 2)
-                steps['points'] += points
-                steps['minutes'] += exerMins
-                steps['cals'] += exerCals
+                try:
+                    # let's use 2 decimal places for now, and then shorten to 1 after concat
+                    points = round(points, 2)
+                    steps['points'] += points
+                    steps['cals'] += exerCals
+                    steps['minutes'] += exerMins
+                except TypeError:
+                    print(renamedEx + "could not be properly added")
             else:
                 # Round to 1 decimal place
                 points = round(points, 1)
@@ -300,10 +306,14 @@ for date in arrow.Arrow.range(
     if walking['points'] > 0:
         # take the total number of points from walking and round them before saving
         walking['points'] = round(walking['points'], 1)
+        # then add them to that day's total exercise points
+        totExerPoints += walking['points']
         exercises.append(walking)
     if steps['points'] > 0:
         # take the total number of points from walking and round them before saving
         steps['points'] = round(steps['points'], 1)
+        # then add them to that day's total exercise points
+        totExerPoints += steps['points']
         exercises.append(steps)
 
     # Double check everything got rounded properly

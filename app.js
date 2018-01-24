@@ -189,20 +189,26 @@ app.use((req, res, next) => {
 
     const startOfTracking = moment.tz(config.startDate, 'MM-DD-YYYY', 'US/Pacific').startOf('day');
     // res.locals.startOfTracking = startOfTracking;
-    const customRanges = [
-      {
-        // We started Monday, Sept 18th
-        key: 'sinceStart',
-        startDate: startOfTracking,
-        endDate: today
-      },
-      {
-        key: 'pastTwoWeeks',
-        startDate: twoWeeksAgo,
-        endDate: today
-      }
-    ];
-    res.locals.customRanges = customRanges; // do we want to pass an object instead?
+    const customRange = {
+      // We started Monday, Sept 18th
+      key: 'sinceStart',
+      startDate: startOfTracking,
+      endDate: today
+    };
+    // const customRanges = [
+    //   {
+    //     // We started Monday, Sept 18th
+    //     key: 'sinceStart',
+    //     startDate: startOfTracking,
+    //     endDate: today
+    //   },
+    //   {
+    //     key: 'pastTwoWeeks',
+    //     startDate: twoWeeksAgo,
+    //     endDate: today
+    //   }
+    // ];
+    res.locals.customRange = customRange; // do we want to pass an object instead?
   }
   next();
 });
@@ -222,12 +228,12 @@ app.use(
       // const userWeeks = await mongoMiddleware.queryWeeksFromMongo(res.locals.user.username);
       const userCustom = await mongoMiddleware.queryCustomPeriodsFromMongo(
         res.locals.user.username,
-        res.locals.customRanges
+        res.locals.customRange
       );
       // const partnerWeeks = await mongoMiddleware.queryWeeksFromMongo(res.locals.partner.username);
       const partnerCustom = await mongoMiddleware.queryCustomPeriodsFromMongo(
         res.locals.partner.username,
-        res.locals.customRanges
+        res.locals.customRange
       );
 
       // NOTE: as of 2018-01-14, not using week tallies, since it turned out we
@@ -236,75 +242,80 @@ app.use(
       // them out. Next up is intelligent caching of point tallies!
 
       // const periods = _.union(userWeeks, userCustom, partnerWeeks, partnerCustom);
-      const periods = _.union(userCustom, partnerCustom);
+      // const periods = _.union(userCustom, partnerCustom);
 
       // make the points array available to the view engine
-      res.locals.pointTotals = periods;
+      // res.locals.pointTotals = periods;
 
-      // Save to periods collection
+      // As of 2018-01-23, not saving point totals into database, will just
+      // recalculate every time
 
-      periods.forEach(entry => {
-        const period = {
-          key: entry.key,
-          startDate: entry.startDate,
-          endDate: entry.endDate,
-          points: entry.points,
-          user: entry.user
-        };
-        // resave points
-        Period.findOneAndUpdate(
-          {
-            key: period.key,
-            user: period.user
-          },
-          { $set: period },
-          { upsert: true },
-          saveErr => {
-            if (saveErr) {
-              console.log(saveErr);
-            }
-          }
-        );
-      });
+      // periods.forEach(entry => {
+      //   const period = {
+      //     key: entry.key,
+      //     startDate: entry.startDate,
+      //     endDate: entry.endDate,
+      //     points: entry.points,
+      //     user: entry.user
+      //   };
+      //   // resave points
+      //   Period.findOneAndUpdate(
+      //     {
+      //       key: period.key,
+      //       user: period.user
+      //     },
+      //     { $set: period },
+      //     { upsert: true },
+      //     saveErr => {
+      //       if (saveErr) {
+      //         console.log(saveErr);
+      //       }
+      //     }
+      //   );
+      // });
 
       // make the current running total easily accessible. if more specific ones
       // needed, we can get those within the views template
       // Array.filter to find ALL (returns array even if only one match)
-      const pointTallies = periods.filter(period => period.key === 'sinceStart');
+      // const pointTallies = periods.filter(period => period.key === 'sinceStart');
 
       // Array.find to find the FIRST match. returns the item (not an array), but
       // will only ever find one
-      const userPointTally = pointTallies.find(period => period.user === res.locals.user.username);
-      const partnerPointTally = pointTallies.find(
-        period => period.user === res.locals.partner.username
-      );
+      // const userPointTally = pointTallies.find(period => period.user === res.locals.user.username);
+      // const partnerPointTally = pointTallies.find(
+      //   period => period.user === res.locals.partner.username
+      // );
 
+      // const pointTally = {
+      //   user: parseFloat(userPointTally.points),
+      //   partner: parseFloat(partnerPointTally.points)
+      // };
       const pointTally = {
-        user: parseFloat(userPointTally.points),
-        partner: parseFloat(partnerPointTally.points)
+        user: parseFloat(userCustom.points),
+        partner: parseFloat(partnerCustom.points)
       };
 
       // make the point tallies array available to the view engine
       res.locals.pointTally = pointTally;
 
-      pointTallies.forEach(period => {
-        User.update(
-          {
-            username: period.user
-          },
-          {
-            $set: {
-              currentPoints: period.points
-            }
-          },
-          { upsert: true },
-          saveErr => {
-            if (saveErr) {
-              console.log(saveErr);
-            }
-          }
-        );
-      });
+      // pointTallies.forEach(period => {
+      //   User.update(
+      //     {
+      //       username: period.user
+      //     },
+      //     {
+      //       $set: {
+      //         currentPoints: period.points
+      //       }
+      //     },
+      //     { upsert: true },
+      //     saveErr => {
+      //       if (saveErr) {
+      //         console.log(saveErr);
+      //       }
+      //     }
+      //   );
+      // });
     }
     next();
   })
