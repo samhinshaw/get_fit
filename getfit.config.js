@@ -6,7 +6,7 @@ module.exports = {
     // First application
     {
       name: 'getfit',
-      script: 'yarn',
+      script: 'yarn.js',
       args: 'prod',
       env: {
         NODE_ENV: 'development'
