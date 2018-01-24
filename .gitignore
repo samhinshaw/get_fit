@@ -6,8 +6,11 @@ samGStoken.rds
 .vscode
 *.pkl
 .sass-cache
-config/database.js
+secret_config.json
 secret_config.js
-config/client_secret.js
-config/ifttt.js
+client_secret.json
+client_secret.js
+ifttt.json
+ifttt.js
 benchmarking
+dist
