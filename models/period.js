@@ -2,7 +2,7 @@
 // exist in a NoSQL database. This structures it on the application level rather
 // than the database level (as with a SQL database)
 
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema;
 
@@ -35,4 +35,4 @@ const periodSchema = new Schema(
 );
 
 const Period = mongoose.model('period', periodSchema);
-module.exports = Period;
+export default Period;

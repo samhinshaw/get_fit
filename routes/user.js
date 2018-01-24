@@ -1,24 +1,16 @@
 // This will contain all '/user/' routes
-const PythonShell = require('python-shell');
-const express = require('express');
-const _ = require('lodash');
-const Moment = require('moment-timezone');
-const MomentRange = require('moment-range');
+import PythonShell from 'python-shell';
+import express from 'express';
+import _ from 'lodash';
+import Moment from 'moment-timezone';
+import { extendMoment } from 'moment-range';
+import ensureAuthenticated from '../config/auth';
 
-const moment = MomentRange.extendMoment(Moment);
+import Entry from '../models/entry';
+
+const moment = extendMoment(Moment);
 
 // const request = require('request');
-const auth = require('../config/auth');
-
-// datetime functions
-// const moment = require('moment');
-// const moment = require('moment-timezone');
-// const mongoMiddleware = require('../middlewares/mongoMiddleware');
-
-// Define Async middleware wrapper to avoid try-catch
-// const asyncMiddleware = fn => (req, res, next) => {
-//   Promise.resolve(fn(req, res, next)).catch(next);
-// };
 
 // IFTTT Configuration
 
@@ -39,11 +31,8 @@ const auth = require('../config/auth');
 // moment().format(); // required by package entirely
 const router = express.Router();
 
-// Bring in user model
-const Entry = require('../models/entry');
-
 // Route to User's Calorie & Exercise Data
-router.get('/', auth.ensureAuthenticated, (req, res) => {
+router.get('/', ensureAuthenticated, (req, res) => {
   // Construct an array of dates to query. Let's get the past two weeks
   // First our start and end points:
 
@@ -121,7 +110,7 @@ router.get('/', auth.ensureAuthenticated, (req, res) => {
 });
 
 // Route to Weight Data
-router.get('/weight', auth.ensureAuthenticated, (req, res) => {
+router.get('/weight', ensureAuthenticated, (req, res) => {
   res.render('user/weight', {
     routeInfo: {
       heroType: res.locals.user.username,
@@ -135,7 +124,7 @@ router.get('/weight', auth.ensureAuthenticated, (req, res) => {
   });
 });
 
-router.post('/:date', auth.ensureAuthenticated, (req, res) => {
+router.post('/:date', ensureAuthenticated, (req, res) => {
   // parse date that was POSTed as string
   // Wait, we're passing the string directly to python, so is this even necessary?
   // const postedDate = moment.utc(req.params.date, 'YYYY-MM-DD');
@@ -183,4 +172,4 @@ router.post('/:date', auth.ensureAuthenticated, (req, res) => {
   });
 });
 
-module.exports = router;
+export default router;

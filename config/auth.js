@@ -1,6 +1,6 @@
 // Access Control
 // We can add this to ANY route we want to protect
-const ensureAuthenticated = (req, res, next) => {
+export default function(req, res, next) {
   // Because we're using passport, we can check the req for isAuthenticated();
   if (req.isAuthenticated()) {
     // and if auth, continue as normal
@@ -10,8 +10,4 @@ const ensureAuthenticated = (req, res, next) => {
   req.flash('danger', 'Please login.');
   res.redirect('/login');
   return true;
-};
-
-module.exports = {
-  ensureAuthenticated
-};
+}

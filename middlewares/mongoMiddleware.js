@@ -1,21 +1,19 @@
 // Script to calculate the number of points our user has!
 // Calculate and bring in our points of interest!
 // const mongoose = require('mongoose');
-const Moment = require('moment-timezone');
-const MomentRange = require('moment-range');
+import Moment from 'moment-timezone';
+import { extendMoment } from 'moment-range';
 // const _ = require('lodash');
 // const config = require('../config/database');
 // const async = require('async');
+// Bring in user models
+import Entry from '../models/entry';
+import Request from '../models/request';
 
-const moment = MomentRange.extendMoment(Moment);
+const moment = extendMoment(Moment);
 
 // Initialize Moment & Today Object
 moment().format();
-
-// Bring in user models
-const Entry = require('../models/entry');
-
-const Request = require('../models/request');
 
 // async function queryWeeksFromMongo(user) {
 //   // First get all db entries for that user
@@ -81,7 +79,7 @@ const Request = require('../models/request');
 
 // Old method would pass in all custom periods. New method passes in one custom
 // period at a time
-async function queryCustomPeriodsFromMongo(user, customRange) {
+export async function queryCustomPeriodsFromMongo(user, customRange) {
   // First get all db entries for that user
   const entries = await Entry.find(
     {
@@ -170,7 +168,7 @@ async function queryCustomPeriodsFromMongo(user, customRange) {
 //   return sortedEntries;
 // }
 
-async function getPendingRequests(partner) {
+export async function getPendingRequests(partner) {
   const requests = await Request.find(
     {
       requester: partner,
@@ -186,10 +184,3 @@ async function getPendingRequests(partner) {
   );
   return requests;
 }
-
-module.exports = {
-  // queryWeeksFromMongo,
-  queryCustomPeriodsFromMongo,
-  // getSortedEntries,
-  getPendingRequests
-};

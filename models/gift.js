@@ -2,7 +2,7 @@
 // exist in a NoSQL database. This structures it on the application level rather
 // than the database level (as with a SQL database)
 
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema;
 
@@ -39,4 +39,4 @@ const giftSchema = new Schema(
 );
 
 const Gift = mongoose.model('gift', giftSchema);
-module.exports = Gift;
+export default Gift;

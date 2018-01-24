@@ -2,7 +2,7 @@
 // exist in a NoSQL database. This structures it on the application level rather
 // than the database level (as with a SQL database)
 
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const Schema = mongoose.Schema;
 
@@ -67,4 +67,4 @@ const requestSchema = new Schema(
 );
 
 const Request = mongoose.model('request', requestSchema);
-module.exports = Request;
+export default Request;

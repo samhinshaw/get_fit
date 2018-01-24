@@ -1,17 +1,17 @@
-// This will contain all '/data/' routes
+// This will contain all '/account/' routes
 
-const express = require('express');
-const auth = require('../config/auth.js');
-const request = require('request');
-const _ = require('lodash');
-const moment = require('moment-timezone');
+import express from 'express';
+import request from 'request';
+import _ from 'lodash';
+import moment from 'moment-timezone';
+import ensureAuthenticated from '../config/auth';
+import iftttToken from '../config/ifttt';
 
-const Request = require('../models/request');
-const Reward = require('../models/reward');
+import Request from '../models/request';
+import Reward from '../models/reward';
 // const flash = require('connect-flash');
 
 // Bring in config files
-const iftttToken = require('../config/ifttt.json');
 
 // moment().format(); // required by package entirely
 
@@ -41,7 +41,7 @@ const configureIFTTT = ({ user, partnerToken, messageType }) => {
 
 // Get Started Handling
 
-router.get('/', auth.ensureAuthenticated, (req, res) => {
+router.get('/', ensureAuthenticated, (req, res) => {
   res.render('account/index', {
     routeInfo: {
       heroType: 'twitter',
@@ -62,7 +62,7 @@ router.get('/', auth.ensureAuthenticated, (req, res) => {
   });
 });
 
-router.get('/spend', auth.ensureAuthenticated, (req, res) => {
+router.get('/spend', ensureAuthenticated, (req, res) => {
   Reward.find({ for: res.locals.user.username }, (err, rewards) => {
     if (err) {
       console.log(err);
@@ -85,7 +85,7 @@ router.get('/spend', auth.ensureAuthenticated, (req, res) => {
 
 router.post(
   '/spend',
-  auth.ensureAuthenticated,
+  ensureAuthenticated,
   asyncMiddleware(async (req, res) => {
     const rewardKey = req.sanitize('reward').trim();
 
@@ -148,7 +148,7 @@ router.post(
   })
 );
 
-router.get('/send', auth.ensureAuthenticated, (req, res) => {
+router.get('/send', ensureAuthenticated, (req, res) => {
   Reward.find({ for: res.locals.partner.username }, (err, rewards) => {
     if (err) {
       console.log(err);
@@ -169,7 +169,7 @@ router.get('/send', auth.ensureAuthenticated, (req, res) => {
   });
 });
 
-router.get('/send', auth.ensureAuthenticated, (req, res) => {
+router.get('/send', ensureAuthenticated, (req, res) => {
   // Reward.find({ for: res.locals.user.username }, (err, rewards) => {
   //   if (err) {
   //     console.log(err);
@@ -190,7 +190,7 @@ router.get('/send', auth.ensureAuthenticated, (req, res) => {
   // });
 });
 
-router.get('/requests', auth.ensureAuthenticated, (req, res) => {
+router.get('/requests', ensureAuthenticated, (req, res) => {
   // Our requests are pulled in via middleware in app.js so we can display the #
   // of pending requests badge on your account info button in the navbar.
   // Therefore, they do not need to be passed through here, and can be pulled
@@ -210,7 +210,7 @@ router.get('/requests', auth.ensureAuthenticated, (req, res) => {
 });
 
 // Receive AJAX response to request
-router.post('/requests/respond', auth.ensureAuthenticated, (req, res) => {
+router.post('/requests/respond', ensureAuthenticated, (req, res) => {
   // Pull up request entry in DB
   // Note: Model.findByIdAndUpdate() is specifically for when we need the found
   // document returned as well.
@@ -260,7 +260,7 @@ router.post('/requests/respond', auth.ensureAuthenticated, (req, res) => {
   );
 });
 
-router.get('/history', auth.ensureAuthenticated, (req, res) => {
+router.get('/history', ensureAuthenticated, (req, res) => {
   Request.find(
     {
       requester: res.locals.user.username,
@@ -289,4 +289,4 @@ router.get('/history', auth.ensureAuthenticated, (req, res) => {
   );
 });
 
-module.exports = router;
+export default router;

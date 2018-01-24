@@ -1,20 +1,22 @@
 // This will contain all '/' routes
-
-const express = require('express');
-const bcrypt = require('bcryptjs');
-const passport = require('passport');
-const mongoose = require('mongoose');
-const Moment = require('moment-timezone');
-const MomentRange = require('moment-range');
+import Moment from 'moment-timezone';
+import { extendMoment } from 'moment-range';
+import express from 'express';
+import bcrypt from 'bcryptjs';
+import passport from 'passport';
+import mongoose from 'mongoose';
 // Setup brute force prevention
-const ExpressBrute = require('express-brute');
-const MongooseStore = require('express-brute-mongoose');
-// euthentication assurance
-const auth = require('../config/auth');
+import ExpressBrute from 'express-brute';
+import MongooseStore from 'express-brute-mongoose';
+import bruteForceSchema from 'express-brute-mongoose/dist/schema';
 
-const bruteForceSchema = require('express-brute-mongoose/dist/schema');
+import ensureAuthenticated from '../config/auth';
+import secretConfig from '../config/secret_config';
+import User from '../models/user';
 
-const moment = MomentRange.extendMoment(Moment);
+const moment = extendMoment(Moment);
+
+// authentication assurance
 const model = mongoose.model('bruteforce', bruteForceSchema);
 const store = new MongooseStore(model);
 
@@ -32,15 +34,13 @@ const bruteforce = new ExpressBrute(store, {
   failCallback
 });
 
-const User = require('../models/user');
 // const auth = require('../config/auth.js');
-const secretConfig = require('../config/secret_config.json');
 
 const router = express.Router();
 
 // Get Started Handling
 
-// router.get('/', auth.ensureAuthenticated, (req, res) => {
+// router.get('/', ensureAuthenticated, (req, res) => {
 //   res.render('landing_page');
 // });
 
@@ -94,7 +94,7 @@ router.get('/logout', (req, res) => {
   res.redirect('/');
 });
 
-router.get('/overview', auth.ensureAuthenticated, (req, res) => {
+router.get('/overview', ensureAuthenticated, (req, res) => {
   res.render('overview', {
     routeInfo: {
       heroType: 'dark',

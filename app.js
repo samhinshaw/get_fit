@@ -1,29 +1,53 @@
 // bring in express for routing
-const express = require('express');
-const path = require('path'); // core module included with Node.js
-const bodyParser = require('body-parser');
-const mongoose = require('mongoose');
-const session = require('express-session');
-const Moment = require('moment-timezone');
-const MomentRange = require('moment-range');
-const expressValidator = require('express-validator');
-const expressSanitizer = require('express-sanitizer');
-// const flash = require('connect-flash');
-const expMessages = require('express-messages');
-const passport = require('passport');
-const _ = require('lodash');
-const helmet = require('helmet');
-const GoogleSpreadsheet = require('google-spreadsheet');
+import express from 'express';
 
-const config = require('./config/database');
-const secretConfig = require('./config/secret_config.json');
-const auth = require('./config/auth');
-const googleCreds = require('./config/client_secret.json');
+import path from 'path'; // core module included with Node.js
+import bodyParser from 'body-parser';
+import mongoose from 'mongoose';
+import session from 'express-session';
+import Moment from 'moment-timezone';
+import { extendMoment } from 'moment-range';
+import expressValidator from 'express-validator';
+import expressSanitizer from 'express-sanitizer';
+// const flash = require('connect-flash');
+import expMessages from 'express-messages';
+import passport from 'passport';
+// import _ from 'lodash';
+import helmet from 'helmet';
+import GoogleSpreadsheet from 'google-spreadsheet';
+import graphqlHTTP from 'express-graphql';
+
+// Include custom middleware
+import { queryCustomPeriodsFromMongo, getPendingRequests } from './middlewares/mongoMiddleware';
+import dbConfig from './config/database';
+import ensureAuthenticated from './config/auth';
+import secretConfig from './config/secret_config';
+import googleCreds from './config/client_secret';
+
+// Bring in route files
+// const data = require('./routes/data');
+import account from './routes/account';
+import landing from './routes/landing';
+import user from './routes/user';
+import partner from './routes/partner';
+
+// Bring in GraphQL Schemas
+// import { entrySchema, userSchema } from './graphql/schema';
+
+// Include document Schemas
+// import Request from './models/request';
+// import Period from './models/period';
+// import Entry from './models/entry';
+import User from './models/user';
+
+// should probably change up these config files to work better with ES6 modules
+const nodeConfig = secretConfig.node;
+
+mongoose.Promise = Promise;
 
 const MongoStore = require('connect-mongo')(session);
 
-const nodeConfig = secretConfig.node;
-const moment = MomentRange.extendMoment(Moment);
+const moment = extendMoment(Moment);
 // moment().format(); // required by package entirely
 
 // Define Async middleware wrapper to avoid try-catch
@@ -43,7 +67,7 @@ const asyncMiddleware = fn => (req, res, next) => {
 
 const mongoURI = `mongodb://${nodeConfig.user}:${nodeConfig.password}@${nodeConfig.host}:${nodeConfig.port}/${nodeConfig.authSource}?authMechanism=${nodeConfig.authMechanism}`;
 
-// mongoose.connect(config.database);
+// mongoose.connect(dbConfig.database);
 mongoose.connect(mongoURI);
 // const connection = mongoose.createConnection(mongoURI);
 
@@ -65,13 +89,6 @@ const app = express();
 // Let Express know it's behind a nginx proxy
 app.set('trust proxy', '127.0.0.1');
 
-// Include document Schemas
-// const Request = require('./models/request');
-// const Period = require('./models/period');
-const Period = require('./models/period');
-const User = require('./models/user');
-const Entry = require('./models/entry');
-
 // Use the helmet middleware to "protect your app from some well-known web
 // vulnerabilities by setting HTTP headers appropriately"
 app.use(helmet());
@@ -88,16 +105,6 @@ app.use(expressSanitizer()); // this line follows bodyParser() instantiations
 
 // Route for static assests such as CSS and JS
 app.use(express.static(path.join(__dirname, 'public')));
-
-// Include custom middleware
-const mongoMiddleware = require('./middlewares/mongoMiddleware');
-
-// Middleware for Lesson 8, Messaging & Validation
-// Session Handling Middleware
-// app.use(
-//   session({
-//   })
-// );
 
 app.use(
   session({
@@ -187,7 +194,9 @@ app.use((req, res, next) => {
 
     // .startOf('week')    = Sunday
 
-    const startOfTracking = moment.tz(config.startDate, 'MM-DD-YYYY', 'US/Pacific').startOf('day');
+    const startOfTracking = moment
+      .tz(dbConfig.startDate, 'MM-DD-YYYY', 'US/Pacific')
+      .startOf('day');
     // res.locals.startOfTracking = startOfTracking;
     const customRange = {
       // We started Monday, Sept 18th
@@ -213,6 +222,16 @@ app.use((req, res, next) => {
   next();
 });
 
+// Setting up our graphQL server
+
+app.use(
+  '/graphql',
+  graphqlHTTP(req => ({
+    schema,
+    graphiql: true
+  }))
+);
+
 // /////////////////////////////////////////////////////////////////////////////
 // /////////////// MIDDLEWARE TO CALCULATE POINTS & PURCHASES /////////////////
 // /////////////////////////////////////////////////////////////////////////////
@@ -226,12 +245,12 @@ app.use(
 
       // Get and concat all point tallies
       // const userWeeks = await mongoMiddleware.queryWeeksFromMongo(res.locals.user.username);
-      const userCustom = await mongoMiddleware.queryCustomPeriodsFromMongo(
+      const userCustom = await queryCustomPeriodsFromMongo(
         res.locals.user.username,
         res.locals.customRange
       );
       // const partnerWeeks = await mongoMiddleware.queryWeeksFromMongo(res.locals.partner.username);
-      const partnerCustom = await mongoMiddleware.queryCustomPeriodsFromMongo(
+      const partnerCustom = await queryCustomPeriodsFromMongo(
         res.locals.partner.username,
         res.locals.customRange
       );
@@ -331,7 +350,7 @@ app.use(
       // Get pending requests -- we want to find the ones our PARTNER has
       // requested, because we only have a field in the document for requester,
       // not requestee. So we want to see what we have yet to approve
-      const pendingRequests = await mongoMiddleware.getPendingRequests(res.locals.partner.username);
+      const pendingRequests = await getPendingRequests(res.locals.partner.username);
       res.locals.pendingRequests = pendingRequests;
     }
     next();
@@ -368,7 +387,7 @@ app.get('/', (req, res) => {
 });
 
 // Bring in User Data!
-// app.get('/overview', auth.ensureAuthenticated, (req, res) => {
+// app.get('/overview', ensureAuthenticated, (req, res) => {
 //   // Otherwise, query DB for entries to display!
 //   const user = res.locals.user.username;
 //   const partner = res.locals.partner.username;
@@ -410,7 +429,7 @@ app.get('/', (req, res) => {
 // });
 
 // Send user data to client side (via cookie) when user is logged in
-app.get('/api/user_data', auth.ensureAuthenticated, (req, res) => {
+app.get('/api/user_data', ensureAuthenticated, (req, res) => {
   if (req.user === undefined) {
     // The user is not logged in
     res.json({});
@@ -441,7 +460,7 @@ app.get('/api/user_data', auth.ensureAuthenticated, (req, res) => {
 });
 
 // Send user data to client side (via cookie) when user is logged in
-app.get('/api/user_weight', auth.ensureAuthenticated, (req, res) => {
+app.get('/api/user_weight', ensureAuthenticated, (req, res) => {
   if (req.user.username !== 'sam') {
     // The user is not logged in
     res.json({});
@@ -511,13 +530,6 @@ app.get('/api/user_weight', auth.ensureAuthenticated, (req, res) => {
 //   }
 // });
 
-// Bring in route files
-// const data = require('./routes/data');
-const account = require('./routes/account');
-const landing = require('./routes/landing');
-const user = require('./routes/user');
-const partner = require('./routes/partner');
-
 // app.use('/data', data);
 app.use('/', landing);
 app.use('/account', account);
@@ -525,6 +537,6 @@ app.use('/user', user);
 app.use('/partner', partner);
 
 // Start Server
-app.listen(config.serverPort, () => {
-  console.log(`Server started on port ${config.serverPort}`);
+app.listen(dbConfig.serverPort, () => {
+  console.log(`Server started on port ${dbConfig.serverPort}`);
 });
