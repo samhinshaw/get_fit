@@ -4,13 +4,16 @@
   "description": "Fitness Tracker for Sam & Am",
   "main": "app.js",
   "scripts": {
-    "dev": "uglifyjs public/js/client.js --compress --mangle --source-map --output public/js/bundle.min.js && grunt dev && nodemon lib/app.js --exec babel-node",
+    "dev":
+      "uglifyjs public/src/js/client.js --compress --mangle --source-map --output public/dist/js/bundle.min.js && grunt dev && nodemon lib/app.js --exec babel-node",
     "clean": "rm -rf ./dist",
     "build": "babel ./lib -d ./dist -s",
-    "uglifyClient": "uglifyjs public/js/client.js --compress --mangle --source-map --output public/js/bundle.min.js",
+    "uglifyClient":
+      "uglifyjs public/src/js/client.js --compress --mangle --source-map --output public/dist/js/bundle.min.js",
     "format": "prettier --list-different --single-quote --print-width=120 \"public/js/**/*.js\"",
     "lint": "eslint **/*.js --quiet",
-    "prod": "uglifyjs public/js/client.js --compress --mangle --source-map --output public/js/bundle.min.js && grunt dev && node dist/app.js",
+    "prod":
+      "uglifyjs public/src/js/client.js --compress --mangle --source-map --output public/dist/js/bundle.min.js && grunt dev && node dist/app.js",
     "test": "snyk test"
   },
   "repository": {

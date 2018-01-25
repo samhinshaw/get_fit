@@ -14,7 +14,7 @@ module.exports = grunt => {
     sass: {
       dist: {
         files: {
-          'public/css/bulma.css': 'sass/custom_bulma.sass'
+          'public/dist/css/bulma.css': 'public/src/sass/custom_bulma.sass'
         }
       }
     },

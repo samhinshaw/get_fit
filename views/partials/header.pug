@@ -13,10 +13,10 @@ html
     meta(name="apple-mobile-web-app-title", content="Get Fit")
     meta(name="application-name", content="Get Fit")
     meta(name="theme-color", content="#f0f0f0")
-    link(rel='stylesheet', href='/css/bulma.css')
+    link(rel='stylesheet', href='/dist/css/bulma.css')
     link(rel='stylesheet', href='/bower_components/mdi/css/materialdesignicons.min.css')
     //- link(rel='stylesheet', href='/bower_components/font-awesome/css/font-awesome.min.css')
-    link(rel='stylesheet', href='/css/styles.css')
+    link(rel='stylesheet', href='/src/css/styles.css')
     link(href="https://fonts.googleapis.com/css?family=Cormorant+Garamond:600", rel="stylesheet")
   body.flex-body
     nav.navbar.has-shadow.is-light(role="navigation" aria-label="main navigation")
@@ -76,11 +76,11 @@ html
     script(type='text/javascript', src='/bower_components/moment-range/dist/moment-range.js')
     //- script.
     //-   moment().format();
-    script(type='text/javascript', src='/js/bundle.min.js')
-    //- script(type='text/javascript', src='/js/client.js')
+    script(type='text/javascript', src='/dist/js/bundle.min.js')
+    //- script(type='text/javascript', src='/src/js/client.js')
 
     //- If we're on a page where we need to display the weight chart, load D3 and the data script
     if ['/partner/weight', '/user/weight'].includes(routeInfo.route) 
       //- Load D3 library and my D3 script
       script(type='text/javascript', src='/bower_components/d3/d3.min.js')
-      script(type='text/javascript', src='/js/data.js')
+      script(type='text/javascript', src='/src/js/data.js')
