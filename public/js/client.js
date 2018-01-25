@@ -1,3 +1,5 @@
+// Import statements will go here, webpack & Babel will take care of the rest
+
 const handlers = {
   // Function 1 to listen for: hamburger menu
   toggleNavBarBurger: () => {

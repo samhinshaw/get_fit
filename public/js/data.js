@@ -31,7 +31,7 @@ const endDate = today.clone().add(7, 'days');
 
 // Enable custom domain?
 const dateRange = [startDate.toDate(), endDate.toDate()];
-const momentArray = [startDate, endDate];
+// const momentArray = [startDate, endDate];
 const momentRange = moment.range(startDate, endDate);
 // const dateRange = [new Date(2017, 10, 1), new Date(2018, 6, 30)];
 // const dateRange = false;
