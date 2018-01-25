@@ -7,7 +7,7 @@ module.exports = {
     {
       name: 'getfit',
       script: 'npm',
-      args: 'prod',
+      args: 'run prod',
       env: {
         NODE_ENV: 'development'
       },
