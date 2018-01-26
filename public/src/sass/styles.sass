@@ -1,5 +1,5 @@
 // Import Bulma's core
-@import "bulma/sass/utilities/_all"
+@import "~bulma/sass/utilities/_all"
 
 // Set your colors
 $primary: hsl(0, 0%, 21%) // #8c67ef
@@ -29,4 +29,10 @@ $link: $primary
 $link-invert: $primary-invert
 $link-focus-border: $primary
 
-@import "bulma/bulma"
+@import "~bulma/bulma"
+
+
+// $mdi-font-path: "../fonts" !default;
+$mdi-font-path: "~mdi/fonts";
+
+@import "~mdi/scss/materialdesignicons"

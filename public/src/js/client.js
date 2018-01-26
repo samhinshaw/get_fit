@@ -1,3 +1,15 @@
+/* global window */
+
+// import { $ } from 'jquery';
+// import { $, jQuery } from 'jquery';
+
+import $ from 'jquery';
+import sass from '../sass/styles.sass';
+import css from '../css/styles.css';
+
+// window.$ = $;
+// window.jQuery = jQuery;
+
 // Import statements will go here, webpack & Babel will take care of the rest
 
 const handlers = {

@@ -1,5 +1,18 @@
-/* global d3 */
-/* global moment */
+import Moment from 'moment-timezone';
+import { extendMoment } from 'moment-range';
+// import * as d3 from 'd3';
+import { scaleLinear, scaleTime } from 'd3-scale';
+import { axisBottom, axisLeft } from 'd3-axis';
+import { min, max, extent } from 'd3-array';
+import { timeFormat } from 'd3-time-format'; // timeFormatLocale, parseDate
+import { select } from 'd3-selection'; // timeFormatLocale
+import { line } from 'd3-shape'; // timeFormatLocale
+// import { map, nest } from 'd3-collection';
+
+// Import CSS
+import css from '../css/d3.css';
+
+const moment = extendMoment(Moment);
 
 // async function asyncQuery() {
 //   const response = await $.getJSON('/api/user_weight/', json => json);
@@ -18,9 +31,6 @@
 //   { name: 'Emily', math: 80, science: 94 }
 // ];
 
-// Initialize Moment-Range
-window['moment-range'].extendMoment(moment);
-
 // Set up dates
 const now = moment.tz('US/Pacific');
 const today = now.clone().startOf('day');
@@ -38,7 +48,7 @@ const momentRange = moment.range(startDate, endDate);
 
 // Set D3 locale
 
-// const locale = d3.timeFormatLocale({
+// const locale = timeFormatLocale({
 //   dateTime: '%x, %X',
 //   date: '%-m/%-d/%Y',
 //   time: '%-I:%M:%S %p',
@@ -69,7 +79,7 @@ $.getJSON('/api/user_weight/', json => {
   // example: June 07, 2017 at 09:01AM
   // parseDate('June 07, 2017 at 09:01AM-0700');
 
-  // const map = d3.map(json.rows, d => formatDate(parseDate(`${d.date}-0700`)));
+  // const map = map(json.rows, d => formatDate(parseDate(`${d.date}-0700`)));
   // console.log(map);
 
   if (dateRange) {
@@ -95,8 +105,7 @@ $.getJSON('/api/user_weight/', json => {
 
   // console.log(data);
 
-  // const nestedData = d3
-  //   .nest()
+  // const nestedData = nest()
   //   .key(d => parseDate(`${d.date}-0700`)) // tack on pacific TZ
   //   .entries(data);
 
@@ -104,19 +113,17 @@ $.getJSON('/api/user_weight/', json => {
   const width = 960 - margin.left - margin.right;
   const height = 500 - margin.top - margin.bottom;
 
-  const x = d3.scaleTime().range([0, width]);
-  const y = d3.scaleLinear().range([height, 0]);
+  const x = scaleTime().range([0, width]);
+  const y = scaleLinear().range([height, 0]);
 
-  const xAxis = d3.axisBottom().scale(x);
-  const yAxis = d3
-    .axisLeft()
+  const xAxis = axisBottom().scale(x);
+  const yAxis = axisLeft()
     .scale(y)
     .tickSize(-width);
 
-  // const color = d3.scale.category10();
+  // const color = scale.category10();
 
-  const svg = d3
-    .select('#chart')
+  const svg = select('#chart')
     .append('div')
     .classed('svg-container', true) // container class to make it responsive
     .append('svg')
@@ -136,20 +143,19 @@ $.getJSON('/api/user_weight/', json => {
     .attr('transform', `translate(${margin.left},${margin.top})`);
 
   function drawMainGraph() {
-    const line = d3
-      .line()
+    const chartLine = line()
       .x(d => x(d.date))
       .y(d => y(d.weight));
 
     if (dateRange) {
       // Date Range
       x.domain(dateRange).clamp(true);
-      y.domain([d3.min(data, d => d.weight) - 1, d3.max(data, d => d.weight) + 1]);
+      y.domain([min(data, d => d.weight) - 1, max(data, d => d.weight) + 1]);
     } else {
       // All Dates
-      x.domain(d3.extent(data, d => d.date));
+      x.domain(extent(data, d => d.date));
       y.domain([150, 190]);
-      // y.domain(d3.extent(data, d => d.weight));
+      // y.domain(extent(data, d => d.weight));
     }
 
     // Create the x-axis and its ticks
@@ -158,9 +164,9 @@ $.getJSON('/api/user_weight/', json => {
       .style('font-size', '0.9rem')
       .attr('class', 'x-axis')
       .attr('transform', `translate(0,${height})`)
-      // .call(xAxis.tickFormat(d3.timeFormat('%d %b %Y')))
+      // .call(xAxis.tickFormat(timeFormat('%d %b %Y')))
       // At 1yr scale, don't need day of month
-      .call(xAxis.tickFormat(d3.timeFormat('%b %Y')))
+      .call(xAxis.tickFormat(timeFormat('%b %Y')))
       .selectAll('text')
       .attr('transform', 'translate(10,5) rotate(-25)')
       .style('text-anchor', 'end')
@@ -183,7 +189,7 @@ $.getJSON('/api/user_weight/', json => {
       .attr('stroke-linejoin', 'round')
       .attr('stroke-linecap', 'round')
       .attr('stroke-width', 1.5)
-      .attr('d', line);
+      .attr('d', chartLine);
   }
 
   // Chart Title
@@ -222,8 +228,7 @@ $.getJSON('/api/user_weight/', json => {
     .attr('class', 'grid')
     .attr('transform', `translate(0,${height})`)
     .call(
-      d3
-        .axisBottom(x)
+      axisBottom(x)
         .ticks(1)
         .tickSize(-height)
         .tickFormat('')
