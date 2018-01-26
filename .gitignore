@@ -9,3 +9,4 @@ samGStoken.rds
 config/secret
 benchmarking
 dist
+public/bower_components
