@@ -10,7 +10,7 @@ import { line } from 'd3-shape'; // timeFormatLocale
 // import { map, nest } from 'd3-collection';
 
 // Import CSS
-import css from '../css/d3.css';
+import '../css/d3.css';
 
 const moment = extendMoment(Moment);
 
