@@ -206,3 +206,9 @@ td.exercise-icon {
   font-size: 0.875rem;
   margin-bottom: 0;
 }
+
+/* Clip Path on Avatars to make them circles! */
+.avatar {
+  -webkit-clip-path: circle(50% at 50% 50%);
+  clip-path: circle(50% at 50% 50%);
+}

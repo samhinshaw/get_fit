@@ -32,9 +32,13 @@ html
                 a.navbar-item(href='/overview', class=(routeInfo.route.startsWith('/overview')  ? 'is-active' : false))
                   | Overview
                 a.navbar-item(href=`/user`, class=(routeInfo.route.startsWith('/user') ? 'is-active' : false))
-                  | #{routeInfo.userName} (#{pointTally.user})
+                  span#userName #{routeInfo.userName}
+                  | &nbsp;
+                  span#userPointTally (#{pointTally.user})
                 a.navbar-item(href=`/partner`, class=(routeInfo.route.startsWith('/partner') ? 'is-active' : false))
-                  | #{routeInfo.partnerName} (#{pointTally.partner})
+                  span#partnerName #{routeInfo.partnerName}
+                  | &nbsp;
+                  span#partnerPointTally (#{pointTally.partner})
                 //- a.navbar-item(href='/account', class=(routeInfo.route === "/account"  ? 'is-active' : false))
                   | Account
                 //- a.navbar-item(href='/help', class=(routeInfo.route === "/help"  ? 'is-active' : false))
@@ -46,7 +50,7 @@ html
                     .control
                       a.button(href='/account', class=(routeInfo.route.startsWith('/account')  ? 'is-active' : false))
                         span.icon.is-small
-                          img(src=`/images/${user.username}_avatar.png`, alt=user.username, height='28px', width='28px')
+                          img.avatar(src=`/images/${user.username}.jpg`, alt=user.username, height='28px', width='28px')
                         | &nbsp;
                         span #{routeInfo.userName}
                         if pendingRequests.length > 0
