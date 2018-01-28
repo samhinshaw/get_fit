@@ -9,10 +9,6 @@ block subnav
 block content
   //- Set up date information here. 
   //- Unfortunately this can't be done at the top level of an extending template
-  //- - const moment = require('moment');
-  - const moment = require('moment-timezone');
-  //- - moment().format();
-
   //- - const now = moment.utc();
   - const now = moment.tz('US/Pacific');
   - const today = now.clone().startOf('day');
