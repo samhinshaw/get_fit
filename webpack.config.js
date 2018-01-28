@@ -1,5 +1,6 @@
 const webpack = require('webpack');
 const path = require('path');
+require('babel-polyfill');
 // For writing CSS to files (not include with bundle.js)
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
@@ -10,8 +11,8 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 // Babel is all we need for our back-end
 module.exports = {
   entry: {
-    client: path.join(__dirname, 'public', 'src', 'js', 'client.js'),
-    data: path.join(__dirname, 'public', 'src', 'js', 'data.js')
+    client: ['babel-polyfill', path.join(__dirname, 'public', 'src', 'js', 'client.js')],
+    data: ['babel-polyfill', path.join(__dirname, 'public', 'src', 'js', 'data.js')]
   },
   output: {
     path: path.join(__dirname, 'public', 'dist'),

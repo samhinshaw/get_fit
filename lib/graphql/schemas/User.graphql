@@ -8,3 +8,7 @@ type User {
   currentPoints: Int!
   fitnessGoal: String
 }
+
+type Mutation {
+  createUser(username: String!): User
+}
