@@ -1,0 +1,10 @@
+type User {
+  firstname: String!
+  lastname: String
+  username: String!
+  email: String!
+  partner: String
+  mfp: String!
+  currentPoints: Int!
+  fitnessGoal: String
+}
