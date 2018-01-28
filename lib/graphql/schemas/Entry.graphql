@@ -8,11 +8,6 @@
 # points
 # user
 
-# type Entry {
-#   _id: String!
-#   netCals: Int!
-# }
-
 type Entry {
   date: Date!
   totalCals: Int!
