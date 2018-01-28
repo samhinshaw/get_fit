@@ -1,0 +1,14 @@
+# date
+# totalCals
+# goalCals
+# netCals
+# [exercise]
+# isEmpty
+# complete
+# points
+# user
+
+type Entry {
+  _id: String!
+  netCals: Int!
+}

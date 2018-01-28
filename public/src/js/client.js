@@ -1,16 +1,11 @@
-/* global window */
-
-// import { $ } from 'jquery';
-// import { $, jQuery } from 'jquery';
-
-import $ from 'jquery';
-import sass from '../sass/styles.sass';
-import css from '../css/styles.css';
-
-// window.$ = $;
-// window.jQuery = jQuery;
-
 // Import statements will go here, webpack & Babel will take care of the rest
+// Import JQuery for all of this to work!
+import 'jquery';
+// Import styles for webpack (specifically, webpack-extract-text-plugin)
+import '../sass/styles.sass';
+import '../css/styles.css';
+// Run GraphQL script
+import './graphql';
 
 const handlers = {
   // Function 1 to listen for: hamburger menu

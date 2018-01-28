@@ -1,6 +1,11 @@
 const webpack = require('webpack');
 const path = require('path');
+// For writing CSS to files (not include with bundle.js)
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+
+// Uglify & Minify. This adds to build time with no real difference
+// const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+
 // Set up webpack for front-end code
 // Babel is all we need for our back-end
 module.exports = {
@@ -20,7 +25,8 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['env']
+            presets: ['env'],
+            plugins: ['babel-plugin-inline-import']
           }
         },
         include: path.join(__dirname, 'public', 'src', 'js')
@@ -60,12 +66,12 @@ module.exports = {
       // { test: /\.svg$/, use: 'svg-url-loader' }
       // Use the imports-loader to configure `this`
       // {
-      //   test: /[/\\]node_modules[/\\]some-module[/\\]index\.js$/,
+      //   test: /[/\\]node_modules[/\\]jquery[/\\]src[/\\]jquery\.js$/,
       //   use: 'imports-loader?this=>window'
-      // },
+      // }
       // Use the imports-loader to disable AMD
       // {
-      //   test: /[/\\]node_modules[/\\]some-module[/\\]index\.js$/,
+      //   test: /[/\\]node_modules[/\\]jquery[/\\]src[/\\]jquery\.js$/,
       //   use: 'imports-loader?define=>false'
       // }
     ]
@@ -73,23 +79,36 @@ module.exports = {
   plugins: [
     // Don't bring in locales with moment
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
+    // Fix critical dependency bug:
+    // https://github.com/kadirahq/lokka-transport-http/issues/7
+    // new webpack.IgnorePlugin(/\/iconv-loader$/),
+    // new webpack.IgnorePlugin(/\/node-fetch$/),
+    // https://github.com/kadirahq/lokka-transport-http/issues/22
+    // Don't build node-fetch because we don't need them!
+    // new webpack.NormalModuleReplacementPlugin(/\/iconv-loader$/, 'node-noop'),
+    // new webpack.NormalModuleReplacementPlugin(/\/node-fetch$/, 'node-noop'),
     // Take compiled SASS & CSS and save to file
     new ExtractTextPlugin({
       filename: '[name]-styles.css',
       disable: false,
       allChunks: true
-    })
+    }),
     // set globals for jquery (Use the ProvidePlugin to inject implicit globals)
-    // new webpack.ProvidePlugin({
-    //   $: 'jquery',
-    //   jQuery: 'jquery'
-    // })
+    new webpack.ProvidePlugin({
+      $: 'jquery',
+      jQuery: 'jquery'
+    })
+    // Mangle & minify
+    // new UglifyJsPlugin()
   ],
   resolve: {
     alias: {
       // make sure webpack gets the source version, not the dist (Prefer
       // unminified CommonJS/AMD over dist)
-      jquery: 'jquery/src/jquery'
+      jquery: 'jquery/src/jquery',
+      // Don't use node-fetch!
+      // https://github.com/kadirahq/lokka/issues/32
+      'node-fetch': 'whatwg-fetch'
     }
   }
 };
