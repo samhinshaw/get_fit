@@ -35,4 +35,17 @@ $link-focus-border: $primary
 // $mdi-font-path: "../fonts" !default;
 $mdi-font-path: "~mdi/fonts";
 
-@import "~mdi/scss/materialdesignicons"
+// don't import everything
+// "~mdi/scss/materialdesignicons"
+
+/* MaterialDesignIcons.com */
+@import "~mdi/scss/_variables";
+@import "~mdi/scss/_functions";
+@import "./path.scss";
+
+// don't import this path, we just want WOFF2
+// "~mdi/scss/_path";
+@import "~mdi/scss/_core";
+@import "~mdi/scss/_icons";
+@import "~mdi/scss/_extras";
+@import "~mdi/scss/_animated";
