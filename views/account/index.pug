@@ -11,7 +11,7 @@ block content
   .columns.is-centered
     .column.is-8
       .avatar-container.is-pulled-right
-        img(src=`/images/${user.username}_avatar.png`, alt=user.username)
+        img.avatar(src=`/images/${user.username}.jpg`, alt=user.username)
       h4.is-size-4 #{routeInfo.userName} #{routeInfo.userLastName} 
       p Partner: #{routeInfo.partnerName} #{routeInfo.partnerLastName} 
       p Username: #{user.username}
