@@ -36,7 +36,7 @@ module.exports = {
         test: /\.css$/,
         use: ExtractTextPlugin.extract({
           fallback: 'style-loader',
-          use: 'css-loader',
+          use: { loader: 'css-loader', options: { minimize: true } },
           publicPath: path.join('public', 'dist')
         }),
         include: path.join(__dirname, 'public', 'src', 'css')
@@ -45,7 +45,7 @@ module.exports = {
         test: /\.(scss|sass)$/,
         use: ExtractTextPlugin.extract({
           fallback: 'style-loader',
-          use: ['css-loader', 'sass-loader'],
+          use: [{ loader: 'css-loader', options: { minimize: true } }, 'sass-loader'],
           publicPath: path.join('public', 'dist')
         })
         // include: path.join(__dirname, 'public', 'src', 'sass')
@@ -98,9 +98,13 @@ module.exports = {
     new webpack.ProvidePlugin({
       $: 'jquery',
       jQuery: 'jquery'
-    })
+    }),
     // Mangle & minify
-    // new UglifyJsPlugin()
+    new webpack.optimize.UglifyJsPlugin()
+    // Set node ENV to production!
+    // new webpack.DefinePlugin({
+    //   'process.env.NODE_ENV': '"production"'
+    // })
   ],
   resolve: {
     alias: {
