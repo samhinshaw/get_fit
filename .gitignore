@@ -10,3 +10,4 @@ config/secret
 benchmarking
 dist
 public/bower_components
+yarn-error.log
