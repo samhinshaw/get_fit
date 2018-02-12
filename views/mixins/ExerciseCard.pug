@@ -42,60 +42,48 @@ mixin ExerciseCard(entry)
               i.mdi.mdi-chevron-down
         .card-content
           .content
-            p
-              //- strong= dateHuman
-              //- span  &middot; 
-              //- First check to see if this entry was reported empty
-              if entry.isEmpty
-                if entry.exercise.length === 0
-                  p.has-text-centered
-                    | Hmm, nothing here yet!
-              //- Then, if left over calories, report remaining!
-              else if entry.netCals > 0
-                span #{entry.netCals} 
-                case entry.netCals
-                  when -1
-                  when 1
-                    | cal remaining
-                  default 
-                    | cals remaining
-              else if entry.netCals < 0
-                if entry.netCals < -300
-                  span.is-danger #{-entry.netCals} 
-                else 
-                  span.is-warning #{-entry.netCals} 
-                case entry.netCals
-                  when -1
-                  when 1
-                    span cal over
-                  default 
-                    span cals over
-              else if entry.netCals === 0
-                span you hit your goal EXACTLY
-              if entry.exercise.length > 0
-                .table-container
-                  table.table
-                    thead
-                      th
-                      th exercise
-                      th points
-                      th mins
-                      th cals
-                    tbody
-                      each exercise, i in entry.exercise
-                        tr
-                          td.exercise-icon
-                            .icon
-                              img(src='/images/icons/' + exercise.icon, alt=exercise.name)
-                          td #{exercise.name}
-                          case exercise.points
-                            when -1
-                            when 1
-                              td #{exercise.points}
-                            default 
-                              td #{exercise.points}
-                          td #{exercise.minutes}
-                          td #{exercise.cals}
+            //- strong= dateHuman
+            //- span  &middot; 
+            //- First check to see if this entry was reported empty
+            if entry.isEmpty
+              if entry.exercise.length === 0
+                p.has-text-centered
+                  | Hmm, nothing here yet!
+            //- Then, if left over calories, report remaining!
+            else if entry.netCals > 0
+              progress.progress.cals.is-success(value=entry.totalCals, max=entry.goalCals, data-label=`${entry.totalCals} / ${entry.goalCals} cals`) #{entry.totalCals} / #{entry.goalCals} cals
+            else if entry.netCals < 0
+              if entry.netCals < -300
+                progress.progress.cals.is-danger(value=entry.totalCals, max=entry.goalCals, data-label=`${entry.totalCals} / ${entry.goalCals} cals`) #{entry.totalCals} / #{entry.goalCals} cals
+              else 
+                progress.progress.cals.is-warning(value=entry.totalCals, max=entry.goalCals, data-label=`${entry.totalCals} / ${entry.goalCals} cals`) #{entry.totalCals} / #{entry.goalCals} cals
+            else if entry.netCals === 0
+              p.has-text-centered you hit your goal EXACTLY
+              progress.progress.cals.is-success(value=entry.totalCals, max=entry.goalCals, data-label=`${entry.totalCals} / ${entry.goalCals} cals`) #{entry.totalCals} / #{entry.goalCals} cals
+            if entry.exercise.length > 0
+              .table-container
+                table.table
+                  thead
+                    th
+                    th exercise
+                    th points
+                    th mins
+                    th cals
+                  tbody
+                    each exercise, i in entry.exercise
+                      tr
+                        td.exercise-icon
+                          .icon
+                            img(src='/images/icons/' + exercise.icon, alt=exercise.name)
+                        td #{exercise.name}
+                        case exercise.points
+                          when -1
+                          when 1
+                            td #{exercise.points}
+                          default 
+                            td #{exercise.points}
+                        td #{exercise.minutes}
+                        td #{exercise.cals}
         footer.card-footer
           a.card-footer-item
             .button.is-fullwidth.is-fullheight.update-entry(data-id=entry._id, data-date=datePretty, href='#!')

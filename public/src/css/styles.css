@@ -212,3 +212,30 @@ td.exercise-icon {
   -webkit-clip-path: circle(50% at 50% 50%);
   clip-path: circle(50% at 50% 50%);
 }
+
+/* Progress Bar CSS */
+progress {
+  text-align: right;
+  height: 1.5em;
+  width: 100%;
+  -webkit-appearance: none;
+  border: none;
+
+  /* Set the progressbar to relative */
+  position: relative;
+}
+progress:before {
+  content: attr(data-label);
+  font-size: 0.7em;
+  /* vertical-align: 0; */
+
+  /*Position text over the progress bar */
+  position: absolute;
+  left: 0;
+  right: 10px;
+  bottom: 0.005rem;
+}
+
+progress.cals {
+  border-radius: 0;
+}
