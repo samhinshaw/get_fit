@@ -42,24 +42,36 @@ mixin ExerciseCard(entry)
               i.mdi.mdi-chevron-down
         .card-content
           .content
-            //- strong= dateHuman
-            //- span  &middot; 
-            //- First check to see if this entry was reported empty
-            if entry.isEmpty
-              if entry.exercise.length === 0
-                p.has-text-centered
-                  | Hmm, nothing here yet!
-            //- Then, if left over calories, report remaining!
-            else if entry.netCals > 0
-              progress.progress.cals.is-success(value=entry.totalCals, max=entry.goalCals, data-label=`${entry.totalCals} / ${entry.goalCals} cals`) #{entry.totalCals} / #{entry.goalCals} cals
-            else if entry.netCals < 0
-              if entry.netCals < -300
-                progress.progress.cals.is-danger(value=entry.totalCals, max=entry.goalCals, data-label=`${entry.totalCals} / ${entry.goalCals} cals`) #{entry.totalCals} / #{entry.goalCals} cals
-              else 
-                progress.progress.cals.is-warning(value=entry.totalCals, max=entry.goalCals, data-label=`${entry.totalCals} / ${entry.goalCals} cals`) #{entry.totalCals} / #{entry.goalCals} cals
-            else if entry.netCals === 0
-              p.has-text-centered you hit your goal EXACTLY
-              progress.progress.cals.is-success(value=entry.totalCals, max=entry.goalCals, data-label=`${entry.totalCals} / ${entry.goalCals} cals`) #{entry.totalCals} / #{entry.goalCals} cals
+
+            //- Determine color of progress bar based on net calories!
+            //- ======================================================
+            - let calStatus;
+            if entry.netCals > 0 || entry.netCals === 0
+              - calStatus = 'success'
+            else if entry.netCals < 0 && entry.netCals > -300
+              - calStatus = 'warning'
+            else if entry.netCals < -300
+              - calStatus = 'danger'
+            else
+              //- Default value
+              - calStatus = 'primary'
+            //- ======================================================
+
+            //- Check to see if this entry has cals or exercise
+            if entry.isEmpty && entry.exercise.length === 0
+              p.has-text-centered Hmm, nothing here yet!
+            //- If no cals, but exercise, do not show progress bar, but also
+            //- don't say that there's nothing here.
+            else if entry.isEmpty
+              p.has-text-centered No calorie information.
+            //- If not empty, show calories and progress bar!
+            else 
+              progress(
+                class=`progress cals is-${calStatus}`
+                value=entry.totalCals, 
+                max=entry.goalCals, 
+                data-label=`${entry.totalCals} / ${entry.goalCals} cals`
+              ) #{entry.totalCals} / #{entry.goalCals} cals
             if entry.exercise.length > 0
               .table-container
                 table.table
