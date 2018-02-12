@@ -1,6 +1,5 @@
 const webpack = require('webpack');
 const path = require('path');
-require('babel-polyfill');
 // For writing CSS to files (not include with bundle.js)
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
@@ -12,7 +11,7 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 module.exports = {
   entry: {
     client: ['babel-polyfill', path.join(__dirname, 'public', 'src', 'js', 'client.js')],
-    data: ['babel-polyfill', path.join(__dirname, 'public', 'src', 'js', 'data.js')]
+    data: path.join(__dirname, 'public', 'src', 'js', 'data.js')
   },
   output: {
     path: path.join(__dirname, 'public', 'dist'),
@@ -77,6 +76,7 @@ module.exports = {
       // }
     ]
   },
+  devtool: 'eval-source-map',
   plugins: [
     // Don't bring in locales with moment
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
