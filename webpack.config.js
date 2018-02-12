@@ -76,7 +76,6 @@ module.exports = {
       // }
     ]
   },
-  devtool: 'eval-source-map',
   plugins: [
     // Don't bring in locales with moment
     new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/),
