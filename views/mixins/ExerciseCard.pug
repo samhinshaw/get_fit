@@ -15,7 +15,7 @@ mixin ExerciseCard(entry, startDate)
             span Weekly Summary
             span.is-pulled-right #{entryDate.clone().subtract(7, 'days').format('MMM DD')} - #{entryDate.format('MMM DD')}
           .message-body
-            p Over the past week, you hit your calorie goal #{weekSummary.successfulDays}/7 days! You worked out #{weekSummary.points} times for a total of #{weekSummary.workoutMinutes} minutes, earning you #{weekSummary.points} points this week!
+            p Over the past week, you hit your calorie goal #{weekSummary.successfulDays}/7 days! You worked out #{weekSummary.workouts} times for a total of #{weekSummary.workoutMinutes} minutes, earning you #{weekSummary.points} points this week!
         br
       .card.exercise-card
         header.card-header
