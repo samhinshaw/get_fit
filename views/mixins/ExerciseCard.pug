@@ -1,10 +1,11 @@
 //- Mixins included in partials/header.pug
 mixin ExerciseCard(entry, startDate)
-  - const entryDate = moment.tz(entry.date, 'US/Pacific');
+  - const entryDate = moment.tz(entry.date, 'US/Pacific').startOf('day');
   - const weekDay = entryDate.format('ddd');
   - const datePretty = entryDate.format('YYYY-MM-DD');
   - const dateHuman = entryDate.format('MM-DD-YYYY');
   - const fullDate = entryDate.format('ddd, MMM Do, YYYY')
+  - const weekSummary = weekSummaries.find(week => entryDate.isSame(week.endDate));
   //- Break up into weeks and we'll come back to this for a weekly point total
   .columns.is-centered.is-desktop
     .column.is-6-desktop.is-5-fullhd
@@ -14,7 +15,7 @@ mixin ExerciseCard(entry, startDate)
             span Weekly Summary
             span.is-pulled-right #{entryDate.clone().subtract(7, 'days').format('MMM DD')} - #{entryDate.format('MMM DD')}
           .message-body
-            p Over the past week, you hit your calorie goal X/7 days! You worked out X times, and ran for X minutes. You earned X points this week!
+            p Over the past week, you hit your calorie goal #{weekSummary.successfulDays}/7 days! You worked out #{weekSummary.points} times for a total of #{weekSummary.workoutMinutes} minutes, earning you #{weekSummary.points} points this week!
         br
       .card.exercise-card
         header.card-header
@@ -108,20 +109,7 @@ mixin ExerciseCard(entry, startDate)
               span.icon.is-small
                 i.mdi.mdi-update
               span Update
-          //- Buttons for completed vs not completed
-          //- if entry.complete
-            a.card-footer-item(href=`http://www.myfitnesspal.com/food/diary?date=${datePretty}#complete_day`, target='_blank') 
-              .button.update-entry
-                span.icon.is-small
-                  i.mdi.mdi-checkbox-marked-outline
-                span Complete
-          //- else
-            a.card-footer-item(href=`http://www.myfitnesspal.com/food/diary?date=${datePretty}#complete_day`, target='_blank') 
-              .button.update-entry
-                span.icon.is-small
-                  i.mdi.mdi-checkbox-blank-outline
-                span Incomplete
-      if moment(entry.date).isSame(startDate)
+      if entryDate.isSame(startDate)
         br
         .notification.inline-card-notification
           p.has-text-centered Start of Point Tracking
