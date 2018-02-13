@@ -224,6 +224,8 @@ td.exercise-icon {
   /* Set the progressbar to relative */
   position: relative;
 }
+
+/* Progress Bar Container CSS */
 .progress-container .progress-text {
   font-size: 0.7em;
   height: 100%;
@@ -238,4 +240,9 @@ td.exercise-icon {
 
 progress.cals {
   border-radius: 0;
+}
+
+/* Show the start date */
+.inline-card-notification {
+  margin-bottom: -20px;
 }

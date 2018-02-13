@@ -1,16 +1,21 @@
 //- Mixins included in partials/header.pug
-mixin ExerciseCard(entry)
+mixin ExerciseCard(entry, startDate)
   - const entryDate = moment.tz(entry.date, 'US/Pacific');
   - const weekDay = entryDate.format('ddd');
   - const datePretty = entryDate.format('YYYY-MM-DD');
   - const dateHuman = entryDate.format('MM-DD-YYYY');
   - const fullDate = entryDate.format('ddd, MMM Do, YYYY')
   //- Break up into weeks and we'll come back to this for a weekly point total
-  if weekDay === 'Sun'
-    hr
-    br
   .columns.is-centered.is-desktop
     .column.is-6-desktop.is-5-fullhd
+      if weekDay === 'Sun'
+        .message.inline-card-notification
+          .message-header
+            span Weekly Summary
+            span.is-pulled-right #{entryDate.clone().subtract(7, 'days').format('MMM DD')} - #{entryDate.format('MMM DD')}
+          .message-body
+            p Over the past week, you hit your calorie goal X/7 days! You worked out X times, and ran for X minutes. You earned X points this week!
+        br
       .card.exercise-card
         header.card-header
           p.card-header-title
@@ -116,3 +121,7 @@ mixin ExerciseCard(entry)
                 span.icon.is-small
                   i.mdi.mdi-checkbox-blank-outline
                 span Incomplete
+      if moment(entry.date).isSame(startDate)
+        br
+        .notification.inline-card-notification
+          p.has-text-centered Start of Point Tracking
