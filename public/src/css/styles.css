@@ -214,7 +214,7 @@ td.exercise-icon {
 }
 
 /* Progress Bar CSS */
-progress {
+.progress-container {
   text-align: right;
   height: 1.5em;
   width: 100%;
@@ -224,9 +224,9 @@ progress {
   /* Set the progressbar to relative */
   position: relative;
 }
-progress:before {
-  content: attr(data-label);
+.progress-container .progress-text {
   font-size: 0.7em;
+  height: 100%;
   /* vertical-align: 0; */
 
   /*Position text over the progress bar */

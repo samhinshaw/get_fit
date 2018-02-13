@@ -65,13 +65,14 @@ mixin ExerciseCard(entry)
             else if entry.isEmpty
               p.has-text-centered No calorie information.
             //- If not empty, show calories and progress bar!
-            else 
-              progress(
-                class=`progress cals is-${calStatus}`
-                value=entry.totalCals, 
-                max=entry.goalCals, 
-                data-label=`${entry.totalCals} / ${entry.goalCals} cals`
-              ) #{entry.totalCals} / #{entry.goalCals} cals
+            else
+              .progress-container
+                progress(
+                  class=`progress cals is-${calStatus}`
+                  value=entry.totalCals, 
+                  max=entry.goalCals
+                ) 
+                span.progress-text #{entry.totalCals} / #{entry.goalCals} cals
             if entry.exercise.length > 0
               .table-container
                 table.table
