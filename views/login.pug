@@ -7,6 +7,7 @@ block page
       .box.login-box
         h3.is-size-3 Login
         br
+        != messages('includes/landing-page-notification', locals)
         form(method='POST', action='/login')
           .field
             label.label Username:
@@ -17,5 +18,5 @@ block page
             .control
               input.input(name='password', type='password')
           input.button(type='submit', value='Submit')
-    .hero-foot
-      != messages('includes/footer-notification', locals)
+    //- .hero-foot
+    //-   != messages('includes/notification', locals)

@@ -5,6 +5,7 @@ block page
       .box.register-box
         h3.is-size-3 Register
         br
+        != messages('includes/landing-page-notification', locals)
         form(method='POST', action='/register')
           .columns.is-fullhd
             .column.is-half
@@ -59,5 +60,5 @@ block page
           .field
             .control
               input.button(type='submit', value='Submit')
-    .hero-foot
-      != messages('includes/footer-notification', locals)
+    //- .hero-foot
+    //-   != messages('includes/footer-notification', locals)
