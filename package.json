@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "dev": "nodemon lib/app.js --exec babel-node",
-    "webdev": "webpack -w -d",
+    "webdev": "webpack -d -w",
     "webpack": "webpack -p",
     "clean": "rm -rf ./dist",
     "build": "babel ./lib -d ./dist -s && webpack -p",

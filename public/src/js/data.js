@@ -1,18 +1,20 @@
-import Moment from 'moment-timezone';
-import { extendMoment } from 'moment-range';
+// import Moment from 'moment-timezone';
+// import { extendMoment } from 'moment-range';
+import { parse, startOfDay, subYears, addDays, isWithinRange } from 'date-fns';
 // import * as d3 from 'd3';
 import { scaleLinear, scaleTime } from 'd3-scale';
 import { axisBottom, axisLeft } from 'd3-axis';
-import { min, max, extent } from 'd3-array';
+// import { min, max, extent } from 'd3-array';
+import { extent } from 'd3-array';
 import { timeFormat } from 'd3-time-format'; // timeFormatLocale, parseDate
-import { select } from 'd3-selection'; // timeFormatLocale
-import { line } from 'd3-shape'; // timeFormatLocale
+import { select } from 'd3-selection';
+import { line } from 'd3-shape';
 // import { map, nest } from 'd3-collection';
 
 // Import CSS
 import '../css/d3.css';
 
-const moment = extendMoment(Moment);
+// const moment = extendMoment(Moment);
 
 // async function asyncQuery() {
 //   const response = await $.getJSON('/api/user_weight/', json => json);
@@ -32,17 +34,17 @@ const moment = extendMoment(Moment);
 // ];
 
 // Set up dates
-const now = moment.tz('US/Pacific');
-const today = now.clone().startOf('day');
+const now = parse(new Date().toLocaleString('en-US', { timeZone: 'America/Vancouver' }));
+const today = startOfDay(now);
 
 // Set stard & end
-const startDate = today.clone().subtract(1, 'years');
-const endDate = today.clone().add(7, 'days');
+const startDate = subYears(today, 1);
+const endDate = addDays(today, 7);
 
 // Enable custom domain?
-const dateRange = [startDate.toDate(), endDate.toDate()];
+const dateRange = [startDate, endDate];
 // const momentArray = [startDate, endDate];
-const momentRange = moment.range(startDate, endDate);
+// const momentRange = moment.range(startDate, endDate);
 // const dateRange = [new Date(2017, 10, 1), new Date(2018, 6, 30)];
 // const dateRange = false;
 
@@ -82,26 +84,34 @@ $.getJSON('/api/user_weight/', json => {
   // const map = map(json.rows, d => formatDate(parseDate(`${d.date}-0700`)));
   // console.log(map);
 
-  if (dateRange) {
+  json.rows.forEach(d => {
+    // Use String.prototype.split() to split on the ' at ' in the middle, taking
+    // the first part and throwing away the timestamp. With date-fns 2.0, should
+    // be able to `parse()` directly, with something like:
+    // parse(d.date, 'MMMM DD, YYYY [at] hh:mmA')
+    // parse(`${d.date}-0700`, 'MMMM DD, YYYY [at] hh:mmAZZ')
+    const rowDate = parse(
+      new Date(d.date.split(' at ')[0]).toLocaleString('en-US', {
+        timeZone: 'America/Vancouver'
+      })
+    );
     // if we're using a custom domain...
-    json.rows.forEach(d => {
-      // only add to the array if the the date falls within our custom domain
-      if (moment.tz(d.date, 'MMMM DD, YYYY [at] hh:mmA', 'US/Pacific').within(momentRange)) {
+    // only add to the array if the the date falls within our custom domain
+    if (dateRange) {
+      if (isWithinRange(rowDate, startDate, endDate)) {
         data.push({
-          date: moment.tz(d.date, 'MMMM DD, YYYY [at] hh:mmA', 'US/Pacific').toDate(),
+          date: rowDate,
           weight: +d.weight
         });
       }
-    });
-    // if we're not using a custom domain, just push all the dates
-  } else {
-    json.rows.forEach(d => {
+      // if we're not using a custom domain, just push all the dates
+    } else {
       data.push({
-        date: moment.tz(d.date, 'MMMM DD, YYYY [at] hh:mmA', 'US/Pacific').toDate(),
+        date: rowDate,
         weight: +d.weight
       });
-    });
-  }
+    }
+  });
 
   // console.log(data);
 
@@ -150,7 +160,8 @@ $.getJSON('/api/user_weight/', json => {
     if (dateRange) {
       // Date Range
       x.domain(dateRange).clamp(true);
-      y.domain([min(data, d => d.weight) - 1, max(data, d => d.weight) + 1]);
+      // y.domain([min(data, d => d.weight) - 1, max(data, d => d.weight) + 1]);
+      y.domain([150, 176]);
     } else {
       // All Dates
       x.domain(extent(data, d => d.date));

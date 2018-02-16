@@ -11,6 +11,8 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 module.exports = {
   entry: {
     client: ['babel-polyfill', path.join(__dirname, 'public', 'src', 'js', 'client.js')],
+    // If we don't want to use babel-polyfill
+    // client: path.join(__dirname, 'public', 'src', 'js', 'client.js'),
     data: path.join(__dirname, 'public', 'src', 'js', 'data.js')
   },
   output: {
@@ -32,6 +34,7 @@ module.exports = {
                   targets: {
                     browsers: 'last 2 versions'
                   },
+                  useBuiltIns: true,
                   loose: true,
                   modules: false
                 }
