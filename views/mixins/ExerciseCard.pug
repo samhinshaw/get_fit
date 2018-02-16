@@ -66,10 +66,6 @@ mixin ExerciseCard(entry, startDate)
             //- Check to see if this entry has cals or exercise
             if entry.isEmpty && entry.exercise.length === 0
               p.has-text-centered Hmm, nothing here yet!
-            //- If no cals, but exercise, do not show progress bar, but also
-            //- don't say that there's nothing here.
-            else if entry.isEmpty
-              p.has-text-centered No calorie information.
             //- If not empty, show calories and progress bar!
             else
               .progress-container
@@ -78,7 +74,11 @@ mixin ExerciseCard(entry, startDate)
                   value=entry.totalCals, 
                   max=entry.goalCals
                 ) 
-                span.progress-text #{entry.totalCals} / #{entry.goalCals} cals
+                //- Except if no cals, don't say 0/8
+                if entry.isEmpty
+                  span.progress-text No calorie information.
+                else
+                  span.progress-text #{entry.totalCals} / #{entry.goalCals} cals
             if entry.exercise.length > 0
               .table-container
                 table.table
