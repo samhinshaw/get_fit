@@ -1,4 +1,10 @@
 {
-  "presets": ["node8"],
+  "presets": [
+    ["env", {
+      "targets": {
+        "node": "current"
+      }
+    }]
+  ],
   "plugins": ["babel-plugin-inline-import"]
 }

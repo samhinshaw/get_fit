@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "dev": "nodemon lib/app.js --exec babel-node",
-    "webdev": "webpack -d -w",
+    "webdev": "webpack -w -d",
     "webpack": "webpack -p",
     "clean": "rm -rf ./dist",
     "build": "babel ./lib -d ./dist -s && webpack -p",
@@ -84,7 +84,6 @@
     "babel-loader": "^7.1.2",
     "babel-plugin-inline-import": "^2.0.6",
     "babel-preset-env": "^1.6.1",
-    "babel-preset-node8": "^1.2.0",
     "css-loader": "^0.28.9",
     "eslint": "^4.7.0",
     "eslint-config-airbnb-base": "^12.0.1",

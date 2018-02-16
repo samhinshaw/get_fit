@@ -25,7 +25,18 @@ module.exports = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['env'],
+            presets: [
+              [
+                'env',
+                {
+                  targets: {
+                    browsers: 'last 2 versions'
+                  },
+                  loose: true,
+                  modules: false
+                }
+              ]
+            ],
             plugins: ['babel-plugin-inline-import']
           }
         },
@@ -106,6 +117,7 @@ module.exports = {
     // })
   ],
   resolve: {
+    extensions: ['.js', '.jsx', '.json'],
     alias: {
       // make sure webpack gets the source version, not the dist (Prefer
       // unminified CommonJS/AMD over dist)
@@ -114,6 +126,11 @@ module.exports = {
       // https://github.com/kadirahq/lokka/issues/32
       'node-fetch': 'whatwg-fetch'
     }
+  },
+  stats: {
+    colors: true,
+    reasons: true,
+    chunks: true
   }
 };
 
