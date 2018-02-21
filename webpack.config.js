@@ -120,6 +120,7 @@ module.exports = {
     // })
   ],
   resolve: {
+    mainFields: ['module', 'browser', 'main'],
     extensions: ['.js', '.jsx', '.json'],
     alias: {
       // make sure webpack gets the source version, not the dist (Prefer
