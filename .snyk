@@ -1,4 +1,74 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
 version: v1.10.1
-ignore: {}
+# ignores vulnerabilities until expiry date; change duration by modifying expiry date
+ignore:
+  'npm:bson:20180225':
+    - connect-mongo > mongodb > mongodb-core > bson:
+        reason: no fix
+        expires: '2018-03-30T19:29:59.167Z'
+    - mongoose > bson:
+        reason: no fix
+        expires: '2018-03-30T19:29:59.168Z'
+    - mongoose > mongodb > mongodb-core > bson:
+        reason: no fix
+        expires: '2018-03-30T19:29:59.168Z'
+    - express-brute-mongoose > mongoose > bson:
+        reason: no fix
+        expires: '2018-03-30T19:29:59.168Z'
+    - express-brute-mongoose > mongoose > mongodb > mongodb-core > bson:
+        reason: no fix
+        expires: '2018-03-30T19:29:59.168Z'
+  'npm:concat-stream:20160901':
+    - google-spreadsheet > google-auth-library > jws > base64url > concat-stream:
+        reason: no fix
+        expires: '2018-03-30T19:29:59.168Z'
+  'npm:hoek:20180212':
+    - google-spreadsheet > google-auth-library > request > hawk > hoek:
+        reason: no fi
+        expires: '2018-03-30T19:29:59.168Z'
+    - google-spreadsheet > google-auth-library > request > hawk > boom > hoek:
+        reason: no fix
+        expires: '2018-03-30T19:29:59.168Z'
+    - google-spreadsheet > google-auth-library > request > hawk > sntp > hoek:
+        reason: no fix
+        expires: '2018-03-30T19:29:59.168Z'
+    - google-spreadsheet > google-auth-library > request > hawk > cryptiles > boom > hoek:
+        reason: no fix
+        expires: '2018-03-30T19:29:59.168Z'
+    - node-pre-gyp > hawk > hoek:
+        reason: no fix
+        expires: '2018-03-30T19:29:59.168Z'
+    - node-pre-gyp > hawk > boom > hoek:
+        reason: no fix
+        expires: '2018-03-30T19:29:59.168Z'
+    - node-pre-gyp > hawk > sntp > hoek:
+        reason: no fix
+        expires: '2018-03-30T19:29:59.168Z'
+    - node-pre-gyp > hawk > cryptiles > boom > hoek:
+        reason: no fix
+        expires: '2018-03-30T19:29:59.168Z'
+    - node-pre-gyp > request > hawk > hoek:
+        reason: no fix
+        expires: '2018-03-30T19:29:59.168Z'
+    - node-pre-gyp > request > hawk > boom > hoek:
+        reason: no fix
+        expires: '2018-03-30T19:29:59.168Z'
+    - node-pre-gyp > request > hawk > sntp > hoek:
+        reason: no fix
+        expires: '2018-03-30T19:29:59.168Z'
+    - node-pre-gyp > request > hawk > cryptiles > boom > hoek:
+        reason: no fix
+        expires: '2018-03-30T19:29:59.168Z'
+  'npm:lodash:20180130':
+    - google-spreadsheet > lodash:
+        reason: no fix
+        expires: '2018-03-30T19:29:59.168Z'
+  'npm:node-forge:20180226':
+    - google-spreadsheet > google-auth-library > gtoken > google-p12-pem > node-forge:
+        reason: no fix
+        expires: '2018-03-30T19:29:59.168Z'
+  'npm:tunnel-agent:20170305':
+    - google-spreadsheet > google-auth-library > request > tunnel-agent:
+        reason: no fix
+        expires: '2018-03-30T19:29:59.168Z'
 patch: {}

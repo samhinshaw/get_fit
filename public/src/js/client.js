@@ -60,7 +60,7 @@ const handlers = {
         },
         // handle errors
         error: err => {
-          console.log(err);
+          console.err(err);
           window.location.reload();
         }
       });

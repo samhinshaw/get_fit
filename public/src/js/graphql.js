@@ -2,7 +2,7 @@
 import { Lokka } from 'lokka';
 import { Transport } from 'lokka-transport-http';
 // Also handle cookies with express/js-cookie
-import Cookies from 'js-cookie';
+// import Cookies from 'js-cookie';
 // Set up Lokka HTTP Transport to send queries to /graphql
 const client = new Lokka({
   transport: new Transport(`${window.location.origin}/graphql`)
@@ -15,7 +15,7 @@ console.log(templateFixer);
 =                  Get Cookies!                =
 ============================================= */
 
-const username = Cookies('username');
+// const username = Cookies('username');
 
 // Way to handle if cookie not found
 // const handleCookies = async (cookieName, cb, args) => {

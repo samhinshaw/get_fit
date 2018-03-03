@@ -22,7 +22,7 @@ module.exports = {
     // don't use dangling commas!!
     'comma-dangle': ['error', 'never'],
     // actually, we're running node, so allow all console methods (warn, err, log)
-    'no-console': ['error', { allow: ['warn', 'error', 'log'] }],
+    // 'no-console': ['error', { allow: ['warn', 'error', 'log'] }],
     'no-debugger': 'off',
     'no-underscore-dangle': ['error', { allow: ['_id'] }]
   }
