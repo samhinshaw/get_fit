@@ -5,7 +5,6 @@ import 'jquery';
 import '../sass/styles.sass';
 import '../css/styles.css';
 // Run GraphQL script
-import './graphql';
 
 const handlers = {
   // Function 1 to listen for: hamburger menu
