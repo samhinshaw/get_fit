@@ -1,0 +1,14 @@
+extends partials/header
+block page
+  section.hero.is-default.is-bold.flex-content.landing-page.login-page
+    .hero-body
+      .container.is-fluid.has-text-centered
+        h1.title.is-huge
+          | 404
+        br
+        .has-text-centered
+          h4.is-size-4.has-text-light Oops, the page you requested (
+            span.under.has-text-light #{routeInfo.route}
+            | ) does not exist!
+    .hero-foot
+      != messages('includes/footer-notification', locals)

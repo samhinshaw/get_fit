@@ -246,3 +246,7 @@ progress.cals {
 .inline-card-notification {
   margin-bottom: -20px;
 }
+
+.under {
+  text-decoration: underline;
+}
