@@ -1,0 +1,6 @@
+scalar Date
+
+type Query {
+  entries: [Entry]
+  users: [User]
+}
