@@ -45,6 +45,7 @@
     "d3-shape": "^1.2.0",
     "d3-time-format": "^2.1.1",
     "date-fns": "^1.29.0",
+    "email-verification": "^0.4.6",
     "express": "^4.15.4",
     "express-brute": "^1.0.1",
     "express-brute-mongoose": "0.0.9",
