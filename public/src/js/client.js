@@ -182,7 +182,6 @@ const handlers = {
 // Process all actions after DOM content has loaded
 document.addEventListener('DOMContentLoaded', () => {
   handlers.toggleNavBarBurger();
-  // handlers.deleteArticle();
   handlers.dismissMessagesNotification();
   handlers.dismissNotification();
   handlers.updateEntry();
