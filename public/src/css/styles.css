@@ -250,3 +250,7 @@ progress.cals {
 .under {
   text-decoration: underline;
 }
+
+.form-header {
+  margin-bottom: 10px;
+}

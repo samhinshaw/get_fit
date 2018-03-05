@@ -86,7 +86,7 @@ const handlers = {
     });
   },
   dismissNotification: () => {
-    $('.footer-notification').on('click', e => {
+    $('.footer-notification, .landing-page-notification ').on('click', e => {
       // before we delete anything, check to see if this is the last alert
       $(e.currentTarget)
         .addClass('is-hidden')
