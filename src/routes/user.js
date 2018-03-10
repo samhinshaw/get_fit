@@ -300,7 +300,7 @@ router.post('/:date', ensureAuthenticated, (req, res) => {
   if (process.platform === 'linux') {
     pythonPath = '/home/sam/.miniconda3/bin/python3';
   } else if (process.platform === 'darwin') {
-    pythonPath = '/Users/samhinshaw/.miniconda3/bin/python';
+    pythonPath = '/usr/local/bin/python';
   }
 
   // Python script options
@@ -315,11 +315,12 @@ router.post('/:date', ensureAuthenticated, (req, res) => {
   // Run python script
   PythonShell.run('getMFP.py', options, err => {
     if (err) {
-      logger.error(JSON.stringify(err));
+      logger.error('Error updating from MyFitnessPal: %j', err);
       req.flash('danger', JSON.stringify(err));
       res.redirect('/user');
     } else {
-      logger.info('Success updating user data from MFP');
+      // console.log(result);
+      logger.info('Success updating user data from MFP.');
       res.send('Success');
     }
   });

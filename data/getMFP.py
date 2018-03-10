@@ -20,7 +20,7 @@ from dateutil.tz import tzutc  # timezone functions
 from pymongo import MongoClient  # mongodb operations
 import myfitnesspal  # myfitnesspal API!
 
-## NOTES
+# NOTES
 # - Later on I may wish to pull calorie goals straight from MFP
 # MFPcals.goals['calories']
 
@@ -104,16 +104,31 @@ secretPyConfig = secretConfig['python']
 
 # However, we can manually construct the URI and connect that way.
 # It's uglier, but it still works.
-mongoURI = "mongodb://" + secretPyConfig['user'] + ":" + secretPyConfig['password'] + "@" + secretPyConfig['host'] + ":" + secretPyConfig['port'] + "/" + secretPyConfig['authSource'] + "?authMechanism=" + secretPyConfig['authMechanism']
+mongoURI = "mongodb://" + secretPyConfig['user'] + ":" + secretPyConfig['password'] + "@" + secretPyConfig['host'] + \
+    ":" + secretPyConfig['port'] + "/" + secretPyConfig['authSource'] + \
+    "?authMechanism=" + secretPyConfig['authMechanism']
 
 client = MongoClient(mongoURI)
 
 db = client.get_fit
 entries = db.entries
 
+# Bring in authorized users to check whether we should validate login with stored password
+unparsedAuthorizedUsers = open(os.path.join(
+    'config', 'authorized-users.json')).read()
+authorizedUsers = json.loads(unparsedAuthorizedUsers)
+
 print('Pulling in MyFitnessPal information for ' + user.capitalize() + '...')
 
-MFPclient = myfitnesspal.Client(mfp)
+# Make sure user is authorized, otherwise just pull in public data!
+if (user in authorizedUsers):
+    if (authorizedUsers[user] == mfp):
+        MFPclient = myfitnesspal.Client(mfp)
+    else:
+        MFPclient = myfitnesspal.Client(mfp, password='', login=False)
+else:
+    MFPclient = myfitnesspal.Client(mfp, password='', login=False)
+
 
 # Assign database collection and MFP connection
 # if user == 'sam':
