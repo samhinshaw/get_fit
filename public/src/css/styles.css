@@ -208,10 +208,10 @@ td.exercise-icon {
 }
 
 /* Clip Path on Avatars to make them circles! */
-.avatar {
+/* .avatar {
   -webkit-clip-path: circle(50% at 50% 50%);
   clip-path: circle(50% at 50% 50%);
-}
+} */
 
 /* Progress Bar CSS */
 .progress-container {
@@ -253,4 +253,9 @@ progress.cals {
 
 .form-header {
   margin-bottom: 10px;
+}
+
+/* Make class to allow for clearing floats */
+.inline-user-element {
+  margin-right: 3em;
 }

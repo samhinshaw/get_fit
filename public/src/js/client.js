@@ -176,6 +176,16 @@ const handlers = {
         });
       }
     });
+  },
+  resetForm: () => {
+    $('#cancel-account-settings').on('click', e => {
+      document.getElementById('account-settings').reset();
+    });
+  },
+  resetForm: () => {
+    $('#cancel-account-settings').on('click', e => {
+      document.getElementById('account-settings').reset();
+    });
   }
 };
 
@@ -187,4 +197,5 @@ document.addEventListener('DOMContentLoaded', () => {
   handlers.updateEntry();
   handlers.replyToRequest();
   handlers.watchModal();
+  handlers.resetForm();
 });

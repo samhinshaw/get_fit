@@ -12,6 +12,7 @@ import logger from '../methods/logger';
 import Request from '../models/request';
 import Reward from '../models/reward';
 import Gift from '../models/gift';
+import User from '../models/user';
 // const flash = require('connect-flash');
 const moment = extendMoment(Moment);
 
@@ -62,9 +63,63 @@ router.get('/', ensureAuthenticated, (req, res) => {
           res.locals.partner.firstname.slice(1).toLowerCase() || null,
       partnerLastName:
         res.locals.partner.lastname.charAt(0).toUpperCase() +
-          res.locals.partner.lastname.slice(1).toLowerCase() || null
+          res.locals.partner.lastname.slice(1).toLowerCase() || null,
+      user: res.locals.user
     }
   });
+});
+router.post('/', ensureAuthenticated, (req, res) => {
+  const userObject = {};
+
+  // console.log('pre-validation name: ', firstname);
+  let firstname = req.sanitize('firstname').trim();
+  firstname = firstname !== '' ? firstname : null;
+
+  if (firstname) userObject.firstname = firstname;
+
+  let lastname = req.sanitize('lastname').trim();
+  lastname = lastname !== '' ? lastname : null;
+
+  if (lastname) userObject.lastname = lastname;
+  // const username = req.sanitize('username').trim();
+  // const email = req.sanitize('email').trim();
+  // req
+  // .checkBody('email', 'Email is not valid')
+  // .isEmail()
+  // .trim()
+  // .normalizeEmail();
+  let fitnessGoal = req.sanitize('fitness-goal').trim();
+  fitnessGoal = fitnessGoal !== '' ? fitnessGoal : null;
+  if (fitnessGoal) userObject.fitnessGoal = fitnessGoal;
+
+  let startDate = req.sanitize('start-date').trim();
+  startDate = startDate !== '' ? startDate : null;
+  if (startDate) userObject.startDate = startDate;
+
+  let mfp = req.sanitize('mfp').trim();
+  mfp = mfp !== '' ? mfp : null;
+  if (mfp) userObject.mfp = mfp;
+
+  let currentPoints = req.sanitize('current-points').trim();
+  currentPoints = currentPoints !== '' ? currentPoints : null;
+  if (currentPoints) userObject.currentPoints = currentPoints;
+
+  // const weight = req.sanitize('weight').trim();
+  // const calorieGoal = req.sanitize('calorie-goal').trim();
+  User.findOneAndUpdate(
+    { username: req.user.username },
+    {
+      $set: userObject
+    },
+    err => {
+      if (err) {
+        req.flash('danger', 'Oops, there was an error updating your settings!');
+        res.redirect('#');
+      }
+      req.flash('success', 'Settings successfully updated!');
+      res.redirect('#');
+    }
+  );
 });
 
 router.get('/spend', ensureAuthenticated, (req, res) => {

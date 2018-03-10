@@ -49,9 +49,9 @@ html
                   if user
                     .control
                       a.button(href='/account', class=(routeInfo.route.startsWith('/account')  ? 'is-active' : false))
-                        span.icon.is-small
+                        //- span.icon.is-small
                           img.avatar(src=`/images/${user.username}.jpg`, alt=user.username, height='28px', width='28px')
-                        | &nbsp;
+                        //- | &nbsp;
                         span #{routeInfo.userName}
                         if pendingRequests.length > 0
                           | &nbsp;
