@@ -4,11 +4,11 @@
   "description": "Fitness Tracker for Sam & Am",
   "main": "app.js",
   "scripts": {
-    "dev": "NODE_ENV=development nodemon lib/app.js --exec babel-node",
+    "dev": "NODE_ENV=development nodemon src/app.js --exec babel-node",
     "watch": "NODE_ENV=development webpack -d -w",
     "webpack": "NODE_ENV=production webpack -p",
     "clean": "rm -rf ./dist",
-    "build": "NODE_ENV=production babel ./lib -d ./dist -s && webpack -p",
+    "build": "NODE_ENV=production babel ./src -d ./dist -s && webpack -p",
     "format": "prettier --list-different --single-quote --print-width=120 \"public/js/**/*.js\"",
     "lint": "eslint **/*.js --quiet",
     "deploy": "pm2 deploy getfit.config.js production",
