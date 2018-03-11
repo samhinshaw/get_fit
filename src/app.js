@@ -217,9 +217,23 @@ app.use(
     // also store 'logged-in' status
     if (req.user) {
       res.locals.loggedIn = true;
-      res.locals.partner = await User.findOne({
-        username: req.user.partner
-      });
+      if (req.user.partner == null || req.user.partner === '') {
+        res.locals.partner = {
+          firstname: '',
+          lastname: '',
+          username: '',
+          email: '',
+          mfp: '',
+          partner: '',
+          fitnessGoal: '',
+          password: null,
+          currentPoints: 0
+        };
+      } else {
+        res.locals.partner = await User.findOne({
+          username: req.user.partner
+        });
+      }
     } else {
       res.locals.loggedIn = false;
     }
@@ -299,60 +313,6 @@ app.use(
         res.locals.customRange
       );
 
-      // NOTE: as of 2018-01-14, not using week tallies, since it turned out we
-      // weren't rendering these anywhere or using them in any calculations.
-      // It'd be nice to have them added up in the UI, but for now just cutting
-      // them out. Next up is intelligent caching of point tallies!
-
-      // const periods = _.union(userWeeks, userCustom, partnerWeeks, partnerCustom);
-      // const periods = _.union(userCustom, partnerCustom);
-
-      // make the points array available to the view engine
-      // res.locals.pointTotals = periods;
-
-      // As of 2018-01-23, not saving point totals into database, will just
-      // recalculate every time
-
-      // periods.forEach(entry => {
-      //   const period = {
-      //     key: entry.key,
-      //     startDate: entry.startDate,
-      //     endDate: entry.endDate,
-      //     points: entry.points,
-      //     user: entry.user
-      //   };
-      //   // resave points
-      //   Period.findOneAndUpdate(
-      //     {
-      //       key: period.key,
-      //       user: period.user
-      //     },
-      //     { $set: period },
-      //     { upsert: true },
-      //     saveErr => {
-      //       if (saveErr) {
-      //         console.log(saveErr);
-      //       }
-      //     }
-      //   );
-      // });
-
-      // make the current running total easily accessible. if more specific ones
-      // needed, we can get those within the views template
-      // Array.filter to find ALL (returns array even if only one match)
-      // const pointTallies = periods.filter(period => period.key === 'sinceStart');
-
-      // Array.find to find the FIRST match. returns the item (not an array), but
-      // will only ever find one
-      // const userPointTally = pointTallies.find(period => period.user === res.locals.user.username);
-      // const partnerPointTally = pointTallies.find(
-      //   period => period.user === res.locals.partner.username
-      // );
-
-      // const pointTally = {
-      //   user: parseFloat(userPointTally.points),
-      //   partner: parseFloat(partnerPointTally.points)
-      // };
       const pointTally = {
         user: parseFloat(userCustom.points),
         partner: parseFloat(partnerCustom.points)

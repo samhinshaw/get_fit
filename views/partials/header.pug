@@ -53,10 +53,11 @@ html
                           img.avatar(src=`/images/${user.username}.jpg`, alt=user.username, height='28px', width='28px')
                         //- | &nbsp;
                         span #{routeInfo.userName}
-                        if pendingRequests.length > 0
-                          | &nbsp;
-                          span.tag(class='is-danger')
-                            | #{pendingRequests.length}
+                        if pendingRequests
+                          if pendingRequests.length > 0
+                            | &nbsp;
+                            span.tag(class='is-danger')
+                              | #{pendingRequests.length}
                     .control
                       a.button(href="/logout")
                         | Log out
