@@ -478,7 +478,7 @@ router.get('/email-verification/:url', (req, res, next) => {
       return next();
     }
     logger.info(`${user.username} confirmed`);
-    req.flash('success', 'Success! Your email address has been confirmed.');
+    req.flash('success', 'Success! Your email address has been confirmed. You may now log in.');
     res.render('landing_page', {
       routeInfo: {
         heroType: 'landing_page',

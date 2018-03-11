@@ -53,14 +53,27 @@ const handlers = {
         type: 'POST',
         url: `${route}/${date}`,
         // handle successes!
-        success: () => {
-          //    (res)
+        success: res => {
+          console.log(res);
           window.location.reload();
         },
         // handle errors
         error: err => {
-          console.err(err);
-          window.location.reload();
+          $(e.currentTarget).removeClass('is-loading');
+          $('#notification-entry').append(
+            `
+              <div class="messages">
+                <div class="notification landing-page-notification is-${err.responseJSON.type}">
+                  <button class="delete"></button>
+                  <p>${err.responseJSON.message}</p>
+                </div>
+              </div>
+            `
+          );
+          // Since we're creating a new .messages div, (after DOMContentLoaded
+          // fired) there's no event handler yet! So we gotta make sure we add
+          // it again.
+          handlers.dismissMessagesNotification();
         }
       });
     });

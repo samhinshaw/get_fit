@@ -259,3 +259,9 @@ progress.cals {
 .inline-user-element {
   margin-right: 3em;
 }
+
+/* Give update buttons above user the same padding as the notification! This
+will prevent the notification from moving the buttons when it appears */
+.level .button-padding {
+  padding: 1.25rem 2.5rem 1.25rem 1.5rem;
+}

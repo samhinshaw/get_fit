@@ -8,8 +8,9 @@ block subnav
 
 block content
   != messages('includes/notification', locals)
-  .columns.is-centered
-    .column.is-7-desktop.is-12-tablet
+  .columns.is-centered.is-desktop
+    .column.is-7-desktop
+      h4.is-size-4.subtitle Account Settings
       form(method="POST", id="account-settings", action="/account")
         .field.is-horizontal
           .field-label.is-normal
@@ -61,7 +62,7 @@ block content
                 input.input(name="start-date", type="date", value="2018-02-18")
                 span.icon.is-small.is-left
                   i.mdi.mdi-calendar
-        hr
+        //- hr
         .field.is-horizontal
           .field-label.is-normal
             label.label MyFitnessPal
@@ -80,24 +81,24 @@ block content
                 input.input(name="current-points", type="number", value=routeInfo.user.currentPoints disabled)
                 span.icon.is-small.is-left
                   i.mdi.mdi-dumbbell
-        .field.is-horizontal
-          .field-label.is-normal
-            label.label Weight
-          .field-body
-            .field
-              .control.has-icons-left
-                input.input(name="weight", type="number", value="170" disabled)
-                span.icon.is-small.is-left
-                  i.mdi.mdi-scale-bathroom
-        .field.is-horizontal
-          .field-label.is-normal
-            label.label Calorie Goal
-          .field-body
-            .field
-              .control.has-icons-left
-                input.input(name="calorie-goal", type="number", value="1700" disabled)
-                span.icon.is-small.is-left
-                  i.mdi.mdi-chart-areaspline
+        //- .field.is-horizontal
+        //-   .field-label.is-normal
+        //-     label.label Weight
+        //-   .field-body
+        //-     .field
+        //-       .control.has-icons-left
+        //-         input.input(name="weight", type="number", value="170" disabled)
+        //-         span.icon.is-small.is-left
+        //-           i.mdi.mdi-scale-bathroom
+        //- .field.is-horizontal
+        //-   .field-label.is-normal
+        //-     label.label Calorie Goal
+        //-   .field-body
+        //-     .field
+        //-       .control.has-icons-left
+        //-         input.input(name="calorie-goal", type="number", value="1700" disabled)
+        //-         span.icon.is-small.is-left
+        //-           i.mdi.mdi-chart-areaspline
         .field.is-horizontal
           .field-label.is-normal
           .field-body
@@ -107,13 +108,3 @@ block content
               .control
                 button.button.is-text(type="button", tabindex=0, id="cancel-account-settings")
                   | Reset
-      //- p
-      //-   span.is-size-4.inline-user-element #{routeInfo.userName} #{routeInfo.userLastName}
-      //-   span.inline-user-element Partner: #{routeInfo.partnerName} #{routeInfo.partnerLastName}
-      //- p
-      //-   span.inline-user-element Username: #{user.username}
-      //-   span.inline-user-element Email Address: #{user.email}
-      //- p
-      //-   span.inline-user-element Current Points: #{user.currentPoints}
-      //-   span.inline-user-element Current Calorie Goal:
-      //-   span.inline-user-element Current Weight:  

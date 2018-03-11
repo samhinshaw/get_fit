@@ -9,10 +9,8 @@ block subnav
   include ../includes/partner_subnav
 
 block content
-  != messages('includes/notification', locals)
   //- Set up date information here. 
   //- Unfortunately this can't be done at the top level of an extending template
-
   //- - const now = moment.utc();
   - const now = moment.tz('US/Pacific');
   - const today = now.clone().startOf('day');
@@ -20,22 +18,17 @@ block content
   - const twoWeeksAgo = today.clone().subtract(14, 'days');
   - const twoWeeksAgoPretty = twoWeeksAgo.format('YYYY-MM-DD');
 
-  //- - const tomorrow = today.clone().add(1, 'day');
-  //- - const tomorrowPretty = tomorrow.format('YYYY-MM-DD');
-
-  .field.is-grouped
-    .control
-      button.button.is-small.is-info.is-pulled-left.update-entry(data-date=todayPretty)
-        | Update Today
-    //- Note, if we place the tooltip directly onto the button, the behavior of
-    //-  the tooltop (which utilizes ::before and ::after pseudo-elements) will
-    //-  interfere with the loading spinner, which uses the ::after element on
-    //-  click! Therefore we must attach the tooltip to the parent .control div
-    //-  of the button. 
-    .control.tooltip.is-tooltip-top(data-tooltip="This may take a while to update.")
-      button.button.is-small.is-info.is-pulled-left.update-entry(data-date=`${twoWeeksAgoPretty} ${todayPretty}`)
-        | Update Past Two Weeks
-  br
+  .level
+    .level-left
+      .button-padding
+        .buttons.level-item
+          button.button.is-small.is-info.update-entry(data-date=todayPretty)
+            | Update Today
+          button.button.is-small.is-info.update-entry(data-date=`${twoWeeksAgoPretty} ${todayPretty}`)
+            | Update Past Two Weeks
+    .level-right
+      #notification-entry.level-item
+  != messages('../includes/landing-page-notification', locals)
   each entry, i in entries
     +ExerciseCard(entry, startDate)
     br
