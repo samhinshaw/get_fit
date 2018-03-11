@@ -18,11 +18,6 @@
   padding: 1.5rem;
 }
 
-/* Specifically, make the messages section have no bottom padding */
-.messages {
-  padding-bottom: 0;
-}
-
 /* Add CSS for handling removal of Bulma notifications */
 .notification > button.delete {
   border: none;
@@ -265,3 +260,8 @@ will prevent the notification from moving the buttons when it appears */
 .level .button-padding {
   padding: 1.25rem 2.5rem 1.25rem 1.5rem;
 }
+
+/* Specifically, make the messages section have no bottom padding */
+/* .messages {
+  padding-bottom: 0;
+} */
