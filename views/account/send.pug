@@ -21,10 +21,10 @@ block content
           p Feature in progress
         .message-body
           | This feature is currently in development. You can not yet send gifts. 😢
-      h4.is-size-4 Send Gifts to Your Partner
-      p 
-        em All fields are optional.
-      br
+      div.title
+        h4.is-size-4 Send Gifts to Your Partner
+        p.subtitle.is-size-6 
+          em All fields are optional.
       form(method="POST", action="/account/send")
         .field
           label.label Send Points
