@@ -25,7 +25,7 @@
         .control
           span.tag(class='is-danger')
             | #{pendingRequests.length}
-  a.navbar-item.is-tab(href=`/account/send`, class=('/account/send' === routeInfo.route ? 'is-active' : false))
+  //- a.navbar-item.is-tab(href=`/account/send`, class=('/account/send' === routeInfo.route ? 'is-active' : false))
     .field.is-grouped
       .control
         span.icon.is-small
@@ -41,3 +41,11 @@
       //- | &nbsp;
       .control
         | History
+  a.navbar-item.is-tab(href=`/account/delete`, class=('/account/delete' === routeInfo.route ? 'is-active' : false))
+    .field.is-grouped
+      .control
+        span.icon.is-small
+          i.mdi.mdi-delete 
+      //- | &nbsp;
+      .control
+        | Delete

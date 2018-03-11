@@ -1,0 +1,24 @@
+extends ../partials/layout
+
+block header
+  include ../includes/account_header
+
+block subnav
+  include ../includes/account_subnav
+
+block content
+  != messages('includes/notification', locals)
+  .columns.is-centered.is-desktop
+    .column.is-7-desktop.is-6-fullhd
+      h4.is-size-4.subtitle Delete Your Account
+      p If you wish to delete your account, you may do so below! Please note that once your account has been deleted, 
+        strong your data cannot be recovered!
+      section.section
+        form(method="POST", action="/account/delete")                  
+          .field
+            label.label Confirm
+            .control
+              input.input(type='text', name='confirm', placeholder='Please type your username to confirm.')
+          .field.is-grouped
+            .control
+              button.button.is-danger Delete Account
