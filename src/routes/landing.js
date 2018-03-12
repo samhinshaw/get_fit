@@ -294,8 +294,14 @@ router.post(
     const lastname = req.sanitize('lastname').trim();
     const username = req.sanitize('username').trim();
     const email = req.sanitize('email').trim();
+    // Amazing operator!! Just converts anything to boolean, because it's the
+    // inverse of the inverse boolean
+    const withPartner = !!req.body.withPartner;
     const partner = req.sanitize('partner').trim();
-    const fitnessGoal = req.sanitize('fitnessGoal').trim();
+    const partnerEmail = req.sanitize('partnerEmail').trim();
+    // const fitnessGoal = req.sanitize('fitnessGoal').trim();
+    // For now, set up all users with a default fitness goal.
+    const fitnessGoal = 'Working to get fit!';
     const mfp = req.sanitize('mfp').trim();
     const accessCode = req.sanitize('accessCode').trim();
     // Not sanitizing password for now, since we're salting & hashing it.
@@ -313,11 +319,23 @@ router.post(
     req.checkBody('mfp', 'MyFitnessPal username is required').notEmpty();
     // In the future, make sure username is not taken!!
     req.checkBody('username', 'Username is required').notEmpty();
+    req.checkBody('username', 'Username must be at least 3 characters long.').isLength({ min: 3 });
     // req.checkBody('partner', 'Partner is required').notEmpty();
     req.checkBody('accessCode', 'Access code is required').notEmpty();
     req.checkBody('password', 'Password is required').notEmpty();
+    req.checkBody('password', 'Password must be at least 5 characters long.').isLength({ min: 5 });
     req.checkBody('passwordConfirm', 'Passwords do not match').equals(req.body.password);
-    // logger.log('Store code is: ', secretConfig.registrationSecret);
+
+    // If registering with partner, make sure username and email were supplied
+    if (withPartner) {
+      req.checkBody('partner', 'Partner username is required').notEmpty();
+      req.checkBody('partnerEmail', 'Partner email is required').notEmpty();
+      req
+        .checkBody('partnerEmail', 'Partner email is not valid')
+        .isEmail()
+        .trim()
+        .normalizeEmail();
+    }
 
     const errors = req.validationErrors();
     // Set up for checking whether users already exist with the username
@@ -445,6 +463,80 @@ router.post(
       });
     }
     return false;
+  })
+);
+
+router.post(
+  '/register/validate',
+  asyncMiddleware(async (req, res, next) => {
+    // Make sure we're not getting hit with anything malicious! No bruteforce prevention here!
+    const name = req.sanitize('name').trim();
+    const value = req.sanitize('value').trim();
+    // Check usernames
+    if (name === 'username') {
+      // First just make sure username is long enough. We could do this
+      // client-side, but I wanted to keep the logic flow pretty.
+      if (value.length < 3) {
+        res
+          .status(200)
+          .json({ message: 'Your username must be at least 3 characters.', classType: 'danger' });
+      } else {
+        // Otherwise, check for the user in the database!
+        const user = await User.findOne({ username: value }, err => {
+          if (err) logger.error(err);
+        });
+        if (user) {
+          res.status(200).json({ message: 'This username is taken.', classType: 'danger' });
+        } else {
+          res.status(200).json({ message: 'This username is available', classType: 'success' });
+        }
+      }
+    } else if (name === 'email') {
+      const userByEmail = await User.findOne({ email: value }, err => {
+        if (err) logger.error(err);
+      });
+      if (userByEmail) {
+        res
+          .status(200)
+          .json({ message: 'This email address is already registered.', classType: 'danger' });
+      } else {
+        res
+          .status(200)
+          .json({ message: 'This email address is unregistered.', classType: 'success' });
+      }
+    } else if (name === 'partner') {
+      const partner = await User.findOne({ username: value }, err => {
+        if (err) logger.error(err);
+      });
+      if (partner) {
+        res.status(200).json({
+          message: "This user is already registered. We'll send them a partner request!",
+          classType: 'success'
+        });
+      } else {
+        res.status(200).json({
+          message:
+            "This user is not yet registered! Input their email address and we'll invite them to Get Fit!.",
+          classType: 'danger'
+        });
+      }
+    } else if (name === 'partnerEmail') {
+      const partnerByEmail = await User.findOne({ email: value }, err => {
+        if (err) logger.error(err);
+      });
+      if (partnerByEmail) {
+        res.status(200).json({
+          message: "This email address is already registered. We'll send them a partner request!",
+          classType: 'success'
+        });
+      } else {
+        res
+          .status(200)
+          .json({ message: 'This email address is unregistered.', classType: 'danger' });
+      }
+    }
+    // console.log('response obj: ', res);
+    // res.status(500).json({ message: 'Error updating from MyFitnessPal', type: 'danger' });
   })
 );
 

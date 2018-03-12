@@ -265,3 +265,10 @@ will prevent the notification from moving the buttons when it appears */
 /* .messages {
   padding-bottom: 0;
 } */
+
+/* Help 'register with partner' checkbox align with form (on desktop) */
+/* @media print, screen and (min-width: 769px) {
+  form .column.is-half .checkbox-field {
+    margin-bottom: 3.75rem;
+  }
+} */

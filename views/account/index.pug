@@ -57,11 +57,15 @@ block content
           .field-label.is-normal
             label.label Start Date
           .field-body
-            .field
+            .field.has-addons
               .control.has-icons-left
                 input.input(name="start-date", type="date", value="2018-02-18")
                 span.icon.is-small.is-left
                   i.mdi.mdi-calendar
+              .control
+                .button.is-light#helpToolTipButton(title="Date from which points will be calculated.")
+                  span.icon.is-small.is-left
+                    i.mdi.mdi-help-circle-outline
         //- hr
         .field.is-horizontal
           .field-label.is-normal

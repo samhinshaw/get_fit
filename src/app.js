@@ -573,8 +573,8 @@ app.get('*', (req, res) => {
 // Set all errors to be sent to Winston!
 // https://stackoverflow.com/questions/45101757/pug-error-handling-for-a-nodejs-express-and-pug-based-application
 app.use((err, req, res, next) => {
-  logger.error(err);
-  logger.error(err.stack);
+  logger.error('uncaught error: %j', err);
+  // logger.error(err.stack);
   // show user some message - for Ajax requests which expects a specific format
   // res.json({ ok: false, message: err.message });
 
@@ -587,9 +587,15 @@ app.use((err, req, res, next) => {
   // - set res.status
   // sth. like this
 
-  req.flash('danger', err.message);
-  res.redirect('/');
-  next(err);
+  req.flash('danger', err);
+  // Shouldn't redirect, because upstream error handling may have redirected already!
+  // res.redirect('/');
+  // If XHR (Ajax) request, we don't want to call next!!! That
+  if (req.xhr) {
+    res.status(500).send({ error: 'Internal Server Error' });
+  } else {
+    next(err);
+  }
 });
 
 // Start Server

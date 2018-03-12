@@ -70,9 +70,10 @@
     "pug": "^2.0.0-rc.4",
     "python-shell": "^0.4.0",
     "request": "2.83.0",
+    "snyk": "^1.69.10",
+    "tippy.js": "^2.3.0",
     "winston": "^3.0.0-rc1",
-    "winston-daily-rotate-file": "^2.0.0-rc.6",
-    "snyk": "^1.69.10"
+    "winston-daily-rotate-file": "^2.0.0-rc.6"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",

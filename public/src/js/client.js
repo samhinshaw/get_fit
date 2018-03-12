@@ -1,6 +1,7 @@
 // Import statements will go here, webpack & Babel will take care of the rest
 // Import JQuery for all of this to work!
 import 'jquery';
+import tippy from 'tippy.js';
 // Import styles for webpack (specifically, webpack-extract-text-plugin)
 import '../sass/styles.sass';
 import '../css/styles.css';
@@ -31,6 +32,7 @@ const handlers = {
     }
   },
   updateEntry: () => {
+    // UPDATE THIS to listen for click within column, not for click on each button
     $('.update-entry').on('click', e => {
       // First stop the click from enacting its default behavior. If this is a
       // link, it will stop navigation. If this is a link to nowhere (href='#'),
@@ -195,15 +197,147 @@ const handlers = {
       document.getElementById('account-settings').reset();
     });
   },
-  resetForm: () => {
-    $('#cancel-account-settings').on('click', e => {
-      document.getElementById('account-settings').reset();
+  participateWithPartner: () => {
+    // When checkbox is toggled (JQuery detects keyboard too by default)
+    $('#withPartner').on('click', e => {
+      // If the checkbox is now checked
+      if ($('#withPartner').is(':checked')) {
+        // Make username field visible
+        $('#partnerUsernameLabel').removeClass('is-hidden');
+        $('#partnerUsername').removeClass('is-hidden');
+      } else {
+        // Doesn't really matter if this gets added multiple times, because
+        // removeClass will remove multiple instances at once.
+        $('#partnerUsername').addClass('is-hidden');
+        $('#partnerUsernameLabel').addClass('is-hidden');
+        // Also clear username value
+        $('#partnerUsername').val('');
+      }
     });
+  },
+  invitePartnerByEmail: () => {
+    // make visible
+    $('#partnerEmail').removeClass('is-hidden');
+    // hide
+    $('#partnerEmail').addClass('is-hidden');
+    // Also clear value
+    $('#partnerEmail').val('');
+  },
+  validateRegistration: {
+    addValidationMarkup: function(target, name, type, message) {
+      this.clearValidationMarkup(target, name);
+      $(target).addClass(`is-${type}`);
+      // This is better than ('.control').after, because it accounts for
+      // multiple .controls
+      $(target).closest('.field').append(`
+      <p id="${name}Validation" class="help is-${type}">${message}</p>
+      `);
+    },
+    clearValidationMarkup: function(target, name) {
+      $(target).removeClass('is-success');
+      $(target).removeClass('is-danger');
+      $(`#${name}Validation`).remove();
+    },
+    checkFields: function() {
+      let delayedAction;
+      const route = window.location.pathname;
+      $('.validated-input').change(e => {
+        clearTimeout(delayedAction);
+        const payload = {
+          name: e.currentTarget.name,
+          value: e.currentTarget.value
+        };
+        delayedAction = setTimeout(() => {
+          // If we're querying checking password, don't need to leave client-side!
+          if (payload.name === 'passwordConfirm') {
+            const password = $('#password').val();
+            if (payload.value.length < 5 || password.length < 5) {
+              this.addValidationMarkup(
+                e.currentTarget,
+                payload.name,
+                'danger',
+                'Your password must be at least 5 characters.'
+              );
+            } else if (password === payload.value) {
+              this.addValidationMarkup(
+                e.currentTarget,
+                payload.name,
+                'success',
+                'These passwords match.'
+              );
+            } else {
+              this.addValidationMarkup(
+                e.currentTarget,
+                payload.name,
+                'danger',
+                'These passwords do not match.'
+              );
+            }
+          } else {
+            $.ajax({
+              type: 'POST',
+              url: `${route}/validate`,
+              dataType: 'json',
+              data: payload,
+              // handle successes!
+              success: res => {
+                this.addValidationMarkup(e.currentTarget, payload.name, res.classType, res.message);
+              },
+              // handle errors
+              error: err => {
+                if (err) console.log(err);
+              }
+            });
+          }
+        }, 500);
+      });
+    },
+    findPartnerByUsername: function() {
+      $('#findPartnerByUsername').on('click', e => {
+        const route = window.location.pathname;
+        const target = $('#partnerUsername input[name="partner"]')[0];
+        const username = $('#partnerUsername input[name="partner"]').val();
+        const payload = {
+          name: 'partner',
+          value: username
+        };
+        $.ajax({
+          type: 'POST',
+          url: `${route}/validate`,
+          dataType: 'json',
+          data: payload,
+          // handle successes!
+          success: res => {
+            this.addPartnerEmailField(target, payload.name, res.classType, res.message);
+          },
+          // handle errors
+          error: err => {
+            if (err) console.log(err);
+          }
+        });
+      });
+    },
+    addPartnerEmailField: function(target, name, type, message) {
+      this.clearPartnerEmailField(target, name);
+      $(target).addClass(`is-${type}`);
+      // For this weird field, we actually want the help text after!
+      $(target).closest('.field').after(`
+      <p id="${name}Validation" class="help is-${type}">${message}</p>
+      `);
+    },
+    clearPartnerEmailField: function(target, name) {
+      $(target).removeClass('is-success');
+      $(target).removeClass('is-danger');
+      $(`#${name}Validation`).remove();
+    }
   }
 };
 
 // Process all actions after DOM content has loaded
 document.addEventListener('DOMContentLoaded', () => {
+  // console.log(window.location);
+  // Could theoretically enable/diable these based on pathname to limit number
+  // of event listeners on a page
   handlers.toggleNavBarBurger();
   handlers.dismissMessagesNotification();
   handlers.dismissNotification();
@@ -211,4 +345,10 @@ document.addEventListener('DOMContentLoaded', () => {
   handlers.replyToRequest();
   handlers.watchModal();
   handlers.resetForm();
+  if (window.location.pathname === '/register') {
+    handlers.participateWithPartner();
+    handlers.validateRegistration.checkFields();
+    handlers.validateRegistration.findPartnerByUsername();
+  }
+  tippy('#helpToolTipButton', { placement: 'right', trigger: 'click' });
 });
