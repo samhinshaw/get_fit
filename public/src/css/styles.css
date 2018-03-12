@@ -272,3 +272,12 @@ will prevent the notification from moving the buttons when it appears */
     margin-bottom: 3.75rem;
   }
 } */
+
+#notificationPlaceholder {
+  height: 3rem;
+}
+
+#partnerValidation {
+  padding: 0.5rem;
+  font-size: 12px;
+}

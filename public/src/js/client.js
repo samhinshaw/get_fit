@@ -210,18 +210,17 @@ const handlers = {
         // removeClass will remove multiple instances at once.
         $('#partnerUsername').addClass('is-hidden');
         $('#partnerUsernameLabel').addClass('is-hidden');
-        // Also clear username value
-        $('#partnerUsername').val('');
+        $('#partnerEmail').addClass('is-hidden');
+        // Also clear values
+        $('#partnerUsername .input').val('');
+        $('#partnerEmail .input').val('');
+        // Also make sure to remove any validation markup
+        $('#partnerValidation').remove();
+        $('#partnerUsername .input')
+          .removeClass('is-success')
+          .removeClass('is-danger');
       }
     });
-  },
-  invitePartnerByEmail: () => {
-    // make visible
-    $('#partnerEmail').removeClass('is-hidden');
-    // hide
-    $('#partnerEmail').addClass('is-hidden');
-    // Also clear value
-    $('#partnerEmail').val('');
   },
   validateRegistration: {
     addValidationMarkup: function(target, name, type, message) {
@@ -234,8 +233,9 @@ const handlers = {
       `);
     },
     clearValidationMarkup: function(target, name) {
-      $(target).removeClass('is-success');
-      $(target).removeClass('is-danger');
+      $(target)
+        .removeClass('is-success')
+        .removeClass('is-danger');
       $(`#${name}Validation`).remove();
     },
     checkFields: function() {
@@ -309,6 +309,10 @@ const handlers = {
           // handle successes!
           success: res => {
             this.addPartnerEmailField(target, payload.name, res.classType, res.message);
+            // If username comes back as missing, let user input email.
+            if (res.classType === 'danger') {
+              $('#partnerEmail').removeClass('is-hidden');
+            }
           },
           // handle errors
           error: err => {
@@ -318,17 +322,14 @@ const handlers = {
       });
     },
     addPartnerEmailField: function(target, name, type, message) {
-      this.clearPartnerEmailField(target, name);
+      this.clearValidationMarkup(target, name);
       $(target).addClass(`is-${type}`);
-      // For this weird field, we actually want the help text after!
-      $(target).closest('.field').after(`
-      <p id="${name}Validation" class="help is-${type}">${message}</p>
+      // For this weird field, we actually want the help in a notification!
+      $('#notificationPlaceholder').append(`
+      <div id="${name}Validation" class="notification is-${type}">
+        <p>${message}</p>
+      </div>
       `);
-    },
-    clearPartnerEmailField: function(target, name) {
-      $(target).removeClass('is-success');
-      $(target).removeClass('is-danger');
-      $(`#${name}Validation`).remove();
     }
   }
 };

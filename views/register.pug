@@ -51,10 +51,11 @@ block page
                   label.label.checkbox
                     input#withPartner(name='withPartner', type='checkbox')
                     | &nbsp;&nbsp;Participate with partner?
+              div#notificationPlaceholder
               label.label.is-hidden#partnerUsernameLabel Partner's username:
                 span.is-pulled-right.is-faded (optional)
               .field.is-hidden.has-addons#partnerUsername
-                p.control.has-icons-left.has-icons-right
+                p.control.has-icons-left.has-icons-right.is-expanded
                   input.input(name='partner', type='text', placeholder='jane995')
                   span.icon.is-small.is-left
                     i.mdi.mdi-account
