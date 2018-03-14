@@ -21,7 +21,7 @@ const handlers = {
       navbarBurgers.forEach(element => {
         element.addEventListener('click', () => {
           // Get the target from the "data-target" attribute
-          let target = element.dataset.target;
+          let { target } = element.dataset;
           target = document.getElementById(target);
 
           // Toggle the class on both the "navbar-burger" and the "navbar-menu"
@@ -193,13 +193,13 @@ const handlers = {
     });
   },
   resetForm: () => {
-    $('#cancel-account-settings').on('click', e => {
+    $('#cancel-account-settings').on('click', () => {
       document.getElementById('account-settings').reset();
     });
   },
   participateWithPartner: () => {
     // When checkbox is toggled (JQuery detects keyboard too by default)
-    $('#withPartner').on('click', e => {
+    $('#withPartner').on('click', () => {
       // If the checkbox is now checked
       if ($('#withPartner').is(':checked')) {
         // Make username field visible
@@ -223,7 +223,7 @@ const handlers = {
     });
   },
   validateRegistration: {
-    addValidationMarkup: function(target, name, type, message) {
+    addValidationMarkup(target, name, type, message) {
       this.clearValidationMarkup(target, name);
       $(target).addClass(`is-${type}`);
       // This is better than ('.control').after, because it accounts for
@@ -232,13 +232,13 @@ const handlers = {
       <p id="${name}Validation" class="help is-${type}">${message}</p>
       `);
     },
-    clearValidationMarkup: function(target, name) {
+    clearValidationMarkup(target, name) {
       $(target)
         .removeClass('is-success')
         .removeClass('is-danger');
       $(`#${name}Validation`).remove();
     },
-    checkFields: function() {
+    checkFields() {
       let delayedAction;
       const route = window.location.pathname;
       $('.validated-input').change(e => {
@@ -292,8 +292,8 @@ const handlers = {
         }, 500);
       });
     },
-    findPartnerByUsername: function() {
-      $('#findPartnerByUsername').on('click', e => {
+    findPartnerByUsername() {
+      $('#findPartnerByUsername').on('click', () => {
         const route = window.location.pathname;
         const target = $('#partnerUsername input[name="partner"]')[0];
         const username = $('#partnerUsername input[name="partner"]').val();
@@ -321,7 +321,7 @@ const handlers = {
         });
       });
     },
-    addPartnerEmailField: function(target, name, type, message) {
+    addPartnerEmailField(target, name, type, message) {
       this.clearValidationMarkup(target, name);
       $(target).addClass(`is-${type}`);
       // For this weird field, we actually want the help in a notification!
