@@ -297,8 +297,10 @@ router.post('/:date', ensureAuthenticated, (req, res) => {
     endDate = req.params.date;
   } else if (/^\d{4}-\d{2}-\d{2} \d{4}-\d{2}-\d{2}$/.test(req.params.date)) {
     const date = req.params.date.split(' ');
-    startDate = date[0];
-    endDate = date[1];
+    [startDate, endDate] = date;
+    // This is array destructuring! It is equivalent to the below:
+    // startDate = date[0];
+    // endDate = date[1];
   }
 
   // Note that since we're posting to /partner/:date, we know to update the

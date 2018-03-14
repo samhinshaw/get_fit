@@ -10,7 +10,7 @@
     "clean": "rm -rf ./dist",
     "build": "NODE_ENV=production babel ./src -d ./dist -s && webpack -p",
     "format": "prettier --list-different --single-quote --print-width=120 \"public/js/**/*.js\"",
-    "lint": "eslint **/*.js --quiet",
+    "lint": "eslint **/*.js",
     "deploy": "pm2 deploy getfit.config.js production",
     "prod": "NODE_ENV=production node dist/app.js",
     "test": "snyk test",

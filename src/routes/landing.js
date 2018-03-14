@@ -305,7 +305,7 @@ router.post(
     const mfp = req.sanitize('mfp').trim();
     const accessCode = req.sanitize('accessCode').trim();
     // Not sanitizing password for now, since we're salting & hashing it.
-    const password = req.body.password;
+    const { password } = req.body;
     // const passwordConfirm = req.body.passwordConfirm;
 
     req.checkBody('firstname', 'Name is required').notEmpty();
@@ -542,7 +542,7 @@ router.post(
 
 // user accesses the link that is sent
 router.get('/email-verification/:url', (req, res, next) => {
-  const url = req.params.url;
+  const { url } = req.params;
 
   let userName;
   let partnerName;

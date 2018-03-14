@@ -289,8 +289,10 @@ router.post('/:date', ensureAuthenticated, (req, res) => {
     endDate = req.params.date;
   } else if (/^\d{4}-\d{2}-\d{2} \d{4}-\d{2}-\d{2}$/.test(req.params.date)) {
     const date = req.params.date.split(' ');
-    startDate = date[0];
-    endDate = date[1];
+    [startDate, endDate] = date;
+    // This is array destructuring! It is equivalent to the below:
+    // startDate = date[0];
+    // endDate = date[1];
   }
 
   // Note that since we're posting to /user/:date, we know to update the user's
@@ -300,7 +302,7 @@ router.post('/:date', ensureAuthenticated, (req, res) => {
   if (process.platform === 'linux') {
     pythonPath = '/home/sam/.miniconda3/bin/python3';
   } else if (process.platform === 'darwin') {
-    pythonPath = '/usr/local/bin/python';
+    pythonPath = '/usr/local/opt/python/libexec/bin/python';
   }
 
   // Python script options
