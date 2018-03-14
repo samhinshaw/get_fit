@@ -469,7 +469,8 @@ app.get('/api/user_weight', ensureAuthenticated, (req, res) => {
     // The user is not logged in
     res.json({});
   } else {
-    const weightDoc = new GoogleSpreadsheet('1q15E449k_0KP_elfptM7oyVx_qXsss9_K4ESExlM2MI');
+    const weightDoc = new GoogleSpreadsheet('1q15E449k_0KP_elfptM7oyVx_qXsss9_K4ESExlM2MI'); // 2016 spreadsheet
+    // const weightDoc = new GoogleSpreadsheet('13XR4qkzeMDVRPkiB3vUGV7n25sLqBpyLlE6yBC22aSM'); // All weight data
 
     weightDoc.useServiceAccountAuth(googleCreds, authErr => {
       if (authErr) {

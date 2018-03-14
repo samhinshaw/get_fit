@@ -1,15 +1,18 @@
 // import Moment from 'moment-timezone';
 // import { extendMoment } from 'moment-range';
-import { parse, startOfDay, subYears, addDays, isWithinRange } from 'date-fns';
+import { parse, startOfDay, subYears, addDays, isWithinRange, format } from 'date-fns';
 // import * as d3 from 'd3';
 import { scaleLinear, scaleTime } from 'd3-scale';
-import { axisBottom, axisLeft } from 'd3-axis';
+import { axisBottom, axisLeft, axisRight } from 'd3-axis';
 // import { min, max, extent } from 'd3-array';
 import { extent } from 'd3-array';
 import { timeFormat } from 'd3-time-format'; // timeFormatLocale, parseDate
 import { select } from 'd3-selection';
 import { line } from 'd3-shape';
 // import { map, nest } from 'd3-collection';
+
+// Little micro-library for what is essentially `seq()` in R
+import rangeInclusive from 'range-inclusive';
 
 // Import CSS
 import '../css/d3.css';
@@ -37,42 +40,18 @@ import '../css/d3.css';
 const now = parse(new Date().toLocaleString('en-US', { timeZone: 'America/Vancouver' }));
 const today = startOfDay(now);
 
-// Set stard & end
+// Set start & end
 const startDate = subYears(today, 1);
 const endDate = addDays(today, 7);
 
 // Enable custom domain?
 const dateRange = [startDate, endDate];
-// const momentArray = [startDate, endDate];
-// const momentRange = moment.range(startDate, endDate);
-// const dateRange = [new Date(2017, 10, 1), new Date(2018, 6, 30)];
-// const dateRange = false;
-
-// Set D3 locale
-
-// const locale = timeFormatLocale({
-//   dateTime: '%x, %X',
-//   date: '%-m/%-d/%Y',
-//   time: '%-I:%M:%S %p',
-//   periods: ['AM', 'PM'],
-//   days: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
-//   shortDays: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
-//   months: [
-//     'January',
-//     'February',
-//     'March',
-//     'April',
-//     'May',
-//     'June',
-//     'July',
-//     'August',
-//     'September',
-//     'October',
-//     'November',
-//     'December'
-//   ],
-//   shortMonths: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-// });
+const weightRange = {
+  start: 150,
+  end: 175,
+  seqMajor: 5,
+  seqMinor: 1
+};
 
 $.getJSON('/api/user_weight/', json => {
   // Pre-parse date
@@ -127,9 +106,6 @@ $.getJSON('/api/user_weight/', json => {
   const y = scaleLinear().range([height, 0]);
 
   const xAxis = axisBottom().scale(x);
-  const yAxis = axisLeft()
-    .scale(y)
-    .tickSize(-width);
 
   // const color = scale.category10();
 
@@ -161,11 +137,11 @@ $.getJSON('/api/user_weight/', json => {
       // Date Range
       x.domain(dateRange).clamp(true);
       // y.domain([min(data, d => d.weight) - 1, max(data, d => d.weight) + 1]);
-      y.domain([150, 176]);
+      y.domain([weightRange.start, weightRange.end]);
     } else {
       // All Dates
       x.domain(extent(data, d => d.date));
-      y.domain([150, 190]);
+      y.domain([weightRange.start, weightRange.end]);
       // y.domain(extent(data, d => d.weight));
     }
 
@@ -184,12 +160,48 @@ $.getJSON('/api/user_weight/', json => {
       .attr('dx', '-.8em')
       .attr('dy', '.15em');
 
-    // Create the y-axis and its ticks
+    // Create the y-axis major ticks
     svg
       .append('g')
       .style('font-size', '0.9rem')
       .attr('class', 'y-axis')
-      .call(yAxis);
+      .attr('class', 'major-ticks')
+      .call(
+        axisRight()
+          .scale(y)
+          .tickSize(width)
+          .tickValues(rangeInclusive(weightRange.start, weightRange.end, weightRange.seqMajor))
+      );
+
+    // Create the y-axis minor ticks
+    svg
+      .append('g')
+      .attr('class', 'y-axis')
+      .attr('class', 'minor-ticks')
+      .call(
+        axisLeft()
+          .scale(y)
+          .tickSize(-width)
+          .tickValues(rangeInclusive(weightRange.start, weightRange.end, weightRange.seqMinor))
+      );
+
+    // Remove text from minor ticks
+    svg
+      .select('.minor-ticks')
+      .selectAll('.tick text')
+      .remove();
+
+    // Make the major ticks thick
+    svg
+      .select('.major-ticks')
+      .selectAll('.tick line')
+      .attr('stroke-width', 2);
+
+    // Make the y-axis major ticks
+    // svg
+    //   .select('.minor-ticks')
+    //   .selectAll('.tick line')
+    //   .attr('stroke-width', 1);
 
     // Draw the actual data!
     svg
@@ -212,7 +224,7 @@ $.getJSON('/api/user_weight/', json => {
     .style('font-size', '1.5rem')
     // .style('text-decoration', 'underline')
     // .text(`Weight Change (${momentArray[0].format('MMM Do')} to ${today.format('MMM Do')})`);
-    .text(`Weight Change (past year)`);
+    .text(`Weight Change (${format(startDate, 'MMM YYYY')} - ${format(endDate, 'MMM YYYY')})`);
 
   // x-axis labels
   svg
@@ -223,12 +235,21 @@ $.getJSON('/api/user_weight/', json => {
     .text('Date');
 
   // y-axis labels
+
+  const yAxisLabelPosition = {
+    x: width + margin.right,
+    y: height / 2
+  };
   svg
     .append('text')
-    .attr('transform', 'rotate(-90)')
-    .attr('y', 0 - margin.left)
-    .attr('x', 0 - height / 2)
+    .attr('x', yAxisLabelPosition.x)
+    .attr('y', yAxisLabelPosition.y)
     .attr('dy', '1em')
+    // The 2nd and 3rd arguments to rotate are `cx` and `cy`, which tell rotate
+    // what coordinates to rotate about! Otherwise this will rotate them
+    // **around the chart's origin**!!!
+    .attr('transform', `rotate(90,${yAxisLabelPosition.x},${yAxisLabelPosition.y})`)
+    .attr('id', 'y-axis-label')
     .style('text-anchor', 'middle')
     .style('font-size', '1.15rem')
     .text('Weight (lbs)');
@@ -244,6 +265,16 @@ $.getJSON('/api/user_weight/', json => {
         .tickSize(-height)
         .tickFormat('')
     );
+
+  // Make the y-axis tick lines we want
+  // svg
+  //   .append('g')
+  //   .attr('class', 'grid')
+  //   .call(
+  //     make_y_gridlines()
+  //       .tickSize(-width)
+  //       .tickFormat('')
+  //   );
 
   drawMainGraph();
 });
