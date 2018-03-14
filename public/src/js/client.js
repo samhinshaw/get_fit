@@ -1,3 +1,5 @@
+/* global Rollbar */
+
 // Import statements will go here, webpack & Babel will take care of the rest
 // Import JQuery for all of this to work!
 import 'jquery';
@@ -55,8 +57,7 @@ const handlers = {
         type: 'POST',
         url: `${route}/${date}`,
         // handle successes!
-        success: res => {
-          console.log(res);
+        success: () => {
           window.location.reload();
         },
         // handle errors
@@ -185,7 +186,7 @@ const handlers = {
           },
           // handle errors
           error: err => {
-            console.log(err);
+            if (err) Rollbar.error(err);
             // window.location.reload();
           }
         });
@@ -285,7 +286,7 @@ const handlers = {
               },
               // handle errors
               error: err => {
-                if (err) console.log(err);
+                if (err) Rollbar.error(err);
               }
             });
           }
@@ -312,11 +313,13 @@ const handlers = {
             // If username comes back as missing, let user input email.
             if (res.classType === 'danger') {
               $('#partnerEmail').removeClass('is-hidden');
+            } else if (res.classType === 'success') {
+              $('#partnerEmail').addClass('is-hidden');
             }
           },
           // handle errors
           error: err => {
-            if (err) console.log(err);
+            if (err) Rollbar.error(err);
           }
         });
       });
