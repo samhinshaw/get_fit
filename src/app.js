@@ -142,6 +142,12 @@ const app = express();
 // Let Express know it's behind a nginx proxy
 app.set('trust proxy', '127.0.0.1');
 
+// Set environment
+app.use((req, res, next) => {
+  app.locals.env = process.env.NODE_ENV;
+  next();
+});
+
 // Use the helmet middleware to "protect your app from some well-known web
 // vulnerabilities by setting HTTP headers appropriately"
 app.use(helmet());
