@@ -18,12 +18,12 @@ block content
           .field-body
             .field
               .control.has-icons-left
-                input.input(name="firstname", type="text", placeholder=routeInfo.user.firstname)
+                input.input(name="firstname", type="text", placeholder=user.firstname)
                 span.icon.is-small.is-left
                   i.mdi.mdi-account
             .field
               .control.has-icons-left
-                input.input(name="lastname", type="text", placeholder=routeInfo.user.lastname)
+                input.input(name="lastname", type="text", placeholder=user.lastname)
                 span.icon.is-small.is-left
                   i.mdi.mdi-account
         .field.is-horizontal
@@ -32,7 +32,7 @@ block content
           .field-body
             .field
               .control.has-icons-left
-                input.input(name="username", type="text", value=routeInfo.user.username disabled)
+                input.input(name="username", type="text", value=user.username disabled)
                 span.icon.is-small.is-left
                   i.mdi.mdi-account
         .field.is-horizontal
@@ -41,7 +41,7 @@ block content
           .field-body
             .field
               .control.has-icons-left
-                input.input(name="email", type="email", value=routeInfo.user.email disabled)
+                input.input(name="email", type="email", value=user.email disabled)
                 span.icon.is-small.is-left
                   i.mdi.mdi-at
         .field.is-horizontal
@@ -50,7 +50,7 @@ block content
           .field-body
             .field
               .control.has-icons-left
-                input.input(name="fitness-goal", type="text", placeholder=routeInfo.user.fitnessGoal)
+                input.input(name="fitness-goal", type="text", placeholder=user.fitnessGoal)
                 span.icon.is-small.is-left
                   i.mdi.mdi-trophy
         .field.is-horizontal
@@ -73,7 +73,7 @@ block content
           .field-body
             .field
               .control.has-icons-left
-                input.input(name="mfp", type="text", placeholder=routeInfo.user.mfp)
+                input.input(name="mfp", type="text", placeholder=user.mfp)
                 span.icon.is-small.is-left
                   i.mdi.mdi-run
         .field.is-horizontal
@@ -82,7 +82,7 @@ block content
           .field-body
             .field
               .control.has-icons-left
-                input.input(name="current-points", type="number", value=routeInfo.user.currentPoints disabled)
+                input.input(name="current-points", type="number", value=user.currentPoints disabled)
                 span.icon.is-small.is-left
                   i.mdi.mdi-dumbbell
         //- .field.is-horizontal

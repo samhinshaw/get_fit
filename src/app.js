@@ -221,8 +221,10 @@ app.use(
     res.locals.user = req.user || null;
 
     // also store 'logged-in' status
+    res.locals.loggedIn = !!req.user;
+
+    // Temporarily mock blank partner (if none)
     if (req.user) {
-      res.locals.loggedIn = true;
       if (req.user.partner == null || req.user.partner === '') {
         res.locals.partner = {
           firstname: '',
@@ -240,8 +242,21 @@ app.use(
           username: req.user.partner
         });
       }
-    } else {
-      res.locals.loggedIn = false;
+    }
+
+    // Set capitalized names
+    if (req.user) {
+      res.locals.userName =
+        res.locals.user.firstname.charAt(0).toUpperCase() + res.locals.user.firstname.slice(1);
+      res.locals.partnerName =
+        res.locals.partner.firstname.charAt(0).toUpperCase() +
+        res.locals.partner.firstname.slice(1).toLowerCase();
+
+      res.locals.userLastName =
+        res.locals.user.lastname.charAt(0).toUpperCase() + res.locals.user.lastname.slice(1);
+      res.locals.partnerLastName =
+        res.locals.partner.lastname.charAt(0).toUpperCase() +
+        res.locals.partner.lastname.slice(1).toLowerCase();
     }
 
     next();
@@ -376,21 +391,14 @@ app.get('/', (req, res) => {
     res.render('landing_page', {
       routeInfo: {
         heroType: 'landing_page',
-        route: `/`,
-        userName:
-          res.locals.user.firstname.charAt(0).toUpperCase() + res.locals.user.firstname.slice(1),
-        partnerName:
-          res.locals.partner.firstname.charAt(0).toUpperCase() +
-          res.locals.partner.firstname.slice(1).toLowerCase()
+        route: `/`
       }
     });
   } else {
     res.render('landing_page', {
       routeInfo: {
         heroType: 'landing_page',
-        route: `/`,
-        userName: null,
-        partnerName: null
+        route: `/`
       }
     });
   }
@@ -425,13 +433,7 @@ app.get('/', (req, res) => {
 //         partnerEntries: sortedPartnerEntries,
 //         routeInfo: {
 //           heroType: 'dark',
-//           route: `/overview`,
-//           userName:
-//             res.locals.user.firstname.charAt(0).toUpperCase() +
-//               res.locals.user.firstname.slice(1) || null,
-//           partnerName:
-//             res.locals.partner.firstname.charAt(0).toUpperCase() +
-//               res.locals.partner.firstname.slice(1).toLowerCase() || null
+//           route: `/overview`
 //         }
 //       });
 //     }

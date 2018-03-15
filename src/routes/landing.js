@@ -120,9 +120,7 @@ router.get('/register', (req, res) => {
     res.render('register', {
       routeInfo: {
         heroType: 'dark',
-        route: `/register`,
-        userName: null,
-        partnerName: null
+        route: `/register`
       }
     });
   }
@@ -137,9 +135,7 @@ router.get('/login', (req, res) => {
     res.render('login', {
       routeInfo: {
         heroType: 'dark',
-        route: `/login`,
-        userName: null,
-        partnerName: null
+        route: `/login`
       }
     });
   }
@@ -191,47 +187,19 @@ router.get('/logout', (req, res) => {
 });
 
 router.get('/overview', ensureAuthenticated, (req, res) => {
-  let userName;
-  let partnerName;
-  if (res.locals.user) {
-    userName =
-      res.locals.user.firstname.charAt(0).toUpperCase() + res.locals.user.firstname.slice(1);
-    partnerName =
-      res.locals.partner.firstname.charAt(0).toUpperCase() +
-      res.locals.partner.firstname.slice(1).toLowerCase();
-  } else {
-    userName = 'User';
-    partnerName = 'Partner';
-  }
   res.render('overview', {
     routeInfo: {
       heroType: 'dark',
-      route: `/overview`,
-      userName,
-      partnerName
+      route: `/overview`
     }
   });
 });
 
 router.get('/login/help', (req, res) => {
-  let userName;
-  let partnerName;
-  if (res.locals.user) {
-    userName =
-      res.locals.user.firstname.charAt(0).toUpperCase() + res.locals.user.firstname.slice(1);
-    partnerName =
-      res.locals.partner.firstname.charAt(0).toUpperCase() +
-      res.locals.partner.firstname.slice(1).toLowerCase();
-  } else {
-    userName = 'User';
-    partnerName = 'Partner';
-  }
   res.render('login-help', {
     routeInfo: {
       heroType: 'dark',
-      route: `/login/help`,
-      userName,
-      partnerName
+      route: `/login/help`
     }
   });
 });

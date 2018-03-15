@@ -4,7 +4,7 @@ block header
   p.title
     | Get Fit!
   p.subtitle
-    | #{routeInfo.userName} & #{routeInfo.partnerName} are gonna be 
+    | #{userName} & #{partnerName} are gonna be 
     strong sexy 
     | next summer! 👙 🏖
 
@@ -18,7 +18,7 @@ block content
       .column.is-6
         .card.overview-card
           header.card-header(class=`is-${user.username}`)
-            a.card-header-title.is-size-4(href='/user') #{routeInfo.userName}
+            a.card-header-title.is-size-4(href='/user') #{userName}
             .card-header-icon.dropdown.is-hoverable.is-right(href='#', aria-label='more options')
               .dropdown-trigger
                 span.icon
@@ -45,7 +45,7 @@ block content
       .column.is-6
         .card.overview-card
           header.card-header(class=`is-${user.partner}`)
-            a.card-header-title.is-size-4(href='/partner') #{routeInfo.partnerName}
+            a.card-header-title.is-size-4(href='/partner') #{partnerName}
             .card-header-icon.dropdown.is-hoverable.is-right(href='#', aria-label='more options')
               .dropdown-trigger
                 span.icon

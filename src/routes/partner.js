@@ -258,13 +258,7 @@ router.get(
       weekSummaries: await promisedWeekSummaries,
       routeInfo: {
         heroType: res.locals.partner.username,
-        route: '/partner',
-        userName:
-          res.locals.user.firstname.charAt(0).toUpperCase() +
-          res.locals.user.firstname.slice(1).toLowerCase(),
-        partnerName:
-          res.locals.partner.firstname.charAt(0).toUpperCase() +
-          res.locals.partner.firstname.slice(1)
+        route: '/partner'
       }
     });
   })
@@ -275,12 +269,7 @@ router.get('/weight', ensureAuthenticated, (req, res) => {
   res.render('partner/weight', {
     routeInfo: {
       heroType: res.locals.partner.username,
-      route: '/partner/weight',
-      userName:
-        res.locals.user.firstname.charAt(0).toUpperCase() + res.locals.user.firstname.slice(1),
-      partnerName:
-        res.locals.partner.firstname.charAt(0).toUpperCase() +
-        res.locals.partner.firstname.slice(1).toLowerCase()
+      route: '/partner/weight'
     }
   });
 });

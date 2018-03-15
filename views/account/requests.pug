@@ -42,7 +42,7 @@ block content
               if request.requestMessage
                 article.message(class=`is-${partner.username}`)
                   .message-header
-                    p #{routeInfo.partnerName}'s Request
+                    p #{partnerName}'s Request
                   .message-body
                     p #{request.requestMessage}
               else 

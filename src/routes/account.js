@@ -53,20 +53,7 @@ router.get('/', ensureAuthenticated, (req, res) => {
   res.render('account/index', {
     routeInfo: {
       heroType: 'twitter',
-      route: '/account',
-      userName:
-        res.locals.user.firstname.charAt(0).toUpperCase() + res.locals.user.firstname.slice(1) ||
-        null,
-      userLastName:
-        res.locals.user.lastname.charAt(0).toUpperCase() + res.locals.user.lastname.slice(1) ||
-        null,
-      partnerName:
-        res.locals.partner.firstname.charAt(0).toUpperCase() +
-          res.locals.partner.firstname.slice(1).toLowerCase() || null,
-      partnerLastName:
-        res.locals.partner.lastname.charAt(0).toUpperCase() +
-          res.locals.partner.lastname.slice(1).toLowerCase() || null,
-      user: res.locals.user
+      route: '/account'
     }
   });
 });
@@ -136,12 +123,7 @@ router.get('/spend', ensureAuthenticated, (req, res) => {
       rewards: sortedRewards,
       routeInfo: {
         heroType: 'twitter',
-        route: '/account/spend',
-        userName:
-          res.locals.user.firstname.charAt(0).toUpperCase() + res.locals.user.firstname.slice(1),
-        partnerName:
-          res.locals.partner.firstname.charAt(0).toUpperCase() +
-          res.locals.partner.firstname.slice(1).toLowerCase()
+        route: '/account/spend'
       }
     });
   });
@@ -222,12 +204,7 @@ router.post(
 //       rewards: sortedRewards,
 //       routeInfo: {
 //         heroType: 'twitter',
-//         route: '/account/send',
-//         userName:
-//           res.locals.user.firstname.charAt(0).toUpperCase() + res.locals.user.firstname.slice(1),
-//         partnerName:
-//           res.locals.partner.firstname.charAt(0).toUpperCase() +
-//           res.locals.partner.firstname.slice(1).toLowerCase()
+//         route: '/account/send'
 //       }
 //     });
 //   });
@@ -310,13 +287,7 @@ router.get('/requests', ensureAuthenticated, (req, res) => {
     moment,
     routeInfo: {
       heroType: 'twitter',
-      route: '/account/requests',
-      userName:
-        res.locals.user.firstname.charAt(0).toUpperCase() + res.locals.user.firstname.slice(1) ||
-        null,
-      partnerName:
-        res.locals.partner.firstname.charAt(0).toUpperCase() +
-          res.locals.partner.firstname.slice(1).toLowerCase() || null
+      route: '/account/requests'
     }
   });
 });
@@ -417,13 +388,7 @@ router.get(
       moment,
       routeInfo: {
         heroType: 'twitter',
-        route: '/account/history',
-        userName:
-          res.locals.user.firstname.charAt(0).toUpperCase() + res.locals.user.firstname.slice(1) ||
-          null,
-        partnerName:
-          res.locals.partner.firstname.charAt(0).toUpperCase() +
-            res.locals.partner.firstname.slice(1).toLowerCase() || null
+        route: '/account/history'
       }
     });
   })
@@ -438,13 +403,7 @@ router.get('/delete', ensureAuthenticated, (req, res) => {
     moment,
     routeInfo: {
       heroType: 'twitter',
-      route: '/account/delete',
-      userName:
-        res.locals.user.firstname.charAt(0).toUpperCase() + res.locals.user.firstname.slice(1) ||
-        null,
-      partnerName:
-        res.locals.partner.firstname.charAt(0).toUpperCase() +
-          res.locals.partner.firstname.slice(1).toLowerCase() || null
+      route: '/account/delete'
     }
   });
 });
