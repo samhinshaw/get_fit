@@ -1,6 +1,6 @@
 extends partials/header
 block page
-  section.hero.is-default.is-bold.flex-content.landing-page
+  section.hero.flex-content.landing-page
     //- .hero-head
       .container
     .hero-body
@@ -17,5 +17,19 @@ block page
           else 
             a.button.is-large.is-transparent(href='/login')
               | Log in
+          //- a.button.is-large.is-transparent(href='/login')
+          //-   | Info
     .hero-foot
+      div.mini-info.is-pulled-right
+        //- a.tag.is-light About
+        //- | &nbsp;
+        //- a.tag.is-light © 2018 Sam Hinshaw
+        a.has-text-light
+          span.icon
+            i.mdi.mdi-information
+          | Info
+        a.has-text-light
+          span.icon
+            i.mdi.mdi-copyright
+          | 2018
       != messages('includes/footer-notification', locals)

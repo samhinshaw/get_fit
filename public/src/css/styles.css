@@ -96,14 +96,16 @@
 }
 
 /* Background Image for Landing Page */
-.landing-page .hero-body {
+.hero.landing-page {
   background-color: #363636;
   background: url(/images/get-fit-cropped.jpg) no-repeat center center fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
   background-size: cover;
-  /* V & H-Center items that appear in this landing page  */
+}
+/* V & H-Center items that appear in this landing page  */
+.landing-page .hero-body {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -115,6 +117,14 @@
 }
 .landing-page .login-box {
   width: 25rem;
+}
+/* Position landing page footer icons */
+.landing-page .hero-foot .mini-info {
+  padding: 0.5rem;
+}
+.landing-page .hero-foot .mini-info a {
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
 }
 
 .landing-page .title,
