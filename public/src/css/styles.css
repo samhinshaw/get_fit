@@ -14,9 +14,9 @@
 }
 
 /* Make footer margins wayyy smaller */
-.footer {
+/* .footer {
   padding: 1.5rem;
-}
+} */
 
 /* Add CSS for handling removal of Bulma notifications */
 .notification > button.delete {
@@ -111,7 +111,7 @@
 
 /* Specify width of the landing page boxes */
 .landing-page .register-box {
-  width: 50rem;
+  width: 40rem;
 }
 .landing-page .login-box {
   width: 25rem;
@@ -122,6 +122,11 @@
   color: #dbdbdb;
   font-family: 'Cormorant Garamond', Georgia, Cambria, 'Times New Roman', Times, serif;
   font-weight: 600;
+}
+
+/* Make sure buttons don't touch */
+.landing-page .button {
+  margin: 10px;
 }
 
 .title.is-huge {
@@ -150,11 +155,6 @@
 
 .footer-notification > button.delete {
   left: 0;
-}
-
-/* Make avater image a normal size */
-.avatar-container img {
-  height: 30vmin;
 }
 
 /* If our update-entry button is in the card footer, make it borderless! */
@@ -273,11 +273,15 @@ will prevent the notification from moving the buttons when it appears */
   }
 } */
 
-#notificationPlaceholder {
-  height: 3rem;
+/*=============================================
+=            Partner Validation            =
+=============================================*/
+
+#partnerValidation.notification {
+  margin-bottom: 0.75rem;
 }
 
-#partnerValidation {
-  padding: 0.5rem;
-  font-size: 12px;
+p#partnerValidation {
+  margin-bottom: 0.75rem;
+  margin-top: -0.5rem;
 }

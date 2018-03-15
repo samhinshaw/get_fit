@@ -310,7 +310,7 @@ router.post('/:date', ensureAuthenticated, (req, res) => {
   if (process.platform === 'linux') {
     pythonPath = '/home/sam/.miniconda3/bin/python3';
   } else if (process.platform === 'darwin') {
-    pythonPath = '/usr/local/bin/python';
+    pythonPath = '/usr/local/opt/python/libexec/bin/python';
   }
 
   // Python script options

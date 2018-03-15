@@ -16,8 +16,7 @@
     "test": "snyk test",
     "snyk-protect": "snyk protect",
     "prepare": "npm run snyk-protect",
-    "rollbar":
-      "curl https://api.rollbar.com/api/1/deploy/ -F access_token=607807c2e15542d3bf8d2111b4fe5282 -F environment=production -F revision=`git log -n 1 --pretty=format:'%H'` -F local_username=`whoami`"
+    "rollbar": "curl https://api.rollbar.com/api/1/deploy/ -F access_token=607807c2e15542d3bf8d2111b4fe5282 -F environment=production -F revision=`git log -n 1 --pretty=format:'%H'` -F local_username=`whoami`"
   },
   "repository": {
     "type": "git",

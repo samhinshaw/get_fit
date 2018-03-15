@@ -219,6 +219,8 @@ const handlers = {
         $('#partnerValidation').remove();
         $('#partnerUsername .input')
           .removeClass('is-success')
+          .removeClass('is-info')
+          .removeClass('is-warning')
           .removeClass('is-danger');
       }
     });
@@ -236,6 +238,7 @@ const handlers = {
     clearValidationMarkup(target, name) {
       $(target)
         .removeClass('is-success')
+        .removeClass('is-warning')
         .removeClass('is-danger');
       $(`#${name}Validation`).remove();
     },
@@ -311,7 +314,7 @@ const handlers = {
           success: res => {
             this.addPartnerEmailField(target, payload.name, res.classType, res.message);
             // If username comes back as missing, let user input email.
-            if (res.classType === 'danger') {
+            if (['danger', 'warning', 'info'].includes(res.classType)) {
               $('#partnerEmail').removeClass('is-hidden');
             } else if (res.classType === 'success') {
               $('#partnerEmail').addClass('is-hidden');
@@ -328,10 +331,13 @@ const handlers = {
       this.clearValidationMarkup(target, name);
       $(target).addClass(`is-${type}`);
       // For this weird field, we actually want the help in a notification!
-      $('#notificationPlaceholder').append(`
-      <div id="${name}Validation" class="notification is-${type}">
-        <p>${message}</p>
-      </div>
+      // $('#notificationPlaceholder').append(`
+      // <div id="${name}Validation" class="notification is-${type}">
+      //   <p>${message}</p>
+      // </div>
+      // `);
+      $('#partnerUsername').after(`
+      <p id="${name}Validation" class="help is-${type}">${message}</p>
       `);
     }
   }

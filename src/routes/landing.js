@@ -111,12 +111,6 @@ emailVer.generateTempUserModel(User, (err, tempUserModel) => {
 
 const router = express.Router();
 
-// Get Started Handling
-
-// router.get('/', ensureAuthenticated, (req, res) => {
-//   res.render('landing_page');
-// });
-
 // Register Form Route
 router.get('/register', (req, res) => {
   // If already logged in, reroute to landing_page
@@ -328,6 +322,10 @@ router.post(
 
     // If registering with partner, make sure username and email were supplied
     if (withPartner) {
+      req
+        .checkBody('username', 'You cannot add yourself as a partner!')
+        .not()
+        .equals(req.body.partner);
       req.checkBody('partner', 'Partner username is required').notEmpty();
       req.checkBody('partnerEmail', 'Partner email is required').notEmpty();
       req
@@ -492,17 +490,29 @@ router.post(
         }
       }
     } else if (name === 'email') {
-      const userByEmail = await User.findOne({ email: value }, err => {
-        if (err) logger.error(err);
-      });
-      if (userByEmail) {
-        res
-          .status(200)
-          .json({ message: 'This email address is already registered.', classType: 'danger' });
+      // Make sure the email is valid
+      req
+        .checkBody('value', 'Email is not valid')
+        .isEmail()
+        .trim()
+        .normalizeEmail();
+      const errors = req.validationErrors();
+      if (errors) {
+        // Or handle errors with flash
+        res.status(200).json({ message: 'This is not a valid email address', classType: 'danger' });
       } else {
-        res
-          .status(200)
-          .json({ message: 'This email address is unregistered.', classType: 'success' });
+        const userByEmail = await User.findOne({ email: value }, err => {
+          if (err) logger.error(err);
+        });
+        if (userByEmail) {
+          res
+            .status(200)
+            .json({ message: 'This email address is already registered.', classType: 'danger' });
+        } else {
+          res
+            .status(200)
+            .json({ message: 'This email address is unregistered.', classType: 'success' });
+        }
       }
     } else if (name === 'partner') {
       const partner = await User.findOne({ username: value }, err => {
@@ -516,23 +526,38 @@ router.post(
       } else {
         res.status(200).json({
           message:
-            "This user is not yet registered! Input their email address and we'll invite them to Get Fit!.",
-          classType: 'danger'
+            "This user is not yet registered! Input their email address and we'll invite them to Get Fit!",
+          classType: 'info'
         });
       }
     } else if (name === 'partnerEmail') {
-      const partnerByEmail = await User.findOne({ email: value }, err => {
-        if (err) logger.error(err);
-      });
-      if (partnerByEmail) {
-        res.status(200).json({
-          message: "This email address is already registered. We'll send them a partner request!",
-          classType: 'success'
-        });
+      // Make sure the email is valid
+      req
+        .checkBody('value', 'Email is not valid')
+        .isEmail()
+        .trim()
+        .normalizeEmail();
+      const errors = req.validationErrors();
+      console.log(req.body);
+      if (errors) {
+        // Or handle errors with flash
+        res.status(200).json({ message: 'This is not a valid email address', classType: 'danger' });
       } else {
-        res
-          .status(200)
-          .json({ message: 'This email address is unregistered.', classType: 'danger' });
+        const partnerByEmail = await User.findOne({ email: value }, err => {
+          if (err) logger.error(err);
+        });
+        if (partnerByEmail) {
+          res.status(200).json({
+            message: "This email address is unregistered, we'll invite them!",
+            classType: 'success'
+          });
+        } else {
+          res.status(200).json({
+            message:
+              "This email address is already registered&mdash;make sure you have your partner's username correct!",
+            classType: 'danger'
+          });
+        }
       }
     }
     // console.log('response obj: ', res);
@@ -571,14 +596,7 @@ router.get('/email-verification/:url', (req, res, next) => {
     }
     logger.info(`${user.username} confirmed`);
     req.flash('success', 'Success! Your email address has been confirmed. You may now log in.');
-    res.render('landing_page', {
-      routeInfo: {
-        heroType: 'landing_page',
-        route: `/`,
-        userName,
-        partnerName
-      }
-    });
+    res.redirect('/');
     return true;
   });
 });
