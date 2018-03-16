@@ -19,18 +19,18 @@ fi
 
 if [[ $platform == 'linux' ]]; then
   # Change working directory
-  cd /home/sam/projects/get_fit
+  cd /home/sam/serve/get_fit/source/
   # Run Script for sam
   /home/sam/.miniconda3/bin/python data/getMFP.py `TZ=':America/Vancouver' date '+%Y-%m-%d' -d 'yesterday'` `TZ=':America/Vancouver' date '+%Y-%m-%d'` 'sam' 'jetknife'
   # Run Script for amelia
-  /home/sam/.miniconda3/bin/python data/getMFP.py `TZ=':America/Vancouver' date '+%Y-%m-%d' -d 'yesterday'` `TZ=':America/Vancouver' date '+%Y-%m-%d'` 'amelia' 'ameliaho'
+  /usr/local/bin/python3 data/getMFP.py `TZ=':America/Vancouver' date '+%Y-%m-%d' -d 'yesterday'` `TZ=':America/Vancouver' date '+%Y-%m-%d'` 'amelia' 'ameliaho'
 elif [[ $platform == 'darwin' ]]; then
   # Change working directory
   cd /Users/samhinshaw/projects/get_fit
   # Run Script for sam
   /Users/samhinshaw/.miniconda3/bin/python data/getMFP.py `TZ=':America/Vancouver' date -v-1d '+%Y-%m-%d'` `TZ=':America/Vancouver' date '+%Y-%m-%d'` 'sam' 'jetknife'
   # Run Script for amelia
-  /Users/samhinshaw/.miniconda3/bin/python data/getMFP.py `TZ=':America/Vancouver' date -v-1d '+%Y-%m-%d'` `TZ=':America/Vancouver' date '+%Y-%m-%d'` 'amelia' 'ameliaho'
+  /usr/local/bin/python3 data/getMFP.py `TZ=':America/Vancouver' date -v-1d '+%Y-%m-%d'` `TZ=':America/Vancouver' date '+%Y-%m-%d'` 'amelia' 'ameliaho'
 fi
 
 ## Notes
