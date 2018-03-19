@@ -32,6 +32,7 @@ block page
           span.icon
             i.mdi.mdi-copyright
           | 2018
+      != messages('includes/footer-notification', locals)
   .modal#copyrightModal
     .modal-background#copyrightModalBackground
     .modal-content
@@ -56,4 +57,3 @@ block page
               li MyFitnessPal API by 
                 a(href="https://github.com/coddingtonbear/python-myfitnesspal") Adam Coddington
     button.modal-close.is-large#copyrightModalClose(aria-label="close")
-      != messages('includes/footer-notification', locals)
