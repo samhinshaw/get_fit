@@ -1,0 +1,15 @@
+extends partials/header
+block page
+  section.hero.flex-content.landing-page
+    .hero-body
+      .box.register-box
+        h4.is-size-4 Login Help
+        hr
+        != messages('includes/landing-page-notification', locals)
+        h5.is-size-5.form-header Resend Verification Email
+        form(method='POST', action='/login/resend')
+          .field
+            label.label Email Address:
+            .control
+              input.input(name='email', type='email')
+          input.button(type='submit', value='Submit')

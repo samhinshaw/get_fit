@@ -1,0 +1,16 @@
+extends partials/header
+block page
+  section.hero.flex-content.landing-page
+    .hero-body
+      .box.register-box
+        h3.is-size-3 Privacy
+        br
+        p Your password will be salted and hashed securely using 
+          a(href="https://en.wikipedia.org/wiki/Bcrypt") bcrypt
+          | , a very secure method of password storage, and Get Fit employs bruteforce prevention. Get Fit is secured by 
+          a(href="https://snyk.io/") Snyk
+          | , and regularly updated to prevent vulernabilities.
+        br
+        p 
+          em However
+          | , to use Get Fit, you must have a public MyFitnessPal diary. While this may change in the future, it is currently not feasible to authenticate users with MyFitnessPal. Additionally, currently all of your goals, rewards, and MyFitnessPal data are stored by Get Fit in plain text. While we will never look at your data, it is not currently encrypted! We plan to implement encrypted data storage in the future, so you can be assured that only you will ever have access to your data. 

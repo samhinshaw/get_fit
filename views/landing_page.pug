@@ -12,10 +12,10 @@ block page
         br
         .has-text-centered
           if user
-            a.button.is-large.is-transparent(href='/overview')
+            a.button.is-large.is-light(href='/overview')
               | Get Started
           else 
-            a.button.is-large.is-transparent(href='/login')
+            a.button.is-large.is-light(href='/login')
               | Log in
           //- a.button.is-large.is-transparent(href='/login')
           //-   | Info
@@ -24,12 +24,36 @@ block page
         //- a.tag.is-light About
         //- | &nbsp;
         //- a.tag.is-light © 2018 Sam Hinshaw
-        a.has-text-light
+        a.has-text-light(href="https://github.com/samhinshaw/get_fit")
           span.icon
             i.mdi.mdi-information
           | Info
-        a.has-text-light
+        a.has-text-light#copyrightInfo
           span.icon
             i.mdi.mdi-copyright
           | 2018
+  .modal#copyrightModal
+    .modal-background#copyrightModalBackground
+    .modal-content
+      .modal-card
+        .modal-card-body
+          h5.is-size-5 Get Fit &copy; 2018 Sam Hinshaw
+          .modal-text-container
+            ul
+              li Background Photo by&nbsp;
+                a(href="https://unsplash.com/@bruno_nascimento") Bruno Nascimento
+                | &nbsp;on&nbsp;
+                a(href="https://unsplash.com/") Unsplash
+              li Colored exercise icons from 
+                a(href="https://icons8.com/") Icons8
+              li
+                | Favicon by 
+                a(href='http://www.freepik.com', title='Freepik') Freepik
+                |  from 
+                a(href='https://www.flaticon.com/', title='Flaticon') www.flaticon.com
+                |  is licensed by 
+                a(href='http://creativecommons.org/licenses/by/3.0/', title='Creative Commons BY 3.0', target='_blank') CC 3.0 BY
+              li MyFitnessPal API by 
+                a(href="https://github.com/coddingtonbear/python-myfitnesspal") Adam Coddington
+    button.modal-close.is-large#copyrightModalClose(aria-label="close")
       != messages('includes/footer-notification', locals)

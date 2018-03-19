@@ -98,7 +98,7 @@
 /* Background Image for Landing Page */
 .hero.landing-page {
   background-color: #363636;
-  background: url(/images/get-fit-cropped.jpg) no-repeat center center fixed;
+  background: url(/images/sneakers-sm.jpg) no-repeat center center fixed;
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
@@ -129,9 +129,16 @@
 
 .landing-page .title,
 .landing-page .subtitle {
-  color: #dbdbdb;
+  /* color: #242424; */
   font-family: 'Cormorant Garamond', Georgia, Cambria, 'Times New Roman', Times, serif;
   font-weight: 600;
+  color: #f5f5f5;
+  -moz-text-fill-color: #f5f5f5;
+  -webkit-text-fill-color: #f5f5f5;
+  -moz-text-stroke-color: #333;
+  -webkit-text-stroke-color: #333;
+  -moz-text-stroke-width: 1px;
+  -webkit-text-stroke-width: 1px;
 }
 
 /* Make sure buttons don't touch */
@@ -188,6 +195,20 @@ for bulma cards! */
 
 a.card-header-title:hover {
   text-decoration: underline;
+}
+
+.modal-card-body a,
+.register-box a {
+  text-decoration: underline;
+}
+
+.modal-card-body ul {
+  list-style-type: circle;
+}
+
+.modal-content .modal-text-container {
+  padding-left: 2rem;
+  padding-right: 2rem;
 }
 
 a.navbar-item.is-tab:hover {

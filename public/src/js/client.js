@@ -340,6 +340,26 @@ const handlers = {
       <p id="${name}Validation" class="help is-${type}">${message}</p>
       `);
     }
+  },
+  toggleCopyrightModal: () => {
+    // Function to listen for: copyright logo/modal
+    // Find the copyright logo and and the copyright modal.
+    const copyrightInfo = document.getElementById('copyrightInfo');
+    const copyrightModalClose = document.getElementById('copyrightModalClose');
+    const copyrightModal = document.getElementById('copyrightModal');
+    const copyrightModalBackground = document.getElementById('copyrightModalBackground');
+
+    // Add an event listener to logo watch for clicks
+    copyrightInfo.addEventListener('click', () => {
+      copyrightModal.classList.toggle('is-active');
+    });
+    // Add an event listener to close button watch for clicks
+    copyrightModalClose.addEventListener('click', () => {
+      copyrightModal.classList.toggle('is-active');
+    });
+    copyrightModalBackground.addEventListener('click', () => {
+      copyrightModal.classList.toggle('is-active');
+    });
   }
 };
 
@@ -361,4 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
     handlers.validateRegistration.findPartnerByUsername();
   }
   tippy('#helpToolTipButton', { placement: 'right', trigger: 'click' });
+  if (window.location.pathname === '/') {
+    handlers.toggleCopyrightModal();
+  }
 });

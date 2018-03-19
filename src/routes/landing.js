@@ -195,11 +195,20 @@ router.get('/overview', ensureAuthenticated, (req, res) => {
   });
 });
 
-router.get('/login/help', (req, res) => {
-  res.render('login-help', {
+router.get('/help', (req, res) => {
+  res.render('help', {
     routeInfo: {
       heroType: 'dark',
-      route: `/login/help`
+      route: `/help`
+    }
+  });
+});
+
+router.get('/privacy', (req, res) => {
+  res.render('privacy', {
+    routeInfo: {
+      heroType: 'dark',
+      route: `/privacy`
     }
   });
 });
