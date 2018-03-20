@@ -8,7 +8,7 @@
     "watch": "NODE_ENV=development webpack -d -w",
     "webpack": "NODE_ENV=production webpack -p",
     "clean": "rm -rf ./dist",
-    "build": "NODE_ENV=production babel ./src -d ./dist -s && webpack -p",
+    "build": "NODE_ENV=production babel ./src -d ./dist && webpack -p",
     "format": "prettier --list-different --single-quote --print-width=120 \"public/js/**/*.js\"",
     "lint": "eslint **/*.js",
     "deploy": "pm2 deploy getfit.config.js production",
@@ -16,7 +16,8 @@
     "test": "snyk test",
     "snyk-protect": "snyk protect",
     "prepare": "npm run snyk-protect",
-    "rollbar": "curl https://api.rollbar.com/api/1/deploy/ -F access_token=607807c2e15542d3bf8d2111b4fe5282 -F environment=production -F revision=`git log -n 1 --pretty=format:'%H'` -F local_username=`whoami`"
+    "rollbar":
+      "curl https://api.rollbar.com/api/1/deploy/ -F access_token=607807c2e15542d3bf8d2111b4fe5282 -F environment=production -F revision=`git log -n 1 --pretty=format:'%H'` -F local_username=`whoami`"
   },
   "repository": {
     "type": "git",
@@ -77,8 +78,8 @@
     "request": "2.83.0",
     "snyk": "1.69.11",
     "tippy.js": "^2.3.0",
-    "winston": "^3.0.0-rc1",
-    "winston-daily-rotate-file": "^2.0.0-rc.6"
+    "winston": "^3.0.0-rc3",
+    "winston-daily-rotate-file": "^3.0.0"
   },
   "devDependencies": {
     "babel-cli": "^6.26.0",
@@ -87,6 +88,7 @@
     "babel-loader": "^7.1.2",
     "babel-plugin-inline-import": "^2.0.6",
     "babel-preset-env": "^1.6.1",
+    "babel-register": "^6.26.0",
     "css-loader": "^0.28.9",
     "eslint": "^4.7.0",
     "eslint-config-airbnb-base": "^12.0.1",

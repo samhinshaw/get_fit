@@ -12,6 +12,9 @@ import MongooseStore from 'express-brute-mongoose';
 import bruteForceSchema from 'express-brute-mongoose/dist/schema';
 import nodeEmailVer from 'email-verification';
 import emoji from 'node-emoji';
+// helper function for assignment destructuring with awaited values
+// Eliminates most callbacks!!
+import to from 'await-to-js';
 
 import logger from '../methods/logger';
 import ensureAuthenticated from '../methods/auth';
@@ -99,10 +102,13 @@ emailVer.configure(
   }
 );
 
-emailVer
-  .generateTempUserModelAsync(User)
-  .then(tempUser => logger.debug(`generated temp user model: ${typeof tempUser === 'function'}`))
-  .catch(err => logger.error('Error generating temporary user model: %j', err));
+emailVer.generateTempUserModel(User, (err, tempUserModel) => {
+  if (err) {
+    logger.error('Error generating temporary user model: %j', err);
+    return;
+  }
+  logger.debug(`generated temp user model: ${typeof tempUserModel === 'function'}`);
+});
 
 /*= ====  End of Email Verification Setup  ====== */
 
@@ -247,30 +253,26 @@ router.post('/login/resend', bruteforce.prevent, (req, res, next) => {
     return next();
   }
 
-  emailVer
-    .resendVerificationEmailAsync(email)
-    .then(user => {
-      if (!user) {
-        // Handle tempuser expiration
-        req.flash(
-          'danger',
-          'Either your verification code expired, or no user was found with that email address. Please sign up again.'
-        );
-        res.redirect('/login/help');
-        return next();
-      }
-      // Handle success.
-      req.flash('warning', `Verification email resent to ${email}.`);
-      res.redirect('/login/help');
-      return next();
-    })
-    .catch(err => {
-      logger.error('error resending verification email: %j', err);
-      req.flash('danger', 'Error resending verification email');
-      res.redirect('/login/help');
-      return next(err);
-    });
-  return true;
+  const [sendErr, userFound] = to(emailVer.resendVerificationEmail(email));
+  if (sendErr) {
+    // Handle errors
+    logger.error('error resending verification email: %j', sendErr);
+    req.flash('danger', 'Error resending verification email');
+    res.redirect('/login/help');
+    return next(sendErr);
+  } else if (!userFound) {
+    // Handle tempuser expiration
+    req.flash(
+      'danger',
+      'Either your verification code expired, or no user was found with that email address. Please sign up again.'
+    );
+    res.redirect('/login/help');
+    return next();
+  }
+  // Handle success.
+  req.flash('warning', `Verification email resent to ${email}.`);
+  res.redirect('/login/help');
+  return next();
 });
 
 // Handle Registration POSTS
@@ -332,7 +334,6 @@ router.post(
 
     const errors = req.validationErrors();
     // Set up for checking whether users already exist with the username
-
     if (errors) {
       // Or handle errors with flash
       errors.forEach(error => {
@@ -412,50 +413,49 @@ router.post(
         currentPoints: 0
       });
 
-      emailVer
-        .createTempUserAsync(newUser)
-        .then((existingPermUser, newTempUser) => {
-          if (existingPermUser) {
-            req.flash('danger', 'Username Taken');
-            res.redirect('#');
-            return next();
-          } else if (newTempUser) {
-            const URL = newTempUser[emailVer.options.URLFieldName];
-            // Destructuring Assignment For The Win (https://www.npmjs.com/package/await-to-js)
-            emailVer
-              .sendVerificationEmailAsync(email, URL)
-              .then(sendInfo => {
-                logger.info('Email send info: %j', sendInfo);
-              })
-              .catch(sendErr => {
-                logger.error('Error sending verification email: %j', sendErr);
-                req.flash(
-                  'danger',
-                  'Oops, something went wrong on our end and we failed to send your verification email.'
-                );
-                res.redirect('#');
-                return next();
-              });
-          } else {
-            // otherwise if newTempUser is null
-            req.flash(
-              'warning',
-              "Hmm, it looks like you've already created an account! Check your email for a verification link."
-            );
-            res.redirect('#');
-            return next();
-          }
-          return true;
-        })
-        .catch(createErr => {
-          logger.error('Error creating temp user: %j', createErr);
-          req.flash(
-            'danger',
-            'Oops, something went wrong on our end and we failed to create your account.'
-          );
-          res.redirect('#');
-          return next();
-        });
+      // Destructuring Assignment For The Win (https://www.npmjs.com/package/await-to-js)
+      const [createErr, existingPermUser, newTempUser] = await to(
+        emailVer.createTempUserAsync(newUser)
+      );
+      if (createErr) {
+        logger.error('Error creating temp user: %j', createErr);
+        req.flash(
+          'danger',
+          'Oops, something went wrong on our end and we failed to create your account.'
+        );
+        res.redirect('#');
+        return next();
+      } else if (existingPermUser) {
+        req.flash('danger', 'Username Taken');
+        res.redirect('#');
+        return next();
+      } else if (!newTempUser) {
+        // otherwise if newTempUser is null
+        req.flash(
+          'warning',
+          "Hmm, it looks like you've already created an account! Check your email for a verification link."
+        );
+        res.redirect('#');
+        return next();
+      }
+
+      /*= ============================================
+      =               New Temp User                  =
+      ============================================= */
+
+      const URL = newTempUser[emailVer.options.URLFieldName];
+      // Destructuring Assignment For The Win (https://www.npmjs.com/package/await-to-js)
+      const [sendErr, sendInfo] = await to(emailVer.sendVerificationEmail(email, URL));
+      if (sendErr) {
+        logger.error('Error sending verification email: %j', sendErr);
+        req.flash(
+          'danger',
+          'Oops, something went wrong on our end and we failed to send your verification email.'
+        );
+        res.redirect('#');
+        return next();
+      }
+      logger.info('Email send info: %j', sendInfo);
 
       // If user has registered with partner, flow is:
       // 1. Check to see if username matches
@@ -490,11 +490,11 @@ router.post(
           }
           // b) Invite user to Get Fit if email address is unregistered
         }
+        // Finally, let the user know they were successful
+        req.flash('success', 'Success! Check your email for a verification link.');
+        res.redirect('/');
+        return next();
       }
-      // Finally, let the user know they were successful
-      req.flash('success', 'Success! Check your email for a verification link.');
-      res.redirect('/');
-      return next();
     }
     return true;
   })
