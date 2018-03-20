@@ -1,7 +1,7 @@
 {
   "name": "get_fit",
   "version": "1.0.0",
-  "description": "Fitness Tracker for Sam & Am",
+  "description": "Fitness Tracker for MyFitnessPal",
   "main": "app.js",
   "scripts": {
     "dev": "NODE_ENV=development nodemon src/app.js --exec babel-node",
