@@ -297,34 +297,36 @@ const handlers = {
       });
     },
     findPartnerByUsername() {
-      $('#findPartnerByUsername').on('click', () => {
-        const route = window.location.pathname;
-        const target = $('#partnerUsername input[name="partner"]')[0];
-        const username = $('#partnerUsername input[name="partner"]').val();
-        const payload = {
-          name: 'partner',
-          value: username
-        };
-        $.ajax({
-          type: 'POST',
-          url: `${route}/validate`,
-          dataType: 'json',
-          data: payload,
-          // handle successes!
-          success: res => {
-            this.addPartnerEmailField(target, payload.name, res.classType, res.message);
-            // If username comes back as missing, let user input email.
-            if (['danger', 'warning', 'info'].includes(res.classType)) {
-              $('#partnerEmail').removeClass('is-hidden');
-            } else if (res.classType === 'success') {
-              $('#partnerEmail').addClass('is-hidden');
+      $('#partnerUsernameInput').on('change keyup paste', e => {
+        setTimeout(() => {
+          const route = window.location.pathname;
+          const { target } = e;
+          const username = $('#partnerUsername input[name="partner"]').val();
+          const payload = {
+            name: 'partner',
+            value: username
+          };
+          $.ajax({
+            type: 'POST',
+            url: `${route}/validate`,
+            dataType: 'json',
+            data: payload,
+            // handle successes!
+            success: res => {
+              this.addPartnerEmailField(target, payload.name, res.classType, res.message);
+              // If username comes back as missing, let user input email.
+              if (['danger', 'warning', 'info'].includes(res.classType)) {
+                $('#partnerEmail').removeClass('is-hidden');
+              } else if (res.classType === 'success') {
+                $('#partnerEmail').addClass('is-hidden');
+              }
+            },
+            // handle errors
+            error: err => {
+              if (err) Rollbar.error(err);
             }
-          },
-          // handle errors
-          error: err => {
-            if (err) Rollbar.error(err);
-          }
-        });
+          });
+        }, 500);
       });
     },
     addPartnerEmailField(target, name, type, message) {

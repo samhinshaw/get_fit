@@ -43,12 +43,12 @@ block page
                 input#withPartner(name='withPartner', type='checkbox')
                 | &nbsp;&nbsp;Participate with partner
           label.label.is-hidden#partnerUsernameLabel Partner's username:
-          .field.is-hidden.has-addons#partnerUsername
-            p.control.has-icons-left.has-icons-right.is-expanded
-              input.input(name='partner', type='text', placeholder='jane995')
+          .field.is-hidden#partnerUsername
+            .control.has-icons-left.has-icons-right.is-expanded
+              input.input(name='partner', type='text', placeholder='jane995' id="partnerUsernameInput")
               span.icon.is-small.is-left
                 i.mdi.mdi-account-outline
-            p.control
+            //- .control
               button.button#findPartnerByUsername(type="button") Search
           //- #notificationPlaceholder
           .field.is-hidden#partnerEmail

@@ -250,7 +250,7 @@ router.get(
       // Here we're awaiting that mega-promise!
       weekSummaries: await promisedWeekSummaries,
       routeInfo: {
-        heroType: res.locals.user.username,
+        heroType: 'user',
         route: '/user'
       }
     });
@@ -261,7 +261,7 @@ router.get(
 router.get('/weight', ensureAuthenticated, (req, res) => {
   res.render('user/weight', {
     routeInfo: {
-      heroType: res.locals.user.username,
+      heroType: 'user',
       route: '/user/weight'
     }
   });

@@ -237,6 +237,19 @@ app.use(
           password: null,
           currentPoints: 0
         };
+      } else if (!await User.findOne({ username: req.user.partner })) {
+        // Otherwise if no user located in database, insert dummy user for now
+        res.locals.partner = {
+          firstname: '',
+          lastname: '',
+          username: '',
+          email: '',
+          mfp: '',
+          partner: '',
+          fitnessGoal: '',
+          password: null,
+          currentPoints: 0
+        };
       } else {
         res.locals.partner = await User.findOne({
           username: req.user.partner
@@ -404,42 +417,6 @@ app.get('/', (req, res) => {
   }
 });
 
-// Bring in User Data!
-// app.get('/overview', ensureAuthenticated, (req, res) => {
-//   // Otherwise, query DB for entries to display!
-//   const user = res.locals.user.username;
-//   const partner = res.locals.partner.username;
-//   Entry.find(
-//     {
-//       date: {
-//         $gte: res.locals.twoWeeksAgo.toDate(),
-//         $lte: res.locals.today.toDate()
-//       }
-//     },
-//     (err, entries) => {
-//       if (err) {
-//         logger.error(err);
-//       }
-//       // If we get the results back, split by user
-//       const userEntries = entries.filter(entry => entry.user === user);
-//       const partnerEntries = entries.filter(entry => entry.user === partner);
-
-//       // ...and order by date
-//       const sortedUserEntries = _.orderBy(userEntries, 'date', 'desc');
-//       const sortedPartnerEntries = _.orderBy(partnerEntries, 'date', 'desc');
-
-//       res.render('overview', {
-//         userEntries: sortedUserEntries,
-//         partnerEntries: sortedPartnerEntries,
-//         routeInfo: {
-//           heroType: 'dark',
-//           route: `/overview`
-//         }
-//       });
-//     }
-//   );
-// });
-
 // Send user data to client side (via cookie) when user is logged in
 app.get('/api/user_data', ensureAuthenticated, (req, res) => {
   if (req.user === undefined) {
@@ -560,7 +537,7 @@ app.get('*', (req, res) => {
   res.render('404', {
     routeInfo: {
       heroType: 'landing_page',
-      route: `${req.url}`,
+      route: `${req.url}`
     }
   });
 });

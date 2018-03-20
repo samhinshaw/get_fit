@@ -4,9 +4,11 @@ block header
   p.title
     | Get Fit!
   p.subtitle
-    | #{userName} & #{partnerName} are gonna be 
-    strong sexy 
-    | next summer! 👙 🏖
+    | #{userName} 
+    if partner.firstname !== ''
+      | & #{partnerName} are gonna get fit! #{emoji}
+    else 
+      | is gonna get fit! #{emoji}
 
 block subnav
   include includes/overview_subnav
@@ -17,7 +19,7 @@ block content
       //- .column.is-2
       .column.is-6
         .card.overview-card
-          header.card-header(class=`is-${user.username}`)
+          header.card-header(class=`is-user`)
             a.card-header-title.is-size-4(href='/user') #{userName}
             .card-header-icon.dropdown.is-hoverable.is-right(href='#', aria-label='more options')
               .dropdown-trigger
@@ -44,7 +46,7 @@ block content
             a.card-footer-item.request-button.deny(href='#!') Deny
       .column.is-6
         .card.overview-card
-          header.card-header(class=`is-${user.partner}`)
+          header.card-header(class=`is-user`)
             a.card-header-title.is-size-4(href='/partner') #{partnerName}
             .card-header-icon.dropdown.is-hoverable.is-right(href='#', aria-label='more options')
               .dropdown-trigger

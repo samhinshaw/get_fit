@@ -10,6 +10,7 @@ import ExpressBrute from 'express-brute';
 import MongooseStore from 'express-brute-mongoose';
 import bruteForceSchema from 'express-brute-mongoose/dist/schema';
 import nodeEmailVer from 'email-verification';
+import emoji from 'node-emoji';
 
 import logger from '../methods/logger';
 import ensureAuthenticated from '../methods/auth';
@@ -187,11 +188,29 @@ router.get('/logout', (req, res) => {
 });
 
 router.get('/overview', ensureAuthenticated, (req, res) => {
+  const possibleEmojis = [
+    'skier',
+    'runner',
+    'running',
+    'swimmer',
+    'dancer',
+    'golfer',
+    'surfer',
+    'rowboat',
+    'snowboarder',
+    'mountain_bicyclist',
+    'bicyclist',
+    'walking',
+    'weight_lifter',
+    'horse_racing'
+  ];
+  const exerciseEmoji = possibleEmojis[Math.floor(Math.random() * possibleEmojis.length)];
   res.render('overview', {
     routeInfo: {
       heroType: 'dark',
       route: `/overview`
-    }
+    },
+    emoji: emoji.get(exerciseEmoji)
   });
 });
 
@@ -335,7 +354,10 @@ router.post(
     // Because the MongoDB function calls are async, if we specify a redirect
     // within the callback, it's not going to get evaluated right away.
     // Thereore, `return next()` won't get called until after the script has
-    // kept running and called res.redirect already! So we need to make sure the final chunk doesn't get called before we know the results of the query. Hence await!
+    // kept running and called res.redirect already! So we need to make sure the
+    // final chunk doesn't get called before we know the results of the query.
+    // Hence await! Overall, this route needs to be refactored and split up
+    // QUITE A BIT.
     const existingUserUsername = await User.findOne(
       {
         username
@@ -409,7 +431,7 @@ router.post(
         if (newTempUser) {
           const URL = newTempUser[emailVer.options.URLFieldName];
           // We're awaiting here so no redirecting is attempted within an async callback
-          emailVer.sendVerificationEmail(email, URL, (sendErr, info) => {
+          emailVer.sendVerificationEmail(email, URL, async (sendErr, info) => {
             if (sendErr) {
               logger.error('Error sending verification email: %j', sendErr);
               req.flash(
@@ -420,6 +442,31 @@ router.post(
               return next();
             }
             logger.info('Email send info: %j', info);
+
+            if (withPartner) {
+              const foundPartner = await User.findOne({ username: partner }, err => {
+                if (err) logger.error(err);
+              });
+              if (foundPartner) {
+                // Send partner a notification here
+              } else if (partnerEmail) {
+                const partnerByEmail = await User.findOne({ email: partnerEmail }, err => {
+                  if (err) logger.error(err);
+                });
+
+                if (partnerByEmail) {
+                  req.flash(
+                    'danger',
+                    "The email address you entered for your partner is already registered&mdash;make sure you have your partner's username correct!"
+                  );
+                  res.redirect('#');
+                  return next();
+                }
+                // Invite partner here
+              }
+            }
+
+            // Finally, let the user know they were successful
             req.flash('success', 'Success! Check your email for a verification link.');
             res.redirect('/');
             return next();
@@ -515,7 +562,6 @@ router.post(
         .trim()
         .normalizeEmail();
       const errors = req.validationErrors();
-      console.log(req.body);
       if (errors) {
         // Or handle errors with flash
         res.status(200).json({ message: 'This is not a valid email address', classType: 'danger' });
@@ -525,14 +571,14 @@ router.post(
         });
         if (partnerByEmail) {
           res.status(200).json({
-            message: "This email address is unregistered, we'll invite them!",
-            classType: 'success'
-          });
-        } else {
-          res.status(200).json({
             message:
               "This email address is already registered&mdash;make sure you have your partner's username correct!",
             classType: 'danger'
+          });
+        } else {
+          res.status(200).json({
+            message: "This email address is unregistered, we'll invite them!",
+            classType: 'success'
           });
         }
       }
@@ -545,19 +591,6 @@ router.post(
 // user accesses the link that is sent
 router.get('/email-verification/:url', (req, res, next) => {
   const { url } = req.params;
-
-  let userName;
-  let partnerName;
-  if (res.locals.user) {
-    userName =
-      res.locals.user.firstname.charAt(0).toUpperCase() + res.locals.user.firstname.slice(1);
-    partnerName =
-      res.locals.partner.firstname.charAt(0).toUpperCase() +
-      res.locals.partner.firstname.slice(1).toLowerCase();
-  } else {
-    userName = 'User';
-    partnerName = 'Partner';
-  }
 
   emailVer.confirmTempUser(url, (confirmErr, user) => {
     if (confirmErr) {
