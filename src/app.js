@@ -18,6 +18,7 @@ import passport from 'passport';
 // import _ from 'lodash';
 import helmet from 'helmet';
 import GoogleSpreadsheet from 'google-spreadsheet';
+import Promise from 'bluebird';
 // import winston from 'winston';
 
 // Include custom middleware
