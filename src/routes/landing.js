@@ -47,8 +47,8 @@ const bruteforce = new ExpressBrute(store, {
 =          Email Verification Setup          =
 ============================================= */
 
-// const emailVer = Promise.promisifyAll(nodeEmailVer(mongoose));
-const emailVer = nodeEmailVer(mongoose);
+const emailVer = Promise.promisifyAll(nodeEmailVer(mongoose));
+// const emailVer = nodeEmailVer(mongoose));
 
 const saltAndHash = function saltAndHash(pwd, tempUserData, insertTempUser, callback) {
   bcrypt.genSalt(10, (saltErr, salt) => {
