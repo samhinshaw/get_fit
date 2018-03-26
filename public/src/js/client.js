@@ -5,7 +5,7 @@
 import 'jquery';
 import tippy from 'tippy.js';
 // Import styles for webpack (specifically, webpack-extract-text-plugin)
-import '../sass/styles.sass';
+import '../sass/styles.scss';
 import '../css/styles.css';
 // Run GraphQL script
 
