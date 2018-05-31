@@ -1,5 +1,5 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
-version: v1.10.2
+version: v1.12.0
 # ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
   'npm:bson:20180225':
@@ -8,7 +8,7 @@ ignore:
         expires: '2018-03-30T19:29:59.167Z'
       email-verification > mongoose > mongodb > bson:
         reason: None given
-        expires: '2018-05-04T01:00:55.838Z'
+        expires: '2018-06-30T20:09:17.936Z'
     - mongoose > bson:
         reason: no fix
         expires: '2018-03-30T19:29:59.168Z'
@@ -27,6 +27,15 @@ ignore:
     - email-verification > mongoose > mongodb > bson:
         reason: no fix
         expires: '2018-04-13T15:57:54.290Z'
+    - email-verification > mongoose > mongodb > bson:
+        reason: None given
+        expires: '2018-05-04T01:00:55.838Z'
+    - email-verification > mongoose > mongodb > bson:
+        reason: None given
+        expires: '2018-06-15T22:21:14.105Z'
+    - email-verification > mongoose > mongodb > bson:
+        reason: None given
+        expires: '2018-06-30T18:37:02.725Z'
   'npm:concat-stream:20160901':
     - google-spreadsheet > google-auth-library > jws > base64url > concat-stream:
         reason: no fix
@@ -34,44 +43,44 @@ ignore:
   'npm:hoek:20180212':
     - google-spreadsheet > google-auth-library > request > hawk > hoek:
         reason: None given
-        expires: '2018-05-04T01:00:55.840Z'
+        expires: '2018-06-30T20:09:17.936Z'
     - google-spreadsheet > google-auth-library > request > hawk > boom > hoek:
         reason: None given
-        expires: '2018-05-04T01:00:55.840Z'
+        expires: '2018-06-30T20:09:17.936Z'
     - google-spreadsheet > google-auth-library > request > hawk > sntp > hoek:
         reason: None given
-        expires: '2018-05-04T01:00:55.840Z'
+        expires: '2018-06-30T20:09:17.936Z'
     - google-spreadsheet > google-auth-library > request > hawk > cryptiles > boom > hoek:
         reason: None given
-        expires: '2018-05-04T01:00:55.840Z'
+        expires: '2018-06-30T20:09:17.936Z'
     - node-pre-gyp > hawk > hoek:
         reason: None given
-        expires: '2018-05-04T01:00:55.840Z'
+        expires: '2018-06-30T20:09:17.936Z'
     - node-pre-gyp > hawk > boom > hoek:
         reason: None given
-        expires: '2018-05-04T01:00:55.840Z'
+        expires: '2018-06-30T20:09:17.936Z'
     - node-pre-gyp > hawk > sntp > hoek:
         reason: None given
-        expires: '2018-05-04T01:00:55.840Z'
+        expires: '2018-06-30T20:09:17.936Z'
     - node-pre-gyp > hawk > cryptiles > boom > hoek:
         reason: None given
-        expires: '2018-05-04T01:00:55.840Z'
+        expires: '2018-06-30T20:09:17.936Z'
     - node-pre-gyp > request > hawk > hoek:
         reason: None given
-        expires: '2018-05-04T01:00:55.840Z'
+        expires: '2018-06-30T20:09:17.936Z'
     - node-pre-gyp > request > hawk > boom > hoek:
         reason: None given
-        expires: '2018-05-04T01:00:55.840Z'
+        expires: '2018-06-30T20:09:17.936Z'
     - node-pre-gyp > request > hawk > sntp > hoek:
         reason: None given
-        expires: '2018-05-04T01:00:55.841Z'
+        expires: '2018-06-30T20:09:17.937Z'
     - node-pre-gyp > request > hawk > cryptiles > boom > hoek:
         reason: None given
-        expires: '2018-05-04T01:00:55.841Z'
+        expires: '2018-06-30T20:09:17.937Z'
   'npm:lodash:20180130':
     - google-spreadsheet > lodash:
         reason: None given
-        expires: '2018-05-04T01:00:55.841Z'
+        expires: '2018-06-30T20:09:17.937Z'
   'npm:node-forge:20180226':
     - google-spreadsheet > google-auth-library > gtoken > google-p12-pem > node-forge:
         reason: None given
@@ -79,7 +88,7 @@ ignore:
   'npm:tunnel-agent:20170305':
     - google-spreadsheet > google-auth-library > request > tunnel-agent:
         reason: None given
-        expires: '2018-05-04T01:00:55.841Z'
+        expires: '2018-06-30T20:09:17.937Z'
   'npm:clean-css:20180306':
     - pug > pug-filters > clean-css:
         reason: no fix
@@ -87,15 +96,52 @@ ignore:
   'npm:ms:20170412':
     - email-verification > mongoose > ms:
         reason: None given
-        expires: '2018-05-04T01:00:55.841Z'
+        expires: '2018-06-30T20:09:17.937Z'
+  'npm:deep-extend:20180409':
+    - node-pre-gyp > rc > deep-extend:
+        reason: None given
+        expires: '2018-06-30T18:37:02.725Z'
+  'npm:base64url:20180511':
+    - google-spreadsheet > google-auth-library > jws > jwa > base64url:
+        reason: None given
+        expires: '2018-06-30T18:37:02.724Z'
+    - google-spreadsheet > google-auth-library > jws > base64url:
+        reason: None given
+        expires: '2018-06-30T18:37:02.725Z'
+  'npm:open:20180512':
+    - snyk > open:
+        reason: None given
+        expires: '2018-06-30T20:09:17.937Z'
+  'npm:stringstream:20180511':
+    - google-spreadsheet > request > stringstream:
+        reason: None given
+        expires: '2018-06-15T22:21:14.106Z'
+      node-pre-gyp > request > stringstream:
+        reason: None given
+        expires: '2018-06-30T20:09:17.937Z'
+    - google-spreadsheet > google-auth-library > request > stringstream:
+        reason: None given
+        expires: '2018-06-15T22:21:14.106Z'
+    - google-spreadsheet > google-auth-library > gtoken > request > stringstream:
+        reason: None given
+        expires: '2018-06-15T22:21:14.106Z'
+    - request > stringstream:
+        reason: None given
+        expires: '2018-06-15T22:21:14.106Z'
+    - node-pre-gyp > request > stringstream:
+        reason: None given
+        expires: '2018-06-15T22:21:14.106Z'
+    - node-pre-gyp > request > stringstream:
+        reason: None given
+        expires: '2018-06-30T18:37:02.725Z'
 # patches apply the minimum changes required to fix a vulnerability
 patch:
   'npm:debug:20170905':
     - email-verification > mongoose > mquery > debug:
-        patched: '2018-04-04T01:00:17.160Z'
+        patched: '2018-05-31T20:08:40.231Z'
   'npm:ms:20170412':
     - email-verification > mongoose > mquery > debug > ms:
-        patched: '2018-04-04T01:00:17.160Z'
+        patched: '2018-05-31T20:08:40.231Z'
   'npm:ms:20151024':
     - email-verification > mongoose > ms:
-        patched: '2018-04-04T01:00:17.160Z'
+        patched: '2018-05-31T20:08:40.231Z'
