@@ -30,57 +30,61 @@ html
   body.flex-body
     nav.navbar.has-shadow.is-light(role="navigation" aria-label="main navigation")
       .container
-          .navbar-brand
-            a.navbar-item(href='/')
-              img(src='/images/gym-near.svg', alt='Description', height=28, width=28)
-            .navbar-burger(data-target="navMenu")
-              span
-              span
-              span
-          .navbar-menu(id='navMenu')
-            .navbar-start
-              if user
-                //- Make username and partner name sentence case 
-                a.navbar-item(href='/overview', class=(routeInfo.route.startsWith('/overview')  ? 'is-active' : false))
-                  | Overview
-                a.navbar-item(href=`/user`, class=(routeInfo.route.startsWith('/user') ? 'is-active' : false))
-                  span#userName #{userName}
+        .navbar-brand
+          a.navbar-item(href='/')
+            img(src='/images/gym-near.svg', alt='Description', height=28, width=28)
+          .navbar-burger(data-target="navMenu")
+            span
+            span
+            span
+            if pendingRequests
+              if pendingRequests.length > 0
+                a.tag.is-danger.is-small(style="font-size: 0.5rem; text-decoration: none; position: absolute; right: 8px; bottom: 8px;")
+                  | #{pendingRequests.length}
+        .navbar-menu(id='navMenu')
+          .navbar-start
+            if user
+              //- Make username and partner name sentence case 
+              a.navbar-item(href='/overview', class=(routeInfo.route.startsWith('/overview')  ? 'is-active' : false))
+                | Overview
+              a.navbar-item(href=`/user`, class=(routeInfo.route.startsWith('/user') ? 'is-active' : false))
+                span#userName #{userName}
+                | &nbsp;
+                span#userPointTally (#{pointTally.user})
+              if partner.firstname
+                a.navbar-item(href=`/partner`, class=(routeInfo.route.startsWith('/partner') ? 'is-active' : false))
+                  span#partnerName #{partnerName}
                   | &nbsp;
-                  span#userPointTally (#{pointTally.user})
-                if partner.firstname
-                  a.navbar-item(href=`/partner`, class=(routeInfo.route.startsWith('/partner') ? 'is-active' : false))
-                    span#partnerName #{partnerName}
-                    | &nbsp;
-                    span#partnerPointTally (#{pointTally.partner})
-                //- a.navbar-item(href='/account', class=(routeInfo.route === "/account"  ? 'is-active' : false))
-                  | Account
-                //- a.navbar-item(href='/help', class=(routeInfo.route === "/help"  ? 'is-active' : false))
-                  | Help
-            .navbar-end
-              span.navbar-item
-                .field.is-grouped.has-addons
-                  if user
-                    .control
-                      a.button(href='/account', class=(routeInfo.route.startsWith('/account')  ? 'is-active' : false))
-                        //- span.icon.is-small
-                          //- img.avatar(src=`/images/${user.username}.jpg`, alt=user.username, height='28px', width='28px')
-                        //- | &nbsp;
-                        span #{userName}
-                        if pendingRequests
-                          if pendingRequests.length > 0
-                            | &nbsp;
-                            span.tag(class='is-danger')
-                              | #{pendingRequests.length}
-                    .control
-                      a.button(href="/logout")
-                        | Log out
-                  else
-                    .control
-                      a.button(href="/login")
-                        | Log in
-                    .control
-                      a.button(href="/register")
-                        | Sign up
+                  span#partnerPointTally (#{pointTally.partner})
+              //- a.navbar-item(href='/account', class=(routeInfo.route === "/account"  ? 'is-active' : false))
+                | Account
+              //- a.navbar-item(href='/help', class=(routeInfo.route === "/help"  ? 'is-active' : false))
+                | Help
+          .navbar-end
+            span.navbar-item
+              .field.is-grouped.has-addons
+                if user
+                  .control
+                    a.button(href='/account', class=(routeInfo.route.startsWith('/account')  ? 'is-active' : false))
+                      //- span.icon.is-small
+                      //- img.avatar(src=`/images/${user.username}.jpg`, alt=user.username, height='28px', width='28px')
+                      //- | &nbsp;
+                      span #{userName}
+                      if pendingRequests
+                        if pendingRequests.length > 0
+                          | &nbsp;
+                          span.tag(class='is-danger')
+                            | #{pendingRequests.length}
+                  .control
+                    a.button(href="/logout")
+                      | Log out
+                else
+                  .control
+                    a.button(href="/login")
+                      | Log in
+                  .control
+                    a.button(href="/register")
+                      | Sign up
     //- Bring in Mixins
     include ../mixins/ExerciseCard
     include ../mixins/HistoryCard
