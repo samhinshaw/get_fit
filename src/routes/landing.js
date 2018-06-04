@@ -146,15 +146,17 @@ router.get('/login', (req, res) => {
 router.post('/login', (req, res, next) => {
   passport.authenticate('local', (authErr, user) => {
     if (authErr) {
+      req.flash('danger', authErr.message);
       return next(authErr);
     }
-    if (!user) {
-      req.flash('danger', 'No User Found.');
-      res.redirect('/login');
-      return next();
-    }
+    // if (!user) {
+    //   req.flash('danger', 'No User Found.');
+    //   res.redirect('/login');
+    //   return next();
+    // }
     req.logIn(user, loginErr => {
       if (loginErr) {
+        req.flash('danger', loginErr.message);
         return next(loginErr);
       }
       res.cookie(
