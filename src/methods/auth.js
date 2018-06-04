@@ -7,7 +7,7 @@ export default function ensureAuthenticated(req, res, next) {
     return next();
   }
   // otherwise, redirect to landing page!
-  req.flash('danger', 'Please login.');
+  req.flash('danger', 'Please log in.');
   res.redirect('/login');
   return true;
 }
