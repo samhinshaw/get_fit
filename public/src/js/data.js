@@ -4,8 +4,9 @@ import { parse, startOfDay, subYears, addDays, isWithinRange, format } from 'dat
 // import * as d3 from 'd3';
 import { scaleLinear, scaleTime } from 'd3-scale';
 import { axisBottom, axisLeft, axisRight } from 'd3-axis';
+import { nest } from 'd3-collection';
 // import { min, max, extent } from 'd3-array';
-import { extent } from 'd3-array';
+import { extent, mean } from 'd3-array';
 import { timeFormat } from 'd3-time-format'; // timeFormatLocale, parseDate
 import { select } from 'd3-selection';
 import { line } from 'd3-shape';
@@ -94,9 +95,17 @@ $.getJSON('/api/user_weight/', json => {
 
   // console.log(data);
 
-  // const nestedData = nest()
-  //   .key(d => parseDate(`${d.date}-0700`)) // tack on pacific TZ
-  //   .entries(data);
+  // Use nest()'s .key() and .rollup(), which are similar to group_by() and summarize()
+  // with help from http://learnjsdata.com/group_data.html
+  const nestedData = nest()
+    .key(d => d.date) // nest by key
+    .rollup(v => mean(v, d => d.weight)) // return the mean weight from each date (2 fns!)
+    .entries(data) // apply this to the data array previously defined
+    .map(d => ({
+      // finally, instead of returning {"key": "", "value": "" }
+      date: parse(d.key), // return a parsed data (it was coerced to chr)
+      weight: d.value // and the weight as "weight"
+    }));
 
   const margin = { top: 40, right: 80, bottom: 80, left: 50 };
   const width = 960 - margin.left - margin.right;
@@ -136,13 +145,13 @@ $.getJSON('/api/user_weight/', json => {
     if (dateRange) {
       // Date Range
       x.domain(dateRange).clamp(true);
-      // y.domain([min(data, d => d.weight) - 1, max(data, d => d.weight) + 1]);
+      // y.domain([min(nestedData, d => d.weight) - 1, max(nestedData, d => d.weight) + 1]);
       y.domain([weightRange.start, weightRange.end]);
     } else {
       // All Dates
-      x.domain(extent(data, d => d.date));
+      x.domain(extent(nestedData, d => d.date));
       y.domain([weightRange.start, weightRange.end]);
-      // y.domain(extent(data, d => d.weight));
+      // y.domain(extent(nestedData, d => d.weight));
     }
 
     // Create the x-axis and its ticks
@@ -206,7 +215,7 @@ $.getJSON('/api/user_weight/', json => {
     // Draw the actual data!
     svg
       .append('path')
-      .datum(data)
+      .datum(nestedData)
       .attr('fill', 'none')
       .attr('stroke', 'steelblue')
       .attr('stroke-linejoin', 'round')
