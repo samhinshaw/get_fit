@@ -467,6 +467,22 @@ Currently, our exercise groups are:
   }
 ```
 
+However, we actually currently have the point values hard-coded in the python script. We'll want to make these user-adjustable, and thus store them in the database as well.
+
+```json
+  "exerciseGroups": [
+    {"group": "veryLightExercise", "pointsPerHour": 0.5, "exercises": ["walking", "stretching"]},
+    {"group": "lightExercise", "pointsPerHour": 1, "exercises": ["yoga", "hiking"]},
+    {"group": "cardio", "pointsPerHour": 2, "exercises": ["jogging", "running", "dancing", "paddleboarding", "parkour"]},
+    {"group": "crossTrain", "pointsPerHour": 4, "exercises": [
+      "low intensity strength training",
+      "high intensity strength training",
+      "bodyweight training",
+      "kelly tape"
+    ]}
+  ]
+```
+
 We might want to rethink the names for these before we release this.
 
 ```mongo
@@ -474,18 +490,17 @@ db.users.find({'_id': ObjectId("59db10d31e5977f5202a0c45")})
 db.users.update(
   { "_id" :ObjectId("59db10d31e5977f5202a0c45") },
   { $set : {
-    "exerciseGroups": {
-      "veryLightExercise": ["walking", "stretching"],
-      "lightExercise": ["yoga", "hiking"],
-      "cardio": ["jogging", "running", "dancing", "paddleboarding", "parkour"],
-      "crossTrain": [
-        "low intensity strength training",
-        "high intensity strength training",
-        "bodyweight training",
-        "kelly tape"
-      ]
-    }
-  }}
+    "exerciseGroups": [
+    {"group": "veryLightExercise", "pointsPerHour": 0.5, "exercises": ["walking", "stretching"]},
+    {"group": "lightExercise", "pointsPerHour": 1, "exercises": ["yoga", "hiking"]},
+    {"group": "cardio", "pointsPerHour": 2, "exercises": ["jogging", "running", "dancing", "paddleboarding", "parkour"]},
+    {"group": "crossTrain", "pointsPerHour": 4, "exercises": [
+      "low intensity strength training",
+      "high intensity strength training",
+      "bodyweight training",
+      "kelly tape"
+    ]}
+  ]}
 )
 db.users.find({'_id': ObjectId("59db10d31e5977f5202a0c45")})
 ```
@@ -495,18 +510,17 @@ db.users.find({'_id': ObjectId("5a1b599bfbd424af2dba6fd4")})
 db.users.update(
   { "_id" :ObjectId("5a1b599bfbd424af2dba6fd4") },
   { $set : {
-    "exerciseGroups": {
-      "veryLightExercise": ["walking", "stretching"],
-      "lightExercise": ["yoga", "hiking"],
-      "cardio": ["jogging", "running", "dancing", "paddleboarding", "parkour"],
-      "crossTrain": [
-        "low intensity strength training",
-        "high intensity strength training",
-        "bodyweight training",
-        "kelly tape"
-      ]
-    }
-  }}
+    "exerciseGroups": [
+    {"group": "veryLightExercise", "pointsPerHour": 0.5, "exercises": ["walking", "stretching"]},
+    {"group": "lightExercise", "pointsPerHour": 1, "exercises": ["yoga", "hiking"]},
+    {"group": "cardio", "pointsPerHour": 2, "exercises": ["jogging", "running", "dancing", "paddleboarding", "parkour"]},
+    {"group": "crossTrain", "pointsPerHour": 4, "exercises": [
+      "low intensity strength training",
+      "high intensity strength training",
+      "bodyweight training",
+      "kelly tape"
+    ]}
+  ]}
 )
 db.users.find({'_id': ObjectId("5a1b599bfbd424af2dba6fd4")})
 ```
@@ -536,7 +550,7 @@ Currently, we have this stored in JSON as:
 }
 ```
 
-For addition to the database, we'll have to change this in a similar to the exercise icons:
+For addition to the database, we'll have to change this in a similar to the exercise icons.
 
 ```json
 {
@@ -640,3 +654,11 @@ We'll need to look a few different places for each usage.
 1.  Where are we asking for the icon filenames? How would it be best to query those?
 2.  Where are we mapping the exercises--is that in the initial pulling down of the exercises from MFP in our Python script?
 3.  Where are we grouping the exercises and assigning point values? Is that done on every route where the points are calculated, or are those calculated when we save the exercise (and the points added to the database)?
+
+**NOTE**: We should make sure to use [`db.collection.createIndex()`](https://docs.mongodb.com/manual/reference/method/db.collection.createIndex/) when making these in order to speed up searching these arrays.
+
+An example:
+
+```
+db.users.createIndex({'exerciseMappings':1})
+```

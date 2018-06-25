@@ -292,25 +292,26 @@ router.post('/:date', ensureAuthenticated, (req, res) => {
   if (process.platform === 'linux') {
     pythonPath = '/home/sam/.miniconda3/bin/python3';
   } else if (process.platform === 'darwin') {
-    pythonPath = '/usr/local/opt/python/libexec/bin/python';
+    pythonPath = '/usr/local/bin/python3';
   }
 
   // Python script options
   const options = {
-    // mode: 'text',
+    // mode: 'json',
     pythonPath,
-    // pythonOptions: ['-u'],
+    pythonOptions: ['-u'], // this will let us see Python's print statements
     scriptPath: './data',
     args: [startDate, endDate, res.locals.user.username, res.locals.user.mfp]
   };
 
   // Run python script
-  PythonShell.run('getMFP.py', options, err => {
+  PythonShell.run('getMFP.py', options, (err, messages) => {
     if (err) {
       logger.error('Error updating from MyFitnessPal: %j', err);
       res.status(500).json({ message: 'Error updating from MyFitnessPal', type: 'danger' });
       // res.status(500).json(err);
     } else {
+      logger.info('messages: %j', messages);
       logger.info('Success updating user data from MFP.');
       res
         .status(200)
