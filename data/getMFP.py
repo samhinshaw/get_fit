@@ -152,19 +152,13 @@ for date in arrow.Arrow.range(frame='day', start=startDate, end=endDate, tz='US/
       goalCals = MFPcals.goals['calories']
       netCals = goalCals - totalCals
       isEmpty = False
-
-      if netCals >= 0:
-        calPoints = 1
-      elif netCals < -300:
-        calPoints = -1
-      else:
-        calPoints = 0
+      calPoints = round((netCals / 100), 2)
     else:
       totalCals = 0
       goalCals = 0
       netCals = 0
       isEmpty = True
-      calPoints = -1
+      calPoints = -3
 
     # Check to see if the entry was completed
     if MFPcals.complete:
@@ -172,7 +166,7 @@ for date in arrow.Arrow.range(frame='day', start=startDate, end=endDate, tz='US/
     # If incomplete, force calorie points to -1
     else:
       complete = False
-      calPoints = -1
+      calPoints = -3
 
   except:
     sys.exit('There was an error retrieving your data from MyFitnessPal.')
@@ -255,23 +249,42 @@ for date in arrow.Arrow.range(frame='day', start=startDate, end=endDate, tz='US/
 
       # Assign icons. We have already assigned sanitized names, so we can do a
       # simply dictionary replacement.
-      try:
-        exerIcon = iconDict[renamedEx]
-      # if no hits, use generic exercise icons
-      except KeyError:
-        exerIcon = 'exercise.png'
 
-      # award points based on workout type
-      if renamedEx in exerTypeDict["veryLightExercise"]:
-        points = (exerMins / 120)
-      elif renamedEx in exerTypeDict["lightExercise"]:
-        points = (exerMins / 60)
-      elif renamedEx in exerTypeDict["cardio"]:
-        points = (exerMins / 30)
-      elif renamedEx in exerTypeDict["crossTrain"]:
-        points = (exerMins / 15)
+      exerciseIconSearch = db.exercises.find_one(
+          {
+              'exercise': renamedEx,
+          }, {
+              '_id': 0,
+              'image': 1
+          }
+      )
+
+      if exerciseIconSearch is None:
+        exerciseIcon = 'exercise.png'
       else:
-        points = 0
+        exerciseIcon = exerciseIconSearch['image']
+
+      #! For now we can manually extract what we need, but in the future, we
+      #! should just structure our query better to just get the fields we want!
+      # We should look into aggregation and projection
+
+      exerciseGroup = db.users.find_one(
+          {
+              'username': user,
+              'exerciseGroups.exercises': renamedEx
+          }, {
+              '_id': 0,
+              'exerciseGroups.$': 1
+          }
+      )
+
+      if exerciseGroup is None:
+        pointsPerHour = 0
+      else:
+        # Extract the exerciseGroup's first array element, and that object's points per hour
+        pointsPerHour = exerciseGroup['exerciseGroups'][0]['pointsPerHour']
+
+      points = (exerMins / 60) * pointsPerHour
 
       # NOW, if this is walking or step-counting, let's concatenate the values
       if renamedEx == "walking":
@@ -301,7 +314,7 @@ for date in arrow.Arrow.range(frame='day', start=startDate, end=endDate, tz='US/
                 'minutes': exerMins,
                 'cals': exerCals,
                 'points': points,
-                'icon': exerIcon
+                'icon': exerciseIcon
             }
         )
 
