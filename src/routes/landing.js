@@ -413,7 +413,31 @@ router.post(
         partner,
         fitnessGoal,
         password,
-        currentPoints: 0
+        currentPoints: 0,
+        // Default exercise groups:
+        exerciseGroups: [
+          {
+            group: 'Very Light Exercise',
+            pointsPerHour: 0.5,
+            exercises: ['walking', 'stretching']
+          },
+          { group: 'Light Exercise', pointsPerHour: 1, exercises: ['yoga', 'hiking'] },
+          {
+            group: 'Cardio',
+            pointsPerHour: 2,
+            exercises: ['jogging', 'running', 'dancing', 'paddleboarding', 'parkour']
+          },
+          {
+            group: 'Cross Training',
+            pointsPerHour: 4,
+            exercises: [
+              'low intensity strength training',
+              'high intensity strength training',
+              'bodyweight training',
+              'kelly tape'
+            ]
+          }
+        ]
       });
       // emailVer
       //   .createTempUserAsync(newUser)
@@ -460,87 +484,84 @@ router.post(
       //     return next();
       //   });
 
-      const tempUserCreated = await emailVer.createTempUser(
-        newUser,
-        (createErr, existingPermUser, newTempUser) => {
-          if (createErr) {
-            logger.error('Error creating temp user: %j', createErr);
+      await emailVer.createTempUser(newUser, (createErr, existingPermUser, newTempUser) => {
+        if (createErr) {
+          logger.error('Error creating temp user: %j', createErr);
+          req.flash(
+            'danger',
+            'Oops, something went wrong on our end and we failed to create your account.'
+          );
+          res.redirect('#');
+          return next();
+        } else if (existingPermUser) {
+          req.flash('danger', 'Username Taken');
+          res.redirect('#');
+          return next();
+        } else if (!newTempUser) {
+          // otherwise if newTempUser is null
+          logger.info('Temp user already exists');
+          req.flash(
+            'warning',
+            "Hmm, it looks like you've already created an account! Check your email for a verification link."
+          );
+          res.redirect('#');
+          return next();
+        }
+        logger.info('Creating user: %j', newTempUser);
+        const URL = newTempUser[emailVer.options.URLFieldName];
+        // Destructuring Assignment For The Win (https://www.npmjs.com/package/await-to-js)
+        emailVer.sendVerificationEmail(email, URL, async (sendErr, sendInfo) => {
+          if (sendErr) {
+            logger.error('Error sending verification email: %j', sendErr);
             req.flash(
               'danger',
-              'Oops, something went wrong on our end and we failed to create your account.'
+              'Oops, something went wrong on our end and we failed to send your verification email.'
             );
             res.redirect('#');
             return next();
-          } else if (existingPermUser) {
-            req.flash('danger', 'Username Taken');
-            res.redirect('#');
-            return next();
-          } else if (!newTempUser) {
-            // otherwise if newTempUser is null
-            logger.info('Temp user already exists');
-            req.flash(
-              'warning',
-              "Hmm, it looks like you've already created an account! Check your email for a verification link."
-            );
-            res.redirect('#');
-            return next();
+          } else if (sendInfo) {
+            logger.info('Email send info: %j', sendInfo);
           }
-          logger.info('Creating user: %j', newTempUser);
-          const URL = newTempUser[emailVer.options.URLFieldName];
-          // Destructuring Assignment For The Win (https://www.npmjs.com/package/await-to-js)
-          emailVer.sendVerificationEmail(email, URL, async (sendErr, sendInfo) => {
-            if (sendErr) {
-              logger.error('Error sending verification email: %j', sendErr);
-              req.flash(
-                'danger',
-                'Oops, something went wrong on our end and we failed to send your verification email.'
-              );
-              res.redirect('#');
-              return next();
-            } else if (sendInfo) {
-              logger.info('Email send info: %j', sendInfo);
-            }
-            // If user has registered with partner, flow is:
+          // If user has registered with partner, flow is:
+          // 1. Check to see if username matches
+          //    a) Check to see if that user already has a partner
+          //        i) Invite user to be partner
+          //        ii) Let user know that user has a partner
+          // 2. Check to see if email is taken
+          //    a) Inform user that email address is registered (and they should check username)
+          //        i) \/\/\/\/\/ Think about prefilling username here if email is registered? /\/\/\/\/\
+          //    b) Invite user to Get Fit if email address is unregistered
+          if (withPartner) {
             // 1. Check to see if username matches
-            //    a) Check to see if that user already has a partner
-            //        i) Invite user to be partner
-            //        ii) Let user know that user has a partner
-            // 2. Check to see if email is taken
-            //    a) Inform user that email address is registered (and they should check username)
-            //        i) \/\/\/\/\/ Think about prefilling username here if email is registered? /\/\/\/\/\
-            //    b) Invite user to Get Fit if email address is unregistered
-            if (withPartner) {
-              // 1. Check to see if username matches
-              const foundPartner = await User.findOne({ username: partner }, err => {
+            const foundPartner = await User.findOne({ username: partner }, err => {
+              if (err) logger.error(err);
+            });
+            if (foundPartner) {
+              //    a) Check to see if that user already has a partner
+              //        i) Invite user to be partner
+            } else if (partnerEmail) {
+              // 2. Check to see if email is taken
+              const partnerByEmail = await User.findOne({ email: partnerEmail }, err => {
                 if (err) logger.error(err);
               });
-              if (foundPartner) {
-                //    a) Check to see if that user already has a partner
-                //        i) Invite user to be partner
-              } else if (partnerEmail) {
-                // 2. Check to see if email is taken
-                const partnerByEmail = await User.findOne({ email: partnerEmail }, err => {
-                  if (err) logger.error(err);
-                });
-                if (partnerByEmail) {
-                  //    a) Inform user that email address is registered (and they should check username)
-                  req.flash(
-                    'danger',
-                    "The email address you entered for your partner is already registered&mdash;make sure you have your partner's username correct!"
-                  );
-                  res.redirect('#');
-                  return next();
-                }
-                // b) Invite user to Get Fit if email address is unregistered
+              if (partnerByEmail) {
+                //    a) Inform user that email address is registered (and they should check username)
+                req.flash(
+                  'danger',
+                  "The email address you entered for your partner is already registered&mdash;make sure you have your partner's username correct!"
+                );
+                res.redirect('#');
+                return next();
               }
+              // b) Invite user to Get Fit if email address is unregistered
             }
-            // Finally, let the user know they were successful
-            req.flash('success', 'Success! Check your email for a verification link.');
-            res.redirect('/');
-            return next();
-          });
-        }
-      );
+          }
+          // Finally, let the user know they were successful
+          req.flash('success', 'Success! Check your email for a verification link.');
+          res.redirect('/');
+          return next();
+        });
+      });
     }
   })
 );

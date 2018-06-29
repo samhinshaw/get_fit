@@ -1,0 +1,22 @@
+extends ../partials/layout
+
+block header
+  include ../includes/account_header
+
+block subnav
+  include ../includes/account_subnav
+
+block content
+  .columns.is-centered.is-desktop
+    .column.is-7-desktop.is-6-fullhd#request-container
+      each exerciseGroup in user.exerciseGroups
+        .box 
+          strong #{exerciseGroup.group}
+          small.is-pulled-right #{exerciseGroup.pointsPerHour}/hr
+          ul
+            each exercise in exerciseGroup.exercises
+              li #{exercise}
+      each exerciseMapping in user.exerciseMappings
+        .box 
+          strong #{exerciseMapping.mappedName}
+          small.is-pulled-right #{exerciseMapping.mfpName}

@@ -14,6 +14,17 @@
       //- | &nbsp;
       .control
         | Spend Points
+  a.navbar-item.is-tab(
+    href=`/account/exercises`, 
+    class=('/account/exercises' === routeInfo.route ? 'is-active' : false)
+  )
+    .field.is-grouped
+      .control
+        span.icon.is-small
+          i.mdi.mdi-bike 
+      //- | &nbsp;
+      .control
+        | Exercises
   a.navbar-item.is-tab(href='/account/requests', class=(routeInfo.route === "/account/requests"  ? 'is-active' : false))
     .field.is-grouped
       .control
