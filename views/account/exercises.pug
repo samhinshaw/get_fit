@@ -13,9 +13,10 @@ block content
         .box 
           strong #{exerciseGroup.group}
           small.is-pulled-right #{exerciseGroup.pointsPerHour}/hr
-          ul
-            each exercise in exerciseGroup.exercises
-              li #{exercise}
+          .content
+            ul
+              each exercise in exerciseGroup.exercises
+                li #{exercise}
       each exerciseMapping in user.exerciseMappings
         .box 
           strong #{exerciseMapping.mappedName}

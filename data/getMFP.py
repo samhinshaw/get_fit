@@ -75,11 +75,11 @@ else:
 ### Import JSON Dictionaries ###
 # This will potentially be replaced by mongoDB entries down the line
 
-dictFile = open(os.path.join('data', 'exerciseIconDictionary.json'))
-parsedDict = dictFile.read()
-exerciseDict = json.loads(parsedDict)['exercises']
-iconDict = json.loads(parsedDict)['icons']
-exerTypeDict = json.loads(parsedDict)['exerciseTypes']
+# dictFile = open(os.path.join('data', 'exerciseIconDictionary.json'))
+# parsedDict = dictFile.read()
+# exerciseDict = json.loads(parsedDict)['exercises']
+# iconDict = json.loads(parsedDict)['icons']
+# exerTypeDict = json.loads(parsedDict)['exerciseTypes']
 
 print('Connecting to MongoDB database...')
 secretJSON = open(os.path.join('config', 'secret', 'secret_config.json')).read()
@@ -128,16 +128,14 @@ else:
   MFPclient = myfitnesspal.Client(mfp, password='', login=False)
 
 # Calculate points based on that day's statistics!
-# Current values are:
-# NET CALS:
-#   - netCals >= 0    //  1pt
-#   - netCals < 0     //  0pt
-#   - netCals < -300  // -1pt
-#   - isEmpty == True // -1pt
+# Current values are: net cals / 100 = points.
+# So if you had 300cals left that day, it'd be +3pts
+# If you overate by 500cals, it'd be -5pts
 # Exercise!
-#   - flex   = 1pt/60min
-#   - cardio = 1pt/30min
-#   - XT     = 1pt/15min
+#   - low impact = 1pt/120min (0.5pt/hr)
+#   - flex       = 1pt/60min  (  1pt/hr)
+#   - cardio     = 1pt/30min  (  2pt/hr)
+#   - XT         = 1pt/15min  (  4pt/hr)
 
 for date in arrow.Arrow.range(frame='day', start=startDate, end=endDate, tz='US/Pacific'):
   print('Loading data from ' + date.format('MMMM DD, YYYY'))
@@ -158,15 +156,15 @@ for date in arrow.Arrow.range(frame='day', start=startDate, end=endDate, tz='US/
       goalCals = 0
       netCals = 0
       isEmpty = True
-      calPoints = -3
+      calPoints = 0
 
     # Check to see if the entry was completed
-    if MFPcals.complete:
-      complete = True
-    # If incomplete, force calorie points to -1
-    else:
-      complete = False
-      calPoints = -3
+    # if MFPcals.complete:
+    #   complete = True
+    # # If incomplete, force calorie points to -3
+    # else:
+    #   complete = False
+    #   calPoints = -3
 
   except:
     sys.exit('There was an error retrieving your data from MyFitnessPal.')
@@ -336,9 +334,12 @@ for date in arrow.Arrow.range(frame='day', start=startDate, end=endDate, tz='US/
   # Double check everything got rounded properly
   totalExerPoints = round(totalExerPoints, 1)
   calPoints = round(calPoints, 1)
-  # Final tally of points, add exercise points + calorie points
-  totalDaysPoints = calPoints + totalExerPoints
-  totalDaysPoints = round(totalDaysPoints, 1)
+  # If day is complete, total points!
+  if MFPcals.complete:
+    totalDaysPoints = calPoints + totalExerPoints
+    totalDaysPoints = round(totalDaysPoints, 1)
+  else:
+    totalDaysPoints = 0
 
   # construct object for db insertion
   MFPdata = {
@@ -348,7 +349,7 @@ for date in arrow.Arrow.range(frame='day', start=startDate, end=endDate, tz='US/
       'netCals': netCals,
       'exercise': exercises,
       'isEmpty': isEmpty,
-      'complete': complete,
+      'complete': MFPcals.complete,
       'points': totalDaysPoints,
       'user': user,
       'lastUpdated': now.datetime
