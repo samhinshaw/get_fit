@@ -294,7 +294,7 @@ router.get('/requests', ensureAuthenticated, (req, res) => {
 
 router.get('/exercises', ensureAuthenticated, (req, res) => {
   res.render('account/exercises', {
-    moment,
+    _,
     routeInfo: {
       heroType: 'twitter',
       route: '/account/exercises'

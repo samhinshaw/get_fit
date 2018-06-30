@@ -7,17 +7,54 @@ block subnav
   include ../includes/account_subnav
 
 block content
-  .columns.is-centered.is-desktop
-    .column.is-7-desktop.is-6-fullhd#request-container
-      each exerciseGroup in user.exerciseGroups
-        .box 
-          strong #{exerciseGroup.group}
-          small.is-pulled-right #{exerciseGroup.pointsPerHour}/hr
+  //- Sort exercise groups by the number of points per hour
+  - const sortedExerciseGroups = _.orderBy(user.exerciseGroups, 'pointsPerHour', 'desc');
+  - const sortedExerciseMappings = _.orderBy(user.exerciseMappings, 'mfpName', 'asc');
+  .columns.is-centered
+    .column.is-3-fullhd#exercise-groups
+      h2.is-size-2 Exercise Groups
+      each exerciseGroup in sortedExerciseGroups
+        .box(data-name=exerciseGroup.group)
+          strong.group-name #{exerciseGroup.group}
+          span.is-pulled-right.box-controls
+            i.icon
+              a.mdi.mdi-pencil.edit-entry
           .content
+            small 
+              span.points-per-hour #{exerciseGroup.pointsPerHour}
+              span &nbsp;
+              span pts/hr
             ul
-              each exercise in exerciseGroup.exercises
-                li #{exercise}
-      each exerciseMapping in user.exerciseMappings
-        .box 
-          strong #{exerciseMapping.mappedName}
-          small.is-pulled-right #{exerciseMapping.mfpName}
+              //- built in array sort--because strings (not objects) can simply sort alphabetically
+              each exercise in exerciseGroup.exercises.sort()
+                li
+                  span.exercise-name #{exercise}
+      .content.has-text-centered
+        button.button.is-outlined
+          i.icon
+            i.mdi.mdi-plus-box-outline
+          span New Exercise Group
+    hr
+    .column.is-4-fullhd#exercise-mappings
+      h2.is-size-2 Exercise Mappings
+      table.table.is-fullwidth.is-bordered
+        thead 
+          th.has-background-white-ter MyFitnessPal Name
+          th Your Mapped Name
+        each exerciseMapping in sortedExerciseMappings
+          tr
+            td.has-background-white-ter #{exerciseMapping.mfpName}
+            td 
+              span #{exerciseMapping.mappedName}
+              span.is-pulled-right
+                i.icon
+                  a.mdi.mdi-pencil.edit-entry
+                i.icon
+                  a.mdi.mdi-close.delete-entry
+        tr
+          td(colspan=2) 
+            .content.has-text-centered
+              button.button.is-outlined
+                i.icon
+                  i.mdi.mdi-plus-box-outline
+                span New Exercise Mapping
