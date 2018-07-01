@@ -319,9 +319,10 @@ router.post('/:date', ensureAuthenticated, (req, res) => {
       // res.status(500).json(err);
     } else {
       logger.info('Success updating user data from MFP.');
-      res
-        .status(200)
-        .json({ message: 'Success updating user data from MyFitnessPal', type: 'success' });
+      res.status(200).json({
+        message: 'Success updating user data from MyFitnessPal',
+        type: 'success'
+      });
       // res.status(200).json(result);
     }
   });
