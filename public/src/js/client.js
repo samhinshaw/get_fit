@@ -7,7 +7,8 @@ import tippy from 'tippy.js';
 // Import styles for webpack (specifically, webpack-extract-text-plugin)
 import '../sass/styles.scss';
 import '../css/styles.css';
-// Run GraphQL script
+// Bring in exercise handling
+import './exercise/master';
 
 const handlers = {
   // Function 1 to listen for: hamburger menu

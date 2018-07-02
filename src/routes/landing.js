@@ -281,7 +281,6 @@ router.post(
   '/register',
   bruteforce.prevent,
   asyncMiddleware(async (req, res, next) => {
-    console.log('we got a request');
     // express-validator sanitizes in-place (mutable), and works by
     const firstname = req.sanitize('firstname').trim();
     const lastname = req.sanitize('lastname').trim();
@@ -565,8 +564,10 @@ router.post(
           res.redirect('/');
           return next();
         });
+        return false;
       });
     }
+    return false;
   })
 );
 

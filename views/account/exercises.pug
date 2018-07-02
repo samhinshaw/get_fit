@@ -14,7 +14,7 @@ block content
     .column.is-3-fullhd#exercise-groups
       h2.is-size-2 Exercise Groups
       each exerciseGroup in sortedExerciseGroups
-        .box(data-name=exerciseGroup.group)
+        .box.exercise-group(data-name=exerciseGroup.group, droppable='true')
           strong.group-name #{exerciseGroup.group}
           span.is-pulled-right.box-controls
             i.icon
@@ -24,16 +24,28 @@ block content
               span.points-per-hour #{exerciseGroup.pointsPerHour}
               span &nbsp;
               span pts/hr
-            ul
+          .content
+            .buttons.exercises
               //- built in array sort--because strings (not objects) can simply sort alphabetically
               each exercise in exerciseGroup.exercises.sort()
-                li
+                - const exerciseID = exercise.replace(/ /g,"-")
+                //- Big thanks to this stackoverflow post for making this make sense!
+                //- https://stackoverflow.com/questions/28203585/prevent-drop-inside-a-child-element-when-drag-dropping-with-js
+                span.button.exercise(
+                  ondblclick='GetFit.makeEditable({event});',
+                  draggable='true', 
+                  id=exerciseID
+                )
                   span.exercise-name #{exercise}
-      .content.has-text-centered
-        button.button.is-outlined
+      .buttons#exercise-controls
+        button.button.is-primary.is-outlined#new-exercise-group(droppable='true')
           i.icon
             i.mdi.mdi-plus-box-outline
           span New Exercise Group
+        button.button.is-outlined.is-danger.is-disabled#delete-exercise-zone(droppable='true', style='display: none;')
+          i.icon
+            i.mdi.mdi-minus-circle-outline
+          span Delete Exercise
     hr
     .column.is-4-fullhd#exercise-mappings
       h2.is-size-2 Exercise Mappings
@@ -54,7 +66,7 @@ block content
         tr
           td(colspan=2) 
             .content.has-text-centered
-              button.button.is-outlined
+              button.button.is-outlined.is-primary
                 i.icon
                   i.mdi.mdi-plus-box-outline
                 span New Exercise Mapping

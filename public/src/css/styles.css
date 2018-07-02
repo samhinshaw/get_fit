@@ -328,3 +328,38 @@ a.mdi {
 a.mdi:hover {
   color: #363636;
 }
+
+.button.exercise {
+  cursor: -webkit-grab;
+  cursor: -moz-grab;
+  cursor: grab;
+}
+
+.navbar.is-fixed-bottom.is-transparent {
+  border: none;
+}
+
+/* Negate hover color on these buttons */
+.button.exercise:hover {
+  border-color: #dbdbdb;
+}
+
+.exercise-group {
+  border: 1px solid transparent;
+}
+
+.exercise-group.hovered-over {
+  border: 1px solid #363636;
+}
+
+#delete-exercise-zone.hovered-over {
+  background-color: #ff3860;
+  border-color: #ff3860;
+  color: #fff;
+}
+
+#new-exercise-group.hovered-over {
+  background-color: #363636;
+  border-color: #363636;
+  color: #fff;
+}
