@@ -94,7 +94,7 @@ secretPyConfig = secretConfig['python']
 # It also didn't work because I was using 'user' instead of 'username'
 client = MongoClient(
     host=secretPyConfig['host'],
-    port=secretPyConfig['port'],
+    port=int(secretPyConfig['port']),
     username=secretPyConfig['user'],
     password=secretPyConfig['password'],
     authSource=secretPyConfig['authSource'],
