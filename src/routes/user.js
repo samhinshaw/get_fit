@@ -307,7 +307,6 @@ router.post('/:date', ensureAuthenticated, (req, res) => {
   // Run python script
   PythonShell.run('getMFP.py', options, (err, messages) => {
     if (err) {
-      logger.error('messages: %j', messages);
       logger.error('Error updating from MyFitnessPal: %j', err);
       res.status(500).json({ message: 'Error updating from MyFitnessPal', type: 'danger' });
       // res.status(500).json(err);

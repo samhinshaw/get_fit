@@ -92,21 +92,21 @@ secretPyConfig = secretConfig['python']
 # brought in as a string, not an Int!! This makes sense that it would have
 # worked when specifying the URI though, because that entire thing is a string.
 # It also didn't work because I was using 'user' instead of 'username'
-client = MongoClient(
-    host=secretPyConfig['host'],
-    port=int(secretPyConfig['port']),
-    username=secretPyConfig['user'],
-    password=secretPyConfig['password'],
-    authSource=secretPyConfig['authSource'],
-    authMechanism=secretPyConfig['authMechanism']
-)
+# client = MongoClient(
+#     host=secretPyConfig['host'],
+#     port=secretPyConfig['port'],
+#     username=secretPyConfig['user'],
+#     password=secretPyConfig['password'],
+#     authSource=secretPyConfig['authSource'],
+#     authMechanism=secretPyConfig['authMechanism']
+# )
 
 # Previous version for connecting.
-# mongoURI = "mongodb://" + secretPyConfig['user'] + ":" + secretPyConfig['password'] + "@" + secretPyConfig['host'] + \
-#     ":" + secretPyConfig['port'] + "/" + secretPyConfig['authSource'] + \
-#     "?authMechanism=" + secretPyConfig['authMechanism']
+mongoURI = "mongodb://" + secretPyConfig['user'] + ":" + secretPyConfig['password'] + "@" + secretPyConfig['host'] + \
+    ":" + secretPyConfig['port'] + "/" + secretPyConfig['authSource'] + \
+    "?authMechanism=" + secretPyConfig['authMechanism']
 
-# client = MongoClient(mongoURI)
+client = MongoClient(mongoURI)
 
 db = client.get_fit
 entries = db.entries
