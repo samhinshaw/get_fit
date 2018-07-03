@@ -23,9 +23,10 @@ mixin ExerciseCard(entry, startDate)
         header.card-header
           p.card-header-title
             a.icon.is-small(href=`http://www.myfitnesspal.com/food/diary?date=${datePretty}#complete_day`, target='_blank' class=(entry.isEmpty  ? 'has-text-danger' : false))
-              if entry.isEmpty
+              //- I actually don't like the way this looks, let's keep it grey
+              //- if entry.isEmpty
                 i.mdi.mdi-alert-circle-outline
-              else if entry.complete
+              if entry.complete
                 i.mdi.mdi-checkbox-marked-circle-outline
               else
                 i.mdi.mdi-checkbox-blank-circle-outline(style="color: #dbdbdb")
@@ -33,10 +34,16 @@ mixin ExerciseCard(entry, startDate)
             a(href=`http://www.myfitnesspal.com/food/diary?date=${datePretty}`, target='_blank')
               span(style=completedColor) #{fullDate}
           a.card-header-icon(href='#!', aria-label='more options')
-            //- If entry is empty or incomplete, show grey tag
+            //- Determine color of points tag based on success!
+            //- ======================================================
+            //- If entry is empty or incomplete, show grey tag (unless negative)
             if entry.isEmpty || !entry.complete
-              span.tag(style="background-color: #dbdbdb; color: #000")
-                | #{points}
+              if entry.points < 0 
+                span.tag.is-danger
+                  | #{points}
+              else if entry.points === 0
+                span.tag(style="background-color: #dbdbdb; color: #000")
+                  | #{points}
             else
               if entry.points < 0 
                 span.tag.is-danger
@@ -50,6 +57,7 @@ mixin ExerciseCard(entry, startDate)
               else
                 span.tag.is-dark
                   | #{points}
+              //- ======================================================
             //- span &nbsp; &middot; &nbsp;
             //- span.icon.is-small
               i.mdi.mdi-chevron-down
