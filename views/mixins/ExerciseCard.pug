@@ -67,7 +67,9 @@ mixin ExerciseCard(entry, startDate)
             //- Determine color of progress bar based on net calories!
             //- ======================================================
             - let calStatus;
-            if entry.netCals > 0 || entry.netCals === 0
+            if !entry.complete
+              - calstatus = 'primary'
+            else if entry.netCals > 0 || entry.netCals === 0
               - calStatus = 'success'
             else if entry.netCals < 0 && entry.netCals > -300
               - calStatus = 'warning'
