@@ -815,7 +815,7 @@ db.users.update(
       "bodyweight training",
       "kelly tape"
     ]}
-  ]}
+  ]}}
 );
 db.users.find({'_id': ObjectId("5a1b5a3c4e861740aaad45bc") })
 ```
@@ -835,7 +835,7 @@ db.users.update(
       "bodyweight training",
       "kelly tape"
     ]}
-  ]}
+  ]}}
 );
 db.users.find({'_id': ObjectId("5a1b5ae04e861740aaad45bd")})
 ```
@@ -897,9 +897,9 @@ For addition to the database, we'll have to change this in a similar to the exer
 And now we can add these to the database:
 
 ```mongo
-db.users.find({'_id': ObjectId("5a1b599bfbd424af2dba6fd4")})
+db.users.find({'_id': ObjectId("5a1b5a3c4e861740aaad45bc")})
 db.users.update(
-  { "_id" :ObjectId("5a1b599bfbd424af2dba6fd4") },
+  { "_id" :ObjectId("5a1b5a3c4e861740aaad45bc") },
   { $set : {
     "exerciseMappings": [
       { "mfpName": "jog", "mappedName": "jogging" },
@@ -925,13 +925,13 @@ db.users.update(
     ]
   }}
 )
-db.users.find({'_id': ObjectId("5a1b599bfbd424af2dba6fd4")})
+db.users.find({'_id': ObjectId("5a1b5a3c4e861740aaad45bc")})
 ```
 
 ```mongo
-db.users.find({ '_id': ObjectId("59db10d31e5977f5202a0c45") })
+db.users.find({ '_id': ObjectId("5a1b5ae04e861740aaad45bd") })
 db.users.update(
-  { "_id": ObjectId("59db10d31e5977f5202a0c45") },
+  { "_id": ObjectId("5a1b5ae04e861740aaad45bd") },
   { $set: {
     "exerciseMappings": [
       { "mfpName": "jog", "mappedName": "jogging" },
@@ -957,7 +957,7 @@ db.users.update(
     ]
   }}
 )
-db.users.find({ '_id': ObjectId("59db10d31e5977f5202a0c45") })
+db.users.find({ '_id': ObjectId("5a1b5ae04e861740aaad45bd") })
 ```
 
 ## Implementation
