@@ -21,6 +21,8 @@ import myfitnesspal  # myfitnesspal API!
 # MFPcals.goals['calories']
 
 now = arrow.now('US/Pacific')
+thisMorning = now.floor('day')
+thisEvening = now.ceil('day')
 
 if len(sys.argv) == 4:
   inputDate = sys.argv[1]
@@ -334,12 +336,17 @@ for date in arrow.Arrow.range(frame='day', start=startDate, end=endDate, tz='US/
   # Double check everything got rounded properly
   totalExerPoints = round(totalExerPoints, 1)
   calPoints = round(calPoints, 1)
+
   # If day is complete, total points!
   if MFPcals.complete:
     totalDaysPoints = calPoints + totalExerPoints
     totalDaysPoints = round(totalDaysPoints, 1)
-  else:
+  # Otherwise, if it's still the same day, give it 0 points
+  elif thisMorning <= date <= thisEvening:
     totalDaysPoints = 0
+  # Otherwise, if it's an old day, give it -3 points!
+  else:
+    totalDaysPoints = -3
 
   # construct object for db insertion
   MFPdata = {
