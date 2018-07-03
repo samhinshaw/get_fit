@@ -292,6 +292,16 @@ router.get('/requests', ensureAuthenticated, (req, res) => {
   });
 });
 
+router.get('/exercises', ensureAuthenticated, (req, res) => {
+  res.render('account/exercises', {
+    _,
+    routeInfo: {
+      heroType: 'twitter',
+      route: '/account/exercises'
+    }
+  });
+});
+
 // Receive AJAX response to request
 router.post('/requests/respond', ensureAuthenticated, (req, res) => {
   // Pull up request entry in DB

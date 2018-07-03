@@ -511,9 +511,10 @@ router.post(
       // First just make sure username is long enough. We could do this
       // client-side, but I wanted to keep the logic flow pretty.
       if (value.length < 3) {
-        res
-          .status(200)
-          .json({ message: 'Your username must be at least 3 characters.', classType: 'danger' });
+        res.status(200).json({
+          message: 'Your username must be at least 3 characters.',
+          classType: 'danger'
+        });
       } else {
         // Otherwise, check for the user in the database!
         const user = await User.findOne({ username: value }, err => {
@@ -522,7 +523,10 @@ router.post(
         if (user) {
           res.status(200).json({ message: 'This username is taken.', classType: 'danger' });
         } else {
-          res.status(200).json({ message: 'This username is available', classType: 'success' });
+          res.status(200).json({
+            message: 'This username is available',
+            classType: 'success'
+          });
         }
       }
     } else if (name === 'email') {
@@ -535,19 +539,24 @@ router.post(
       const errors = req.validationErrors();
       if (errors) {
         // Or handle errors with flash
-        res.status(200).json({ message: 'This is not a valid email address', classType: 'danger' });
+        res.status(200).json({
+          message: 'This is not a valid email address',
+          classType: 'danger'
+        });
       } else {
         const userByEmail = await User.findOne({ email: value }, err => {
           if (err) logger.error(err);
         });
         if (userByEmail) {
-          res
-            .status(200)
-            .json({ message: 'This email address is already registered.', classType: 'danger' });
+          res.status(200).json({
+            message: 'This email address is already registered.',
+            classType: 'danger'
+          });
         } else {
-          res
-            .status(200)
-            .json({ message: 'This email address is unregistered.', classType: 'success' });
+          res.status(200).json({
+            message: 'This email address is unregistered.',
+            classType: 'success'
+          });
         }
       }
     } else if (name === 'partner') {
@@ -576,7 +585,10 @@ router.post(
       const errors = req.validationErrors();
       if (errors) {
         // Or handle errors with flash
-        res.status(200).json({ message: 'This is not a valid email address', classType: 'danger' });
+        res.status(200).json({
+          message: 'This is not a valid email address',
+          classType: 'danger'
+        });
       } else {
         const partnerByEmail = await User.findOne({ email: value }, err => {
           if (err) logger.error(err);

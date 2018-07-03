@@ -1,6 +1,6 @@
 {
   "exerciseTypes": {
-    "cardio": ["jogging", "running", "dancing", "paddleboarding", "parkour"],
+    "cardio": ["jogging", "running", "dancing", "paddleboarding", "parkour", "swimming"],
     "lightExercise": ["yoga", "hiking"],
     "veryLightExercise": ["walking", "stretching"],
     "crossTrain": [

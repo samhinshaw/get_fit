@@ -6,6 +6,8 @@ mixin ExerciseCard(entry, startDate)
   - const dateHuman = entryDate.format('MM-DD-YYYY');
   - const fullDate = entryDate.format('ddd, MMM Do, YYYY')
   - const weekSummary = weekSummaries.find(week => entryDate.isSame(week.endDate));
+  - const points = entry.points.toFixed(1)
+  - const completedColor = entry.complete ? "" : "color: #bdbdbd;"
   //- Break up into weeks and we'll come back to this for a weekly point total
   .columns.is-centered.is-desktop
     .column.is-6-desktop.is-5-fullhd
@@ -26,23 +28,28 @@ mixin ExerciseCard(entry, startDate)
               else if entry.complete
                 i.mdi.mdi-checkbox-marked-circle-outline
               else
-                i.mdi.mdi-checkbox-blank-circle-outline
+                i.mdi.mdi-checkbox-blank-circle-outline(style="color: #dbdbdb")
             span &nbsp;&nbsp;
             a(href=`http://www.myfitnesspal.com/food/diary?date=${datePretty}`, target='_blank')
-              | #{fullDate}
+              span(style=completedColor) #{fullDate}
           a.card-header-icon(href='#!', aria-label='more options')
-            if entry.points < 0 
-              span.tag.is-danger
-                | #{entry.points.toFixed(1)}
-            else if entry.points === 0 
-              span.tag.is-warning
-                | #{entry.points.toFixed(1)}
-            else if entry.points > 0 
-              span.tag.is-success
-                | #{entry.points.toFixed(1)}
+            //- If entry is empty or incomplete, show grey tag
+            if entry.isEmpty || !entry.complete
+              span.tag(style="background-color: #dbdbdb; color: #000")
+                | #{points}
             else
-              span.tag.is-dark
-                | #{entry.points.toFixed(1)}
+              if entry.points < 0 
+                span.tag.is-danger
+                  | #{points}
+              else if entry.points === 0 
+                span.tag.is-warning
+                  | #{points}
+              else if entry.points > 0 
+                span.tag.is-success
+                  | #{points}
+              else
+                span.tag.is-dark
+                  | #{points}
             //- span &nbsp; &middot; &nbsp;
             //- span.icon.is-small
               i.mdi.mdi-chevron-down
@@ -78,7 +85,9 @@ mixin ExerciseCard(entry, startDate)
                 if entry.isEmpty
                   span.progress-text No calorie information.
                 else
-                  span.progress-text #{entry.totalCals} / #{entry.goalCals} cals
+                  - const calPoints = ((entry.goalCals - entry.totalCals) / 100).toFixed(1)
+                  span.progress-text #{entry.totalCals} / #{entry.goalCals} cals&nbsp;
+                    | (#{calPoints} pts)
             if entry.exercise.length > 0
               .table-container
                 table.table
@@ -90,17 +99,12 @@ mixin ExerciseCard(entry, startDate)
                     th cals
                   tbody
                     each exercise, i in entry.exercise
-                      tr
+                      tr(style=completedColor)
                         td.exercise-icon
                           .icon
-                            img(src='/images/icons/' + exercise.icon, alt=exercise.name)
+                            img(src=`/images/icons/${exercise.icon}`, alt=exercise.name)
                         td #{exercise.name}
-                        case exercise.points
-                          when -1
-                          when 1
-                            td #{exercise.points}
-                          default 
-                            td #{exercise.points}
+                        td #{exercise.points}
                         td #{exercise.minutes}
                         td #{exercise.cals}
         footer.card-footer

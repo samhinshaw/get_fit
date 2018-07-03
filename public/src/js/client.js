@@ -7,7 +7,8 @@ import tippy from 'tippy.js';
 // Import styles for webpack (specifically, webpack-extract-text-plugin)
 import '../sass/styles.scss';
 import '../css/styles.css';
-// Run GraphQL script
+// Bring in exercise handling
+import './exercise/master';
 
 const handlers = {
   // Function 1 to listen for: hamburger menu
@@ -367,9 +368,11 @@ const handlers = {
 
 // Process all actions after DOM content has loaded
 document.addEventListener('DOMContentLoaded', () => {
-  // console.log(window.location);
-  // Could theoretically enable/diable these based on pathname to limit number
-  // of event listeners on a page
+  // console.log(window.location); Could theoretically enable/diable these based
+  // on pathname to limit number of event listeners on a page... although the
+  // event listeners won't be run if the element trying to be selected isn't
+  // there. But still, I should really re-think the methodology behind this
+  // setup.
   handlers.toggleNavBarBurger();
   handlers.dismissMessagesNotification();
   handlers.dismissNotification();

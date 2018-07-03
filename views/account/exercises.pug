@@ -1,0 +1,72 @@
+extends ../partials/layout
+
+block header
+  include ../includes/account_header
+
+block subnav
+  include ../includes/account_subnav
+
+block content
+  //- Sort exercise groups by the number of points per hour
+  - const sortedExerciseGroups = _.orderBy(user.exerciseGroups, 'pointsPerHour', 'desc');
+  - const sortedExerciseMappings = _.orderBy(user.exerciseMappings, 'mfpName', 'asc');
+  .columns.is-centered
+    .column.is-3-fullhd#exercise-groups
+      h2.is-size-2 Exercise Groups
+      each exerciseGroup in sortedExerciseGroups
+        .box.exercise-group(data-name=exerciseGroup.group, droppable='true')
+          strong.group-name #{exerciseGroup.group}
+          span.is-pulled-right.box-controls
+            i.icon
+              a.mdi.mdi-pencil.edit-entry
+          .content
+            small 
+              span.points-per-hour #{exerciseGroup.pointsPerHour}
+              span &nbsp;
+              span pts/hr
+          .content
+            .buttons.exercises
+              //- built in array sort--because strings (not objects) can simply sort alphabetically
+              each exercise in exerciseGroup.exercises.sort()
+                - const exerciseID = exercise.replace(/ /g,"-")
+                //- Big thanks to this stackoverflow post for making this make sense!
+                //- https://stackoverflow.com/questions/28203585/prevent-drop-inside-a-child-element-when-drag-dropping-with-js
+                span.button.exercise(
+                  ondblclick='GetFit.makeEditable({event});',
+                  draggable='true', 
+                  id=exerciseID
+                )
+                  span.exercise-name #{exercise}
+      .buttons#exercise-controls
+        button.button.is-primary.is-outlined#new-exercise-group(droppable='true')
+          i.icon
+            i.mdi.mdi-plus-box-outline
+          span New Exercise Group
+        button.button.is-outlined.is-danger.is-disabled#delete-exercise-zone(droppable='true', style='display: none;')
+          i.icon
+            i.mdi.mdi-minus-circle-outline
+          span Delete Exercise
+    hr
+    .column.is-4-fullhd#exercise-mappings
+      h2.is-size-2 Exercise Mappings
+      table.table.is-fullwidth.is-bordered
+        thead 
+          th.has-background-white-ter MyFitnessPal Name
+          th Your Mapped Name
+        each exerciseMapping in sortedExerciseMappings
+          tr
+            td.has-background-white-ter #{exerciseMapping.mfpName}
+            td 
+              span #{exerciseMapping.mappedName}
+              span.is-pulled-right
+                i.icon
+                  a.mdi.mdi-pencil.edit-entry
+                i.icon
+                  a.mdi.mdi-close.delete-entry
+        tr
+          td(colspan=2) 
+            .content.has-text-centered
+              button.button.is-outlined.is-primary
+                i.icon
+                  i.mdi.mdi-plus-box-outline
+                span New Exercise Mapping

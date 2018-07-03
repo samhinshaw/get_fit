@@ -119,10 +119,15 @@ const asyncMiddleware = fn => (req, res, next) => {
 //   useMongoClient: true,
 // });
 
-const mongoURI = `mongodb://${nodeConfig.user}:${nodeConfig.password}@${nodeConfig.host}:${nodeConfig.port}/${nodeConfig.authSource}?authMechanism=${nodeConfig.authMechanism}`;
+const mongoURI = `mongodb://${nodeConfig.user}:${nodeConfig.password}@${nodeConfig.host}:${
+  nodeConfig.port
+}/${nodeConfig.authSource}?authMechanism=${nodeConfig.authMechanism}`;
 
 // mongoose.connect(dbConfig.database);
-mongoose.connect(mongoURI, { useMongoClient: true });
+mongoose.connect(
+  mongoURI,
+  { useMongoClient: true }
+);
 // const connection = mongoose.createConnection(mongoURI);
 
 const db = mongoose.connection;
@@ -238,7 +243,7 @@ app.use(
           password: null,
           currentPoints: 0
         };
-      } else if (!await User.findOne({ username: req.user.partner })) {
+      } else if (!(await User.findOne({ username: req.user.partner }))) {
         // Otherwise if no user located in database, insert dummy user for now
         res.locals.partner = {
           firstname: '',
