@@ -1,8 +1,8 @@
 # Get Fit!
 
-https://getse.xyz
+https://get-fit.xyz
 
-Unfortunately, Get Fit is not 100% ready for public use yet, but you can follow the [Public Release Milestone](https://github.com/samhinshaw/get_fit/milestone/1) to keep track of my progress. 
+Unfortunately, Get Fit is not 100% ready for public use yet, but you can follow the [Public Release Milestone](https://github.com/samhinshaw/get_fit/milestone/1) to keep track of my progress.
 
 ## Welcome to Get Fit!
 
@@ -11,9 +11,11 @@ Get Fit is a fitness-tracking app to help with the difficulty of delayed gratifi
 ## Some rewards that have worked for me
 
 With Partner:
+
 - Do the dishes
 - Cook dinner
 
 By yourself:
+
 - Go see a movie
 - Try a new craft beer
