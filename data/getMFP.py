@@ -14,7 +14,11 @@ from dateutil.tz import tzutc  # timezone functions
 # import pymongo
 # from datetime import datetime
 from pymongo import MongoClient  # mongodb operations
+import bson
 import myfitnesspal  # myfitnesspal API!
+
+# from .utils import query_exercise_group
+import utils
 
 # NOTES
 # - Later on I may wish to pull calorie goals straight from MFP
@@ -192,108 +196,93 @@ for date in arrow.Arrow.range(frame='day', start=startDate, end=endDate, tz='US/
 
   # set up empty array especially to handle walking (via RunKeeper pocket track)
   walking = {
-      'name': 'walking',
-      'minutes': 0,
-      'cals': 0,
-      'points': 0,
-      'icon': 'walking.png'
+    'name': 'walking',
+    'minutes': 0,
+    'cals': 0,
+    'points': 0,
+    'icon': 'walking.png'
   }
   steps = {'name': 'steps', 'minutes': 0, 'cals': 0, 'points': 0, 'icon': 'walking.png'}
 
   # loop through all of the exercises in a day (if more than 0) This might be
   # ideal as a while loop, but this works fine too. I like it because we can
-  # use n without manually counting.
+  # use _entry without manually counting.
   if len(exerEntries) > 0:
-    for n in range(0, len(exerEntries)):
+    for _entry in range(0, len(exerEntries)):
 
       # rename complex variables
-      exerName = exerEntries[n].name.lower()
-      exerMins = exerEntries[n]['minutes']
-      exerCals = exerEntries[n]['calories burned']
+      exerName = exerEntries[_entry].name.lower()
+      exerMins = exerEntries[_entry]['minutes']
+      exerCals = exerEntries[_entry]['calories burned']
 
+      # Since exerEntries is an MFP Client object, we can't do a {}.get() on it
+      # and provide a default value. So check for None here.
       if exerMins is None:
         exerMins = 0
 
-      # Fix for common issues.
-      #! Remove in favor of user specified matching
-      if exerName.startswith('jogging'):
-        renamedEx = 'jogging'
-      elif exerName.startswith('walking'):
-        renamedEx = 'walking'
-      elif exerName.startswith('swimming'):
-        renamedEx = 'swimming'
-      elif exerName.startswith('hiking'):
-        renamedEx = 'hiking'
-      else:
-        exerciseHits = []
-        exerciseNameMapping = db.users.find_one(
-            {
-                'username': user,
-                'exerciseMappings.mfpName': {
-                    '$regex': f'.*{exerName}.*'
-                }
-            },
-            {
-                '_id': 0,
-                'exerciseMappings.mappedName.$': 1
-                # Note this `.$` which means ONLY the matched subfield is returned!
-            }
-        )
+      # To find our exercise, we have to generate substrings of the exercise
+      # name. Let's scan our word for each length that is valid. We'll start
+      # with the total length of the string and go down to a minimum length of
+      # 3. Note: have to specify that range is decreasing
+      exerNameSubstrings = utils.generate_substrings(exerName, escape=True)
+      numberOfQueries = 0
+      # Python has a for/else setup which lets us run the else block if the for
+      # loop runs without a break.
+      for substrings in exerNameSubstrings.values():
+        regex = "^" + "$|^".join(substrings) + "$"
+        # Instead of multiple queries, we can construct one regex for each
+        # substring length to match with. That way we're only every hitting the
+        # database for N - 3 times, where N is the length of the exercise name.
+        exerNameRegex = bson.regex.Regex(regex)
 
-        if exerciseNameMapping is None:
-          renamedEx = exerName
-        else:
-          # Since exerciseMappings is an Array, we want to be sure we only got one hit.
-          #! We will just be pulling the FIRST hit, so this may be something to fix in the future
-          renamedEx = exerciseNameMapping['exerciseMappings'][0]['mappedName']
+        queryResults = utils \
+          .query_exercise_group(username=user, exercise_name=exerNameRegex, database=db)
+        numberOfQueries += 1
+        exerciseGroups = list(queryResults)
+        if exerciseGroups:
+          # For now, let's just pull the first hit blindly. We're starting with
+          # the longest possible query string, so if we found more than one hit
+          # of the same length, they are likely of equal importance. We could
+          # probably refine this more in the future by using Mongo's text search
+          # function with scoring.
+          exerciseGroup = exerciseGroups[0].get('exerciseGroup')
+          # and we found our hit, so no need to query more!
+          break
+
+      # If no hits at all, use sensible defaults
+      else:
+        exerciseGroup = {"group": None, "pointsPerHour": 0, "exercises": exerName}
+
+      pointsPerHour = exerciseGroup.get('pointsPerHour', 0)
+      matchedExercise = exerciseGroup.get('exercises', exerName)
 
       # Assign icons. We have already assigned sanitized names, so we can do a
       # simply dictionary replacement.
 
       exerciseIconSearch = db.exercises.find_one(
-          {
-              'exercise': renamedEx,
-          }, {
-              '_id': 0,
-              'image': 1
-          }
+        {
+          'exercise': matchedExercise,
+        }, {
+          '_id': 0,
+          'image': 1
+        }
       )
 
       if exerciseIconSearch is None:
         exerciseIcon = 'exercise.png'
       else:
-        exerciseIcon = exerciseIconSearch['image']
-
-      #! For now we can manually extract what we need, but in the future, we
-      #! should just structure our query better to just get the fields we want!
-      # We should look into aggregation and projection
-
-      exerciseGroup = db.users.find_one(
-          {
-              'username': user,
-              'exerciseGroups.exercises': renamedEx
-          }, {
-              '_id': 0,
-              'exerciseGroups.$': 1
-          }
-      )
-
-      if exerciseGroup is None:
-        pointsPerHour = 0
-      else:
-        # Extract the exerciseGroup's first array element, and that object's points per hour
-        pointsPerHour = exerciseGroup['exerciseGroups'][0]['pointsPerHour']
+        exerciseIcon = exerciseIconSearch.get('image', 'exercise.png')
 
       points = (exerMins / 60) * pointsPerHour
 
       # NOW, if this is walking or step-counting, let's concatenate the values
-      if renamedEx == "walking":
+      if matchedExercise == "walking":
         # let's use 2 decimal places for now, and then shorten to 1 after concat
         points = round(points, 2)
         walking['points'] += points
         walking['minutes'] += exerMins
         walking['cals'] += exerCals
-      elif renamedEx == "steps":
+      elif matchedExercise == "steps":
         try:
           # let's use 2 decimal places for now, and then shorten to 1 after concat
           points = round(points, 2)
@@ -301,7 +290,7 @@ for date in arrow.Arrow.range(frame='day', start=startDate, end=endDate, tz='US/
           steps['cals'] += exerCals
           steps['minutes'] += exerMins
         except TypeError:
-          print(renamedEx + "could not be properly added")
+          print(matchedExercise + "could not be properly added")
       else:
         # Round to 1 decimal place
         points = round(points, 1)
@@ -309,13 +298,13 @@ for date in arrow.Arrow.range(frame='day', start=startDate, end=endDate, tz='US/
 
         # Leave out step-counting for now
         exercises.append(
-            {
-                'name': renamedEx,
-                'minutes': exerMins,
-                'cals': exerCals,
-                'points': points,
-                'icon': exerciseIcon
-            }
+          {
+            'name': matchedExercise,
+            'minutes': exerMins,
+            'cals': exerCals,
+            'points': points,
+            'icon': exerciseIcon
+          }
         )
 
   # Briefly, add the concatenated steps and walking to the exercise list if
@@ -350,16 +339,16 @@ for date in arrow.Arrow.range(frame='day', start=startDate, end=endDate, tz='US/
 
   # construct object for db insertion
   MFPdata = {
-      'date': date.datetime,
-      'totalCals': totalCals,
-      'goalCals': goalCals,
-      'netCals': netCals,
-      'exercise': exercises,
-      'isEmpty': isEmpty,
-      'complete': MFPcals.complete,
-      'points': totalDaysPoints,
-      'user': user,
-      'lastUpdated': now.datetime
+    'date': date.datetime,
+    'totalCals': totalCals,
+    'goalCals': goalCals,
+    'netCals': netCals,
+    'exercise': exercises,
+    'isEmpty': isEmpty,
+    'complete': MFPcals.complete,
+    'points': totalDaysPoints,
+    'user': user,
+    'lastUpdated': now.datetime
   }
 
   print('Writing data to MongoDB...')
@@ -373,10 +362,10 @@ for date in arrow.Arrow.range(frame='day', start=startDate, end=endDate, tz='US/
   if entries.find_one({'date': date.datetime, 'user': user}):
     print('Found existing data for date, overwriting...')
     entries.update_one(
-        {
-            'date': date.datetime,
-            'user': user
-        }, {'$set': MFPdata}, upsert=False
+      {
+        'date': date.datetime,
+        'user': user
+      }, {'$set': MFPdata}, upsert=False
     )
   else:
     print('No data found yet for this date, creating record...')

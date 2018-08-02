@@ -79,6 +79,8 @@ db.users.find(
 
 We may need to do some aggregate pipeline filtering to get the projection we want...
 
+[[ref](https://stackoverflow.com/questions/28982285/mongodb-projection-of-nested-arrays)]
+
 ```mongo
 db.users.aggregate([
   // Query the documents
@@ -115,10 +117,107 @@ db.users.aggregate([
     "$group": {
       "_id": "$_id.username",
       "exerciseGroup": {
-        "$push": {
-          // "exercises": "$exercises",
-          "exerciseGroup": "$exerciseGroup"
-        }
+        "$push": "$exerciseGroup"
+      }
+    }
+  },
+  { "$unwind": "$exerciseGroup" }
+])
+```
+
+Huzzah! The result:
+
+```mongo
+{ "_id" : "sam", "exerciseGroup" : { "group" : "cardio", "pointsPerHour" : 2, "exercises" : "jogging" } }
+```
+
+Man, I wish I could just code this up with dplyr. Definitely time to practice SQL.
+
+I am curious what happens if we query something that we expect to get multiple hits on. What happens if we search for "ing"?
+
+```mongo
+db.users.aggregate([
+  // Query the documents
+  {
+    "$match": {
+      "username": "sam",
+      "exerciseGroups.exercises": {
+        "$regex": /ing/
+      }
+    }
+  },
+  // De-normalize??
+  { "$unwind": "$exerciseGroups" },
+  { "$unwind": "$exerciseGroups.exercises" },
+  // Filter the actual array elements as desired
+  {
+    "$match": {
+      "exerciseGroups.exercises": {
+        "$regex": /ing/
+      }
+    }
+  },
+  // Group the intermediate result
+  {
+    "$group": {
+      "_id": { "username": "$username"},
+      "exerciseGroup": { "$push": "$exerciseGroups" }
+      // "exercises": { "$push": "$exerciseGroups.exercises" }
+    }
+  },
+  { "$unwind": "$exerciseGroup" },
+  // Group the final result
+  {
+    "$group": {
+      "_id": "$_id.username",
+      "exerciseGroup": {
+        "$push": "$exerciseGroup"
+      }
+    }
+  },
+  { "$unwind": "$exerciseGroup" }
+])
+```
+
+What if we search for multiple terms?
+
+```mongo
+db.users.aggregate([
+  // Query the documents
+  {
+    "$match": {
+      "username": "sam",
+      "exerciseGroups.exercises": {
+        "$regex": /^swimming$|^jogging$/
+      }
+    }
+  },
+  // De-normalize??
+  { "$unwind": "$exerciseGroups" },
+  { "$unwind": "$exerciseGroups.exercises" },
+  // Filter the actual array elements as desired
+  {
+    "$match": {
+      "exerciseGroups.exercises": {
+        "$regex": /^swimming$|^jogging$/
+      }
+    }
+  },
+  // Group the intermediate result
+  {
+    "$group": {
+      "_id": { "username": "$username"},
+      "exerciseGroup": { "$push": "$exerciseGroups" }
+      // "exercises": { "$push": "$exerciseGroups.exercises" }
+    }
+  },
+  { "$unwind": "$exerciseGroup" },
+  // Group the final result
+  {
+    "$group": {
+      "_id": "$_id.username",
+      "exerciseGroup": {
+        "$push": "$exerciseGroup"
       }
     }
   },
