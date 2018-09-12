@@ -128,7 +128,8 @@ module.exports = {
       jquery: 'jquery/src/jquery',
       // Don't use node-fetch!
       // https://github.com/kadirahq/lokka/issues/32
-      'node-fetch': 'whatwg-fetch'
+      'node-fetch': 'whatwg-fetch',
+      d3: 'd3/index'
     }
   },
   stats: {

@@ -8,7 +8,8 @@ import { nest } from 'd3-collection';
 // import { min, max, extent } from 'd3-array';
 import { extent, mean } from 'd3-array';
 import { timeFormat } from 'd3-time-format'; // timeFormatLocale, parseDate
-import { select } from 'd3-selection';
+import { select, event } from 'd3-selection';
+import { transition } from 'd3-transition'; // eslint-disable-line no-unused-vars
 import { line } from 'd3-shape';
 // import { map, nest } from 'd3-collection';
 
@@ -124,7 +125,7 @@ $.getJSON('/api/user_weight/', json => {
     .append('svg')
     // responsive SVG needs these 2 attributes and no width and height attr
     .attr('preserveAspectRatio', 'xMinYMin meet')
-    // Viewbox is [min-x, min-y, width, height]
+    // viewBox is [min-x, min-y, width, height]
     .attr(
       'viewBox',
       `0 0 ${width + margin.left + margin.right} ${height + margin.top + margin.bottom}`
@@ -138,10 +139,6 @@ $.getJSON('/api/user_weight/', json => {
     .attr('transform', `translate(${margin.left},${margin.top})`);
 
   function drawMainGraph() {
-    const chartLine = line()
-      .x(d => x(d.date))
-      .y(d => y(d.weight));
-
     if (dateRange) {
       // Date Range
       x.domain(dateRange).clamp(true);
@@ -212,16 +209,75 @@ $.getJSON('/api/user_weight/', json => {
     //   .selectAll('.tick line')
     //   .attr('stroke-width', 1);
 
+    // Add a div to show on mouseover
+    // This can't be within the SVG since it's a div
+    // But perhaps we could change this to a rect + text element
+    const tooltip = select('body')
+      .append('div')
+      .attr('class', 'tooltip')
+      .style('position', 'absolute')
+      .style('font-size', '0.9rem')
+      .style('background-color', 'steelblue')
+      .style('color', '#f0f0f0')
+      .style('padding', '0 0.3rem 0 0.3rem')
+      .style('border-radius', '3px')
+      .style('opacity', 0);
+
+    // Chart's line
+    const chartLine = line()
+      .x(d => x(d.date))
+      .y(d => y(d.weight));
+
     // Draw the actual data!
     svg
       .append('path')
       .datum(nestedData)
+      .attr('d', chartLine)
+      .attr('id', 'weight-line');
+
+    // Make points to overlay on line
+    const points = svg.append('g').selectAll('circle');
+
+    // Attach data to points
+    points
+      .data(nestedData)
+      .enter()
+      .append('circle')
+      // .attr('r', 2)
+      // .attr('fill', 'steelblue')
+      .attr('cx', d => x(d.date))
+      .attr('cy', d => y(d.weight))
+      .on('mouseover', d => {
+        tooltip
+          .transition()
+          .duration(200)
+          .style('opacity', 1);
+        tooltip
+          .html(d.weight)
+          .style('left', `${event.pageX}px`)
+          .style('top', `${event.pageY - 28}px`);
+      })
+      .on('mouseout', () => {
+        tooltip
+          .transition()
+          .delay(500)
+          .duration(500)
+          .style('opacity', 0);
+      });
+
+    // add constant params (not dependent on data)
+    svg
+      .selectAll('circle')
+      .attr('r', 3)
+      .attr('fill', 'steelblue');
+
+    svg
+      .select('#weight-line')
       .attr('fill', 'none')
       .attr('stroke', 'steelblue')
       .attr('stroke-linejoin', 'round')
       .attr('stroke-linecap', 'round')
-      .attr('stroke-width', 1.5)
-      .attr('d', chartLine);
+      .attr('stroke-width', 1.5);
   }
 
   // Chart Title
