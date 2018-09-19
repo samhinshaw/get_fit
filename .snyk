@@ -6,9 +6,6 @@ ignore:
     - connect-mongo > mongodb > mongodb-core > bson:
         reason: no fix
         expires: '2018-03-30T19:29:59.167Z'
-      email-verification > mongoose > mongodb > bson:
-        reason: None given
-        expires: '2018-06-30T20:09:17.936Z'
     - mongoose > bson:
         reason: no fix
         expires: '2018-03-30T19:29:59.168Z'
@@ -36,6 +33,9 @@ ignore:
     - email-verification > mongoose > mongodb > bson:
         reason: None given
         expires: '2018-06-30T18:37:02.725Z'
+    - email-verification > mongoose > mongodb > bson:
+        reason: None given
+        expires: '2018-06-30T20:09:17.936Z'
   'npm:concat-stream:20160901':
     - google-spreadsheet > google-auth-library > jws > base64url > concat-stream:
         reason: no fix
@@ -116,9 +116,6 @@ ignore:
     - google-spreadsheet > request > stringstream:
         reason: None given
         expires: '2018-06-15T22:21:14.106Z'
-      node-pre-gyp > request > stringstream:
-        reason: None given
-        expires: '2018-06-30T20:09:17.937Z'
     - google-spreadsheet > google-auth-library > request > stringstream:
         reason: None given
         expires: '2018-06-15T22:21:14.106Z'
@@ -134,6 +131,9 @@ ignore:
     - node-pre-gyp > request > stringstream:
         reason: None given
         expires: '2018-06-30T18:37:02.725Z'
+    - node-pre-gyp > request > stringstream:
+        reason: None given
+        expires: '2018-06-30T20:09:17.937Z'
 # patches apply the minimum changes required to fix a vulnerability
 patch:
   'npm:debug:20170905':
@@ -145,3 +145,23 @@ patch:
   'npm:ms:20151024':
     - email-verification > mongoose > ms:
         patched: '2018-05-31T20:08:40.231Z'
+  'npm:hoek:20180212':
+    - node-pre-gyp > hawk > boom > hoek:
+        patched: '2018-09-19T16:14:20.034Z'
+    - node-pre-gyp > hawk > sntp > hoek:
+        patched: '2018-09-19T16:14:20.034Z'
+    - node-pre-gyp > request > hawk > hoek:
+        patched: '2018-09-19T16:14:20.034Z'
+    - node-pre-gyp > hawk > cryptiles > boom > hoek:
+        patched: '2018-09-19T16:14:20.034Z'
+    - node-pre-gyp > request > hawk > boom > hoek:
+        patched: '2018-09-19T16:14:20.034Z'
+    - node-pre-gyp > request > hawk > sntp > hoek:
+        patched: '2018-09-19T16:14:20.034Z'
+    - node-pre-gyp > request > hawk > cryptiles > boom > hoek:
+        patched: '2018-09-19T16:14:20.034Z'
+    - node-pre-gyp > hawk > hoek:
+        patched: '2018-09-19T16:14:20.034Z'
+  'npm:stringstream:20180511':
+    - node-pre-gyp > request > stringstream:
+        patched: '2018-09-19T16:14:20.034Z'

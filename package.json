@@ -65,7 +65,6 @@
     "express-sanitizer": "^1.0.2",
     "express-session": "^1.15.6",
     "express-validator": "5.0.0",
-    "google-spreadsheet": "2.0.4",
     "helmet": "^3.9.0",
     "jquery": "^3.3.1",
     "jquery-ui": "^1.12.1",
@@ -82,10 +81,8 @@
     "pug": "2.0.3",
     "python-shell": "^0.4.0",
     "range-inclusive": "^1.0.2",
-    "request": "2.83.0",
     "snyk": "1.69.11",
     "tippy.js": "^2.3.0",
-    "winston": "^3.0.0-rc3",
     "winston-daily-rotate-file": "^3.0.0"
   },
   "devDependencies": {
