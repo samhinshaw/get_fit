@@ -84,6 +84,7 @@
     "range-inclusive": "^1.0.2",
     "request": "^2.88.0",
     "snyk": "1.69.11",
+    "svgo": "^1.1.1",
     "tippy.js": "^2.3.0",
     "winston": "^3.1.0",
     "winston-daily-rotate-file": "^3.0.0"
