@@ -82,6 +82,7 @@
     "pug": "2.0.3",
     "python-shell": "^0.4.0",
     "range-inclusive": "^1.0.2",
+    "request": "^2.88.0",
     "snyk": "1.69.11",
     "tippy.js": "^2.3.0",
     "winston": "^3.1.0",
