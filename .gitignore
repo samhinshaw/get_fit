@@ -16,3 +16,4 @@ yarn-error.log*
 logs/*.log
 data/__pycache__
 .env
+mongo/init.js
