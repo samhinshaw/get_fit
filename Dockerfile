@@ -25,6 +25,10 @@ COPY ./yarn.lock /app
 # Install dependecies
 RUN yarn install
 
+# Install nodemon
+# For some reason it needs to be install globally
+RUN yarn global add nodemon
+
 #################
 ##     COPY    ##
 #################
