@@ -18,16 +18,16 @@ RUN mkdir -p /app
 # Change directory so that our commands run inside this new directory
 WORKDIR /app
 
+# Install nodemon
+# For some reason it needs to be install globally
+RUN yarn global add nodemon
+
 # Copy dependency definitions
 COPY ./package.json /app
 COPY ./yarn.lock /app
 
 # Install dependecies
 RUN yarn install
-
-# Install nodemon
-# For some reason it needs to be install globally
-RUN yarn global add nodemon
 
 #################
 ##     COPY    ##
