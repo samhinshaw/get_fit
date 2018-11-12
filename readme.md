@@ -19,3 +19,23 @@ By yourself:
 
 - Go see a movie
 - Try a new craft beer
+
+## Development
+
+### Run
+
+```sh
+docker-compose up
+```
+
+### Troubleshooting
+
+Containers not rebuilding properly? Remove stopped containers and rebuild!
+
+```
+docker-compose rm -fv <container_name>
+```
+
+```sh
+docker-compose build
+```
