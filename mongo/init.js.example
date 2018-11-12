@@ -1,0 +1,29 @@
+// As far as I know there is currently no way to use environment variables
+// within a mongo init.js script. I could switch to an init.sh script, but that
+// would be terribly annoying... Therefore, just keep this file ignored, and put
+// secrets in here for now. In the future, we'll find a way to inject secrets
+// directly into this file.
+
+// Make user for python script
+/* eslint-disable-next-line no-undef */
+db.createUser({
+  user: '$MONGO_GETFIT_PYTHON_USER',
+  pwd: '$MONGO_GETFIT_PYTHON_PASS',
+  roles: [{ role: 'readWrite', db: 'get_fit' }]
+});
+
+// Make user for node connection
+/* eslint-disable-next-line no-undef */
+db.createUser({
+  user: '$MONGO_GETFIT_NODE_USER',
+  pwd: '$MONGO_GETFIT_NODE_PASS',
+  roles: [{ role: 'readWrite', db: 'get_fit' }]
+});
+
+// Insert a dummy user
+/* eslint-disable-next-line no-undef */
+db.users.insert({
+  username: 'jon',
+  password: '$2y$10$WJf9in/vfPMJjX3djGfxqOlf1F3XNbKeRXfFMymYnKzoUA6PMof.y',
+  company: 'Jones'
+});
