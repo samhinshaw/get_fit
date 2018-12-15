@@ -5,7 +5,7 @@
 # the default node 8 image, which inherits from debian:jessie-slim, the same as
 # the mongo images. Relevant issue in node docker repo:
 # https://github.com/nodejs/docker-node/issues/618
-FROM node:8
+FROM node:8.14-jessie
 
 #################
 ##   BACKEND   ##
@@ -41,4 +41,4 @@ COPY ./ /app
 #################
 
 # Default command is to spin up server in production mode
-CMD ["yarn", "dev"]
+CMD ["yarn", "prod"]
