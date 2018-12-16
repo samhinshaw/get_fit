@@ -15,14 +15,34 @@ services:
     env_file:
       - .env
   # Start backend Express.js server
-  app:
+  node:
     build: .
-    # Set the NODE_ENV to the internal-dev environment
-    # environment:
-    #   - NODE_ENV=dev
-    command: ['yarn', 'dev']
+    # Set the NODE_ENV to the dev environment
+    environment:
+      - NODE_ENV=development
+    command: ['yarn', 'dev:server']
     ports:
       - '8005:8005'
+    # Mount the codebase to the container for live-reloading
+    volumes:
+      - ./:/app/
+      # Mount nothing to the node_modules folder so that it can be overwritten
+      # within the container. (Trailing slash important.)
+      # This SO post contains a few different techniques for tackling this problem, as well
+      # as the solution I've used here.
+      # https://stackoverflow.com/questions/29181032/add-a-volume-to-docker-but-exclude-a-sub-folder
+      - /app/node_modules/
+  # Start Webpack. This just operates on the `public/src` to generate
+  # `public/dist`, which is served by the backend, so no port exposure is
+  # necessary. We're running webpack in watch mode, not the webpack dev server.
+  # Since we've bind mounted our codebase into both containers, the changes will
+  # be reflected live for our backend container.
+  ui:
+    build: .
+    # Set the NODE_ENV to the dev environment
+    environment:
+      - NODE_ENV=development
+    command: ['yarn', 'dev:ui']
     # Mount the codebase to the container for live-reloading
     volumes:
       - ./:/app/
