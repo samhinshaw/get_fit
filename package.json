@@ -28,7 +28,8 @@
   "resolutions": {
     "base64url": "3.0.0",
     "lodash": "4.17.4",
-    "deep-extend": "0.6.0"
+    "deep-extend": "0.6.0",
+    "**/event-stream": "^4.0.1"
   },
   "homepage": "https://getse.xyz",
   "dependencies": {
