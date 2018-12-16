@@ -4,9 +4,9 @@
   "description": "Fitness Tracker for MyFitnessPal",
   "main": "app.js",
   "scripts": {
-    "dev:server": "NODE_ENV=development nodemon src/app.js --exec babel-node",
-    "dev:ui": "NODE_ENV=development webpack -d -w",
-    "dev": "concurrently 'yarn dev:server' 'yarn dev:ui'",
+    "dev": "docker-compose -f docker-compose.dev.yml up",
+    "dev:server": "nodemon src/app.js --exec babel-node",
+    "dev:ui": "webpack -d -w",
     "webpack": "NODE_ENV=production webpack -p",
     "clean": "rm -rf ./dist",
     "build": "NODE_ENV=production babel ./src -d ./dist && webpack -p",
