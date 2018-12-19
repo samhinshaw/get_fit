@@ -10,7 +10,7 @@ import os
 # import pandas as pd
 # import csv
 import arrow  # datetime handling
-from dateutil.tz import tzutc  # timezone functions
+from dateutil.tz import tzutc  # timezone functions # pip install python-dateutil
 # import pymongo
 # from datetime import datetime
 from pymongo import MongoClient  # mongodb operations
