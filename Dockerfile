@@ -18,9 +18,9 @@ RUN mkdir -p /app
 # Change directory so that our commands run inside this new directory
 WORKDIR /app
 
-# Install nodemon
-# For some reason it needs to be install globally
+# For some reason nodemon & snyk need to be install globally
 RUN yarn global add nodemon
+# RUN yarn global add snyk
 
 # Copy dependency definitions
 COPY ./package.json /app
@@ -35,6 +35,16 @@ RUN yarn install
 
 # Get all the backend code needed to run the app
 COPY ./ /app
+
+#################
+##    BUILD    ##
+#################
+
+# package front-end code
+RUN yarn build:ui
+
+# transpile back-end code
+RUN yarn build:server
 
 #################
 ##    START    ##
