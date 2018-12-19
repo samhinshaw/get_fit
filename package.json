@@ -4,16 +4,16 @@
   "description": "Fitness Tracker for MyFitnessPal",
   "main": "app.js",
   "scripts": {
-    "dev": "docker-compose -f docker-compose.dev.yml up",
+    "d:up": "docker-compose -f docker-compose.dev.yml up",
+    "d:build": "docker-compose -f docker-compose.dev.yml build",
+    "d:down": "docker-compose -f docker-compose.dev.yml down",
     "dev:server": "nodemon src/app.js --exec babel-node",
     "dev:ui": "webpack -d -w",
-    "webpack": "NODE_ENV=production webpack -p",
     "clean": "rm -rf ./dist",
-    "build": "NODE_ENV=production babel ./src -d ./dist && webpack -p",
-    "format": "prettier --write --single-quote --print-width=100 'src/**/*.js' 'public/src/js/**/*.js'",
-    "lint": "eslint **/*.js",
+    "build:ui": "webpack -p",
+    "build:server": "babel ./src -d ./dist && webpack -p",
+    "run:prod": "node dist/app.js",
     "deploy": "pm2 deploy getfit.config.js production",
-    "prod": "NODE_ENV=production node dist/app.js",
     "rollbar": "curl https://api.rollbar.com/api/1/deploy/ -F access_token=607807c2e15542d3bf8d2111b4fe5282 -F environment=production -F revision=`git log -n 1 --pretty=format:'%H'` -F local_username=`whoami`"
   },
   "repository": {
@@ -27,8 +27,6 @@
   },
   "resolutions": {
     "base64url": "3.0.0",
-    "lodash": "4.17.4",
-    "deep-extend": "0.6.0",
     "**/event-stream": "^4.0.1"
   },
   "homepage": "https://getse.xyz",
@@ -65,7 +63,7 @@
     "express-sanitizer": "^1.0.2",
     "express-session": "^1.15.6",
     "express-validator": "5.0.0",
-    "google-spreadsheet": "^2.0.5",
+    "google-spreadsheet": "^2.0.6",
     "helmet": "^3.9.0",
     "jquery": "^3.3.1",
     "jquery-ui": "^1.12.1",
@@ -75,7 +73,7 @@
     "moment": "^2.20.1",
     "moment-range": "^3.1.1",
     "moment-timezone": "0.5.14",
-    "mongoose": "4.12.3",
+    "mongoose": "^5.4.0",
     "node-emoji": "^1.8.1",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
@@ -83,7 +81,7 @@
     "python-shell": "^0.4.0",
     "range-inclusive": "^1.0.2",
     "request": "^2.88.0",
-    "snyk": "1.69.11",
+    "snyk": "^1.117.1",
     "svgo": "^1.1.1",
     "tippy.js": "^2.3.0",
     "winston": "^3.1.0",
@@ -117,5 +115,6 @@
     "style-loader": "^0.19.1",
     "webpack": "^3.10.0",
     "webpack-dev-server": "^2.11.1"
-  }
+  },
+  "snyk": true
 }
