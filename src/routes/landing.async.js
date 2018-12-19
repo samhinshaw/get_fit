@@ -236,7 +236,7 @@ router.get('/privacy', (req, res) => {
   });
 });
 
-router.post('/login/resend', bruteforce.prevent, (req, res, next) => {
+router.post('/login/resend', (req, res, next) => {
   const email = req.sanitize('email').trim();
   req.checkBody('email', 'Email is required').notEmpty();
   req
@@ -278,7 +278,6 @@ router.post('/login/resend', bruteforce.prevent, (req, res, next) => {
 // Handle Registration POSTS
 router.post(
   '/register',
-  bruteforce.prevent,
   asyncMiddleware(async (req, res, next) => {
     // express-validator sanitizes in-place (mutable), and works by
     const firstname = req.sanitize('firstname').trim();

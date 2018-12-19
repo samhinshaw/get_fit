@@ -7,9 +7,9 @@ import passport from 'passport';
 import mongoose from 'mongoose';
 import Promise from 'bluebird';
 // Setup brute force prevention
-import ExpressBrute from 'express-brute';
-import MongooseStore from 'express-brute-mongoose';
-import bruteForceSchema from 'express-brute-mongoose/dist/schema';
+// import ExpressBrute from 'express-brute';
+// import MongooseStore from 'express-brute-mongoose';
+// import bruteForceSchema from 'express-brute-mongoose/dist/schema';
 import nodeEmailVer from 'email-verification';
 import emoji from 'node-emoji';
 
@@ -17,7 +17,7 @@ import logger from '../methods/logger';
 import ensureAuthenticated from '../methods/auth';
 import User from '../models/user';
 
-const moment = extendMoment(Moment);
+// const moment = extendMoment(Moment);
 
 // Define Async middleware wrapper to avoid try-catch
 const asyncMiddleware = fn => (req, res, next) => {
@@ -25,23 +25,23 @@ const asyncMiddleware = fn => (req, res, next) => {
 };
 
 // authentication assurance
-const model = mongoose.model('bruteforce', bruteForceSchema);
-const store = new MongooseStore(model);
+// const model = mongoose.model('bruteforce', bruteForceSchema);
+// const store = new MongooseStore(model);
 const secretConfig = require('../../config/secret/secret_config.json');
 
-const failCallback = (req, res, next, nextValidRequestDate) => {
-  req.flash(
-    'danger',
-    `You've made too many failed attempts in a short period of time, please try again ${moment(
-      nextValidRequestDate
-    ).fromNow()}`
-  );
-  res.redirect('/'); // brute force protection triggered, send them back to the main page
-};
+// const failCallback = (req, res, next, nextValidRequestDate) => {
+//   req.flash(
+//     'danger',
+//     `You've made too many failed attempts in a short period of time, please try again ${moment(
+//       nextValidRequestDate
+//     ).fromNow()}`
+//   );
+//   res.redirect('/'); // brute force protection triggered, send them back to the main page
+// };
 
-const bruteforce = new ExpressBrute(store, {
-  failCallback
-});
+// const bruteforce = new ExpressBrute(store, {
+//   failCallback
+// });
 
 /*= ============================================
 =          Email Verification Setup          =
@@ -233,7 +233,7 @@ router.get('/privacy', (req, res) => {
   });
 });
 
-router.post('/login/resend', bruteforce.prevent, (req, res, next) => {
+router.post('/login/resend', (req, res, next) => {
   const email = req.sanitize('email').trim();
   req.checkBody('email', 'Email is required').notEmpty();
   req
@@ -279,7 +279,6 @@ router.post('/login/resend', bruteforce.prevent, (req, res, next) => {
 // Handle Registration POSTS
 router.post(
   '/register',
-  bruteforce.prevent,
   asyncMiddleware(async (req, res, next) => {
     // express-validator sanitizes in-place (mutable), and works by
     const firstname = req.sanitize('firstname').trim();
