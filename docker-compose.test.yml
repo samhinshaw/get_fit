@@ -1,0 +1,25 @@
+version: '3' # this specifies the docker-compose version
+
+services:
+  mongo:
+    # Build the Dockerfile in the root of the mongo/ folder
+    build: mongo
+    # Expose the default mongoDB port. In contrast to the
+    # docker-compose.test.yml, here we use the more traditional "ports"
+    # configuration. This means that this port is exposed to our local machine,
+    # not just the other docker-compose services. This SO post explains it well:
+    # https://stackoverflow.com/questions/40801772/what-is-the-difference-between-docker-compose-ports-vs-expose
+    ports:
+      - '27017:27017'
+    # And add the environment variables within our secret .env file
+    env_file:
+      - .env
+  # Start backend Express.js server
+  node:
+    build: .
+    # Set the NODE_ENV to the dev environment
+    environment:
+      - NODE_ENV=production
+    command: ['yarn', 'run:prod']
+    ports:
+      - '8005:8005'
