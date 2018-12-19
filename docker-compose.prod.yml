@@ -1,0 +1,12 @@
+version: '3' # this specifies the docker-compose version
+
+services:
+  # Start backend Express.js server
+  node:
+    build: .
+    # Set the NODE_ENV to the dev environment
+    environment:
+      - NODE_ENV=production
+    command: ['yarn', 'test']
+    ports:
+      - '8005:8005'
