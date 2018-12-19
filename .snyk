@@ -1,5 +1,5 @@
 # Snyk (https://snyk.io) policy file, patches or ignores known vulnerabilities.
-version: v1.12.0
+version: v1.13.1
 # ignores vulnerabilities until expiry date; change duration by modifying expiry date
 ignore:
   'npm:bson:20180225':
@@ -36,6 +36,9 @@ ignore:
     - email-verification > mongoose > mongodb > bson:
         reason: None given
         expires: '2018-06-30T20:09:17.936Z'
+    - email-verification > mongoose > mongodb > bson:
+        reason: None given
+        expires: '2019-01-15T22:45:39.877Z'
   'npm:concat-stream:20160901':
     - google-spreadsheet > google-auth-library > jws > base64url > concat-stream:
         reason: no fix
@@ -96,7 +99,7 @@ ignore:
   'npm:ms:20170412':
     - email-verification > mongoose > ms:
         reason: None given
-        expires: '2018-06-30T20:09:17.937Z'
+        expires: '2019-01-15T22:45:39.877Z'
   'npm:deep-extend:20180409':
     - node-pre-gyp > rc > deep-extend:
         reason: None given
@@ -111,7 +114,7 @@ ignore:
   'npm:open:20180512':
     - snyk > open:
         reason: None given
-        expires: '2018-06-30T20:09:17.937Z'
+        expires: '2019-01-15T22:45:39.877Z'
   'npm:stringstream:20180511':
     - google-spreadsheet > request > stringstream:
         reason: None given
@@ -134,17 +137,21 @@ ignore:
     - node-pre-gyp > request > stringstream:
         reason: None given
         expires: '2018-06-30T20:09:17.937Z'
+  SNYK-JS-MPATH-72672:
+    - email-verification > mongoose > mpath:
+        reason: None given
+        expires: '2019-01-15T22:45:39.876Z'
 # patches apply the minimum changes required to fix a vulnerability
 patch:
   'npm:debug:20170905':
     - email-verification > mongoose > mquery > debug:
-        patched: '2018-05-31T20:08:40.231Z'
+        patched: '2018-12-16T22:44:00.218Z'
   'npm:ms:20170412':
     - email-verification > mongoose > mquery > debug > ms:
-        patched: '2018-05-31T20:08:40.231Z'
+        patched: '2018-12-16T22:44:00.218Z'
   'npm:ms:20151024':
     - email-verification > mongoose > ms:
-        patched: '2018-05-31T20:08:40.231Z'
+        patched: '2018-12-16T22:55:29.580Z'
   'npm:hoek:20180212':
     - node-pre-gyp > hawk > boom > hoek:
         patched: '2018-09-19T16:14:20.034Z'
