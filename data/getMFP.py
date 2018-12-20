@@ -64,9 +64,19 @@ secretPyConfig = secretConfig['python']
 # )
 
 # Previous version for connecting.
-mongoURI = "mongodb://" + secretPyConfig['user'] + ":" + secretPyConfig['password'] + "@" + secretPyConfig['host'] + \
-    ":" + str(secretPyConfig['port']) + "/" + secretPyConfig['authSource'] + \
-    "?authMechanism=" + secretPyConfig['authMechanism']
+mongoURI = \
+  "mongodb://" + \
+  secretPyConfig['user'] + \
+  ":" + \
+  secretPyConfig['password'] + \
+  "@" + \
+  secretPyConfig['host'] + \
+  ":" + \
+  str(secretPyConfig['port']) + \
+  "/" + \
+  secretPyConfig['authSource'] + \
+  "?authMechanism=" + \
+  secretPyConfig['authMechanism']
 
 client = MongoClient(mongoURI)
 
