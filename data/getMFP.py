@@ -119,8 +119,6 @@ possibleExercises = db.exercises
 # Pull in the user's exercise groups
 exerciseGroups = db.users.find_one({'username': user}, {'exerciseGroups': 1})
 
-# Bring in authorized users to check whether we should validate login with stored password
-authorizedUsers = json.loads(open(os.path.join('config', 'authorized-users.json')).read())
 
 print('Pulling in MyFitnessPal information for ' + user.capitalize() + '...')
 
@@ -142,6 +140,12 @@ else:
 #   - flex       = 1pt/60min  (  1pt/hr)
 #   - cardio     = 1pt/30min  (  2pt/hr)
 #   - XT         = 1pt/15min  (  4pt/hr)
+# Attempt to get password (yipes!) from environment
+auth = os.environ.get('MFP_PASS_' + mfp.upper())
+# If present, auth should be possible
+authPossible = not not auth
+# If we got it, our user should be able to log in, so we can enable login
+MFPclient = myfitnesspal.Client(mfp, password=auth, login=authPossible)
 
 for date in arrow.Arrow.range(frame='day', start=startDate, end=endDate, tz='US/Pacific'):
   print('Loading data from ' + date.format('MMMM DD, YYYY'))

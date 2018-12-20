@@ -23,6 +23,9 @@ services:
     command: ['yarn', 'dev:server']
     ports:
       - '8005:8005'
+    # And add the environment variables within our secret .env file
+    env_file:
+      - .env
     # Mount the codebase to the container for live-reloading
     volumes:
       - ./:/app/
