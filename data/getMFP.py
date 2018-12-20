@@ -4,20 +4,12 @@ Pull user's data from MyFitnessPal
 import sys  # for system operations such as exit status codes
 import re  # regex library
 import json  # for parsing json
-# import pickle  # for saving
 import os
-# import feather
-# import pandas as pd
-# import csv
 import arrow  # datetime handling
 from dateutil.tz import tzutc  # timezone functions # pip install python-dateutil
-# import pymongo
-# from datetime import datetime
 from pymongo import MongoClient  # mongodb operations
 import bson
 import myfitnesspal  # myfitnesspal API!
-
-# from .utils import query_exercise_group
 import utils
 
 # NOTES
@@ -53,40 +45,6 @@ elif len(sys.argv) == 5:
 else:
   sys.exit('You must provide a date and a user or a start date, end date, and user.')
 
-############
-# receive new date-string
-
-# date = arrow.get(inputDate, 'YYYY-MM-DD', tzinfo=tzutc())
-# now = arrow.utcnow()
-# date = arrow.get(inputDate, 'YYYY-MM-DD', tzinfo='US/Pacific')
-# dateObj = {'year': date.year, 'month': date.month, 'day': date.day}
-
-############
-
-# receive arguments
-# sys.argv[0] name of the script
-# year = sys.argv[1]  # first arg, year
-# month = sys.argv[2]  # second arg, month
-# day = sys.argv[3]  # third arg, day
-# user = sys.argv[4]
-
-# construct date object from passed date arguments
-# IMPORTANT!!!!!
-# Make sure these are treated as numeric values, not strings!!!
-# date = {'year': int(year), 'month': int(month), 'day': int(day)}
-
-# if we want to insert fake date
-# date = datetime(2017, 9, 15)
-
-### Import JSON Dictionaries ###
-# This will potentially be replaced by mongoDB entries down the line
-
-# dictFile = open(os.path.join('data', 'exerciseIconDictionary.json'))
-# parsedDict = dictFile.read()
-# exerciseDict = json.loads(parsedDict)['exercises']
-# iconDict = json.loads(parsedDict)['icons']
-# exerTypeDict = json.loads(parsedDict)['exerciseTypes']
-
 print('Connecting to MongoDB database...')
 secretJSON = open(os.path.join('config', 'secret', 'secret_config.json')).read()
 secretConfig = json.loads(secretJSON)
@@ -119,27 +77,8 @@ possibleExercises = db.exercises
 # Pull in the user's exercise groups
 exerciseGroups = db.users.find_one({'username': user}, {'exerciseGroups': 1})
 
-
 print('Pulling in MyFitnessPal information for ' + user.capitalize() + '...')
 
-# Make sure user is authorized, otherwise just pull in public data!
-if (user in authorizedUsers):
-  if (authorizedUsers[user] == mfp):
-    MFPclient = myfitnesspal.Client(mfp)
-  else:
-    MFPclient = myfitnesspal.Client(mfp, password='', login=False)
-else:
-  MFPclient = myfitnesspal.Client(mfp, password='', login=False)
-
-# Calculate points based on that day's statistics!
-# Current values are: net cals / 100 = points.
-# So if you had 300cals left that day, it'd be +3pts
-# If you overate by 500cals, it'd be -5pts
-# Exercise!
-#   - low impact = 1pt/120min (0.5pt/hr)
-#   - flex       = 1pt/60min  (  1pt/hr)
-#   - cardio     = 1pt/30min  (  2pt/hr)
-#   - XT         = 1pt/15min  (  4pt/hr)
 # Attempt to get password (yipes!) from environment
 auth = os.environ.get('MFP_PASS_' + mfp.upper())
 # If present, auth should be possible
@@ -167,14 +106,6 @@ for date in arrow.Arrow.range(frame='day', start=startDate, end=endDate, tz='US/
       netCals = 0
       isEmpty = True
       calPoints = 0
-
-    # Check to see if the entry was completed
-    # if MFPcals.complete:
-    #   complete = True
-    # # If incomplete, force calorie points to -3
-    # else:
-    #   complete = False
-    #   calPoints = -3
 
   except:
     sys.exit('There was an error retrieving your data from MyFitnessPal.')
