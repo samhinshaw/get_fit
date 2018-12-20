@@ -44,52 +44,6 @@ import logger from './methods/logger';
 // Passport Config Middleware
 import authMiddleware from './methods/passport';
 
-// Set NODE_ENV if undefined
-// const env = process.env.NODE_ENV || 'development';
-
-// function convertDateToUTC(date) {
-//   return new Date(
-//     date.getUTCFullYear(),
-//     date.getUTCMonth(),
-//     date.getUTCDate(),
-//     date.getUTCHours(),
-//     date.getUTCMinutes(),
-//     date.getUTCSeconds()
-//   );
-// }
-
-// function convertToUTC(datetime) {
-//   const parsed = parse(datetime);
-
-//   if (!isValid(parsed)) {
-//     // return empty & log error for invalid dates
-//     console.error('invalid date:', datetime);
-//     return '';
-//   }
-
-//   const utcOffset = parsed.getTimezoneOffset();
-//   const isDST = utcOffset < new Date(2016, 1, 1).getTimezoneOffset();
-//   const edtOffset = isDST ? 240 : 300; // 300mins or 240mins during Daylight savings
-//   const offsetDiff = utcOffset - edtOffset;
-//   let adjustedTime = parsed;
-//   if (offsetDiff) {
-//     adjustedTime = addMinutes(parsed, offsetDiff);
-//   }
-
-//   return adjustedTime;
-// }
-
-// const unchangedDate = new Date();
-// console.log('untouched date: ', format(parse(unchangedDate), 'MMM Do, hh:mma'));
-// console.log('timezoneOffset: ', unchangedDate.getTimezoneOffset());
-
-// const timeShifted = new Date().toLocaleString('en-US', { timeZone: 'America/Vancouver' });
-// const parseDate = parse(timeShifted);
-
-// console.log('timeShifted: ', format(timeShifted, 'MMM Do, hh:mma'));
-// console.log('parsed: ', format(parseDate, 'MMM Do, hh:mma'));
-// console.log('parsed timezone offset: ', parseDate.getTimezoneOffset());
-
 const dbConfig = require('../config/database.json');
 const googleCreds = require('../config/secret/client_secret.json');
 const secretConfig = require('../config/secret/secret_config.json');
@@ -102,36 +56,22 @@ mongoose.Promise = Promise;
 const MongoStore = require('connect-mongo')(session);
 
 const moment = extendMoment(Moment);
-// moment().format(); // required by package entirely
 
 // Define Async middleware wrapper to avoid try-catch
 const asyncMiddleware = fn => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch(next);
 };
 
-// Connect to MongoDB
-// NOTE, this syntax is deprecated
-// http://mongoosejs.com/docs/connections.html#use-mongo-client
-// http://mongoosejs.com/docs/promises.html
-// THIS IS THE NEW SYNTAX
-// promise.then((db) => {});
-// const promise = mongoose.connect('mongodb://localhost/myapp', {
-//   useMongoClient: true,
-// });
-
 const mongoURI = `mongodb://${nodeConfig.user}:${nodeConfig.password}@${nodeConfig.host}:${
   nodeConfig.port
 }/${nodeConfig.authSource}?authMechanism=${nodeConfig.authMechanism}`;
 
-// mongoose.connect(dbConfig.database);
 mongoose.connect(
   mongoURI,
   { useMongoClient: true }
 );
-// const connection = mongoose.createConnection(mongoURI);
 
 const db = mongoose.connection;
-// const db = connection;
 
 // Check connection
 db.once('open', () => {
@@ -300,39 +240,23 @@ app.use((req, res, next) => {
     const twoWeeksAgo = today.clone().subtract(14, 'days');
     res.locals.twoWeeksAgo = twoWeeksAgo;
 
-    // .startOf('week')    = Sunday
-
     const startOfTracking = moment
       .tz(dbConfig.startDate, 'MM-DD-YYYY', 'US/Pacific')
       .startOf('day');
-    // res.locals.startOfTracking = startOfTracking;
     const customRange = {
       // We started Monday, Sept 18th
       key: 'sinceStart',
       startDate: startOfTracking,
       endDate: today.clone().endOf('day')
     };
-    // const customRanges = [
-    //   {
-    //     // We started Monday, Sept 18th
-    //     key: 'sinceStart',
-    //     startDate: startOfTracking,
-    //     endDate: today
-    //   },
-    //   {
-    //     key: 'pastTwoWeeks',
-    //     startDate: twoWeeksAgo,
-    //     endDate: today
-    //   }
-    // ];
     res.locals.customRange = customRange; // do we want to pass an object instead?
   }
   next();
 });
 
-// /////////////////////////////////////////////////////////////////////////////
-// /////////////// MIDDLEWARE TO CALCULATE POINTS & PURCHASES /////////////////
-// /////////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------------//
+//--------------- MIDDLEWARE TO CALCULATE POINTS & PURCHASES -------------------//
+//------------------------------------------------------------------------------//
 app.use(
   asyncMiddleware(async (req, res, next) => {
     // Workaround for now will simply not run this middleware if not logged in
@@ -360,25 +284,6 @@ app.use(
 
       // make the point tallies array available to the view engine
       res.locals.pointTally = pointTally;
-
-      // pointTallies.forEach(period => {
-      //   User.update(
-      //     {
-      //       username: period.user
-      //     },
-      //     {
-      //       $set: {
-      //         currentPoints: period.points
-      //       }
-      //     },
-      //     { upsert: true },
-      //     saveErr => {
-      //       if (saveErr) {
-      //         console.log(saveErr);
-      //       }
-      //     }
-      //   );
-      // });
     }
     next();
   })
@@ -401,9 +306,7 @@ app.use(
   })
 );
 
-// /////////////////////////////////////////////////////////////////////////////
-// /////////////// END MIDDLEWARE TO CALCULATE POINTS & PURCHASES /////////////////
-// /////////////////////////////////////////////////////////////////////////////
+//------------------------------------------------------------------------------//
 
 app.get('/', (req, res) => {
   if (res.locals.loggedIn) {
@@ -471,11 +374,6 @@ app.get('/api/user_weight', ensureAuthenticated, (req, res) => {
       // Get all of the rows from the spreadsheet.
       weightDoc.getRows(
         1,
-        // {
-        //   limit: 30,
-        //   orderby: 'date',
-        //   reverse: true
-        // },
         (getErr, rows) => {
           if (getErr) {
             logger.info('row fetch error: ');
@@ -495,11 +393,6 @@ app.get('/api/user_weight', ensureAuthenticated, (req, res) => {
           res.json({
             rows: prunedRows
           });
-          // return rows;
-          // rows.forEach(row => {
-          //   console.log('date: ', row.date);
-          //   console.log('weight: ', row.weight);
-          // });
         }
       );
     });
