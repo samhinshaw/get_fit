@@ -13,11 +13,39 @@ import myfitnesspal  # myfitnesspal API!
 import utils
 # bring in environment variables
 from dotenv import load_dotenv
+import logging
+
+# Set up environment (are we in production?)
+productionEnv = os.getenv('NODE_ENV') == 'production'
+
+# define log levels
+log_levels = {"production": "WARNING", "development": "DEBUG", "testing": "INFO"}
+
+log_level_for_env = log_levels.get(os.getenv('NODE_ENV'))
+
+# Set up logging options
+logging.basicConfig(level=log_level_for_env)
+# Set up a file to write logs to
+fileHandler = logging.FileHandler('/app/python.log')
+fileHandler.setLevel(log_level_for_env)
+# create a console handler too
+consoleHandler = logging.StreamHandler()
+consoleHandler.setLevel(log_level_for_env)
+
+# create formatter and add it to the handlers
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+fileHandler.setFormatter(formatter)
+consoleHandler.setFormatter(formatter)
+
+# create a new logger to
+logger = logging.getLogger('get-fit-py')
+logger.addHandler(fileHandler)
+logger.addHandler(consoleHandler)
+
+# bring in dotenv config options (located in the project root)
+load_dotenv('../.env')
 
 try:
-  # bring in dotenv config options
-  load_dotenv()
-
   # NOTES
   # - Later on I may wish to pull calorie goals straight from MFP
   # MFPcals.goals['calories']
@@ -51,10 +79,7 @@ try:
   else:
     sys.exit('You must provide a date and a user or a start date, end date, and user.')
 
-  # Set up environment (are we in production?)
-  productionEnv = os.getenv('NODE_ENV') == 'production'
-
-  print('Connecting to MongoDB database...')
+  logger.info('Connecting to MongoDB database...')
 
   # This auth mechanism wasn't working for the longest time because port was being
   # brought in as a string, not an Int!! This makes sense that it would have
@@ -109,7 +134,7 @@ try:
   # Pull in the user's exercise groups
   exerciseGroups = db.users.find_one({'username': user}, {'exerciseGroups': 1})
 
-  print('Pulling in MyFitnessPal information for ' + user.capitalize() + '...')
+  logger.info('Pulling in MyFitnessPal information for ' + user.capitalize() + '...')
 
   # Attempt to get password (yipes!) from environment
   auth = os.getenv('MFP_PASS_' + mfp.upper())
@@ -121,7 +146,7 @@ try:
   for date in arrow.Arrow.range(
     frame='day', start=startDate, end=endDate, tz='US/Pacific'
   ):
-    print('Loading data from ' + date.format('MMMM DD, YYYY'))
+    logger.info('Loading data from ' + date.format('MMMM DD, YYYY'))
     # Try/Except is mostly for if the API fails
     try:
       MFPcals = MFPclient.get_date(date.year, date.month, date.day)
@@ -155,9 +180,9 @@ try:
       exerEntries = MFPexer[0].entries
 
     except:
-      print('We were not able to retrieve your exercise for this date!')
+      logger.error('We were not able to retrieve your exercise for this date!')
 
-    print('Processing MyFitnessPal data...')
+    logger.info('Processing MyFitnessPal data...')
 
     # set up empty exercise array to handle multiple exercises in a day
     exercises = []
@@ -259,7 +284,7 @@ try:
             steps['cals'] += exerCals
             steps['minutes'] += exerMins
           except TypeError:
-            print(matchedExercise + "could not be properly added")
+            logger.error(matchedExercise + "could not be properly added")
         else:
           # Round to 1 decimal place
           points = round(points, 1)
@@ -320,7 +345,7 @@ try:
       'lastUpdated': now.datetime
     }
 
-    print('Writing data to MongoDB...')
+    logger.info('Writing data to MongoDB...')
 
     # First check to see if date already exists in DB OH MY GOD, the field order of
     # the query matters when querying by subdocument in mongodb!!!!! OH for the love
@@ -329,7 +354,7 @@ try:
     # {'date.year': 2017, 'date.month': 9, 'date.day': 15}
 
     if entries.find_one({'date': date.datetime, 'user': user}):
-      print('Found existing data for date, overwriting...')
+      logger.warning('Found existing data for date, overwriting...')
       entries.update_one(
         {
           'date': date.datetime,
@@ -337,7 +362,7 @@ try:
         }, {'$set': MFPdata}, upsert=False
       )
     else:
-      print('No data found yet for this date, creating record...')
+      logger.warning('No data found yet for this date, creating record...')
       entries.insert_one(MFPdata)
 
   # Close our connection to the mongoDB Database
