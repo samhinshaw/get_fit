@@ -301,12 +301,15 @@ router.post('/:date', ensureAuthenticated, (req, res) => {
   };
 
   // Run python script
-  PythonShell.run('getMFP.py', options, err => {
-    if (err) {
+  PythonShell.run('getMFP.py', options, (err, messages) => {
+    // Only throw error if exit code was nonzero.
+    // For some reason I am getting errors with nonzero exit statuses
+    if (err && err.exitCode !== 0) {
       logger.error('Error updating from MyFitnessPal: %j', err);
       res.status(500).json({ message: 'Error updating from MyFitnessPal', type: 'danger' });
       // res.status(500).json(err);
     } else {
+      if (messages) logger.info('messages: %j', messages);
       logger.info('Success updating user data from MFP.');
       res.status(200).json({
         message: 'Success updating user data from MyFitnessPal',
