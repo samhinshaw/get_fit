@@ -254,9 +254,9 @@ app.use((req, res, next) => {
   next();
 });
 
-//------------------------------------------------------------------------------//
-//--------------- MIDDLEWARE TO CALCULATE POINTS & PURCHASES -------------------//
-//------------------------------------------------------------------------------//
+// ------------------------------------------------------------------------------//
+// --------------- MIDDLEWARE TO CALCULATE POINTS & PURCHASES -------------------//
+// ------------------------------------------------------------------------------//
 app.use(
   asyncMiddleware(async (req, res, next) => {
     // Workaround for now will simply not run this middleware if not logged in
@@ -306,7 +306,7 @@ app.use(
   })
 );
 
-//------------------------------------------------------------------------------//
+// ------------------------------------------------------------------------------//
 
 app.get('/', (req, res) => {
   if (res.locals.loggedIn) {
@@ -372,29 +372,26 @@ app.get('/api/user_weight', ensureAuthenticated, (req, res) => {
         logger.error(authErr);
       }
       // Get all of the rows from the spreadsheet.
-      weightDoc.getRows(
-        1,
-        (getErr, rows) => {
-          if (getErr) {
-            logger.info('row fetch error: ');
-            logger.error(getErr);
-          }
-          // initialize empty array for us to gather pruned rows
-          const prunedRows = [];
-          // For each row in the array of rows, return just the weight & date
-          rows.forEach(row => {
-            const prunedRow = {
-              date: row.date,
-              weight: row.weight
-            };
-            prunedRows.push(prunedRow);
-          });
-
-          res.json({
-            rows: prunedRows
-          });
+      weightDoc.getRows(1, (getErr, rows) => {
+        if (getErr) {
+          logger.info('row fetch error: ');
+          logger.error(getErr);
         }
-      );
+        // initialize empty array for us to gather pruned rows
+        const prunedRows = [];
+        // For each row in the array of rows, return just the weight & date
+        rows.forEach(row => {
+          const prunedRow = {
+            date: row.date,
+            weight: row.weight
+          };
+          prunedRows.push(prunedRow);
+        });
+
+        res.json({
+          rows: prunedRows
+        });
+      });
     });
   }
 });

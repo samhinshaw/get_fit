@@ -89,13 +89,6 @@ router.post('/', ensureAuthenticated, (req, res) => {
   mfp = mfp !== '' ? mfp : null;
   if (mfp) userObject.mfp = mfp;
 
-  // let currentPoints = req.sanitize('current-points').trim();
-  // currentPoints = currentPoints !== '' ? currentPoints : null;
-  // if (currentPoints) userObject.currentPoints = currentPoints;
-
-  // const weight = req.sanitize('weight').trim();
-  // const calorieGoal = req.sanitize('calorie-goal').trim();
-
   User.findOneAndUpdate(
     { username: req.user.username },
     {

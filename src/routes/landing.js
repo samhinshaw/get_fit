@@ -162,13 +162,7 @@ router.post('/login', (req, res, next) => {
       res.cookie(
         'username',
         req.user.username,
-        // {
-        //   id: req.user.id,
-        //   username: req.user.username,
-        //   partner: req.user.partner,
-        //   mfp: req.user.mfp,
-        //   currentPoints: req.user.currentPoints
-        // },
+
         { maxAge: 2592000000, signed: false }
       );
       // secure: true for HTTPS only
