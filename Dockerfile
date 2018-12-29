@@ -126,8 +126,9 @@ RUN set -ex; \
 RUN pip install arrow==0.10.0 \
   bson==0.5.7                 \     
   myfitnesspal==1.11.0        \
-  pymongo==3.4.0              \
-  python-dateutil==2.6.1
+  pymongo==3.7.2              \
+  python-dateutil==2.6.1      \
+  python-dotenv==0.1.0
 
 #################
 ##   BACKEND   ##
