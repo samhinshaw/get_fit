@@ -52,10 +52,6 @@ require('dotenv').config();
 // Bring in remaining config files
 const appConfig = require('../config/app_config.json');
 const googleCreds = require('../config/secret/client_secret.json');
-const secretConfig = require('../config/secret/secret_config.json');
-
-// should probably change up these config files to work better with ES6 modules
-const nodeConfig = secretConfig.node;
 
 mongoose.Promise = Promise;
 

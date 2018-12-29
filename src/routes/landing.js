@@ -1,6 +1,4 @@
 // This will contain all '/' routes
-import Moment from 'moment-timezone';
-import { extendMoment } from 'moment-range';
 import express from 'express';
 import bcrypt from 'bcryptjs';
 import passport from 'passport';
@@ -24,31 +22,11 @@ const asyncMiddleware = fn => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch(next);
 };
 
-// authentication assurance
-// const model = mongoose.model('bruteforce', bruteForceSchema);
-// const store = new MongooseStore(model);
-const secretConfig = require('../../config/secret/secret_config.json');
-
-// const failCallback = (req, res, next, nextValidRequestDate) => {
-//   req.flash(
-//     'danger',
-//     `You've made too many failed attempts in a short period of time, please try again ${moment(
-//       nextValidRequestDate
-//     ).fromNow()}`
-//   );
-//   res.redirect('/'); // brute force protection triggered, send them back to the main page
-// };
-
-// const bruteforce = new ExpressBrute(store, {
-//   failCallback
-// });
-
 /*= ============================================
 =          Email Verification Setup          =
 ============================================= */
 
 const emailVer = Promise.promisifyAll(nodeEmailVer(mongoose));
-// const emailVer = nodeEmailVer(mongoose));
 
 const saltAndHash = function saltAndHash(pwd, tempUserData, insertTempUser, callback) {
   bcrypt.genSalt(10, (saltErr, salt) => {
@@ -107,8 +85,6 @@ emailVer
 
 /*= ====  End of Email Verification Setup  ====== */
 
-// const auth = require('../config/auth.js');
-
 const router = express.Router();
 
 // Register Form Route
@@ -142,18 +118,12 @@ router.get('/login', (req, res) => {
 });
 
 // Login Process
-// router.post('/login', bruteforce.prevent, (req, res, next) => {
 router.post('/login', (req, res, next) => {
   passport.authenticate('local', (authErr, user) => {
     if (authErr) {
       req.flash('danger', authErr.message);
       return next(authErr);
     }
-    // if (!user) {
-    //   req.flash('danger', 'No User Found.');
-    //   res.redirect('/login');
-    //   return next();
-    // }
     req.logIn(user, loginErr => {
       if (loginErr) {
         req.flash('danger', loginErr.message);
@@ -289,7 +259,7 @@ router.post(
     const fitnessGoal = 'Working to get fit!';
     const mfp = req.sanitize('mfp').trim();
     const accessCode = req.sanitize('accessCode').trim();
-    // Not sanitizing password for now, since we're salting & hashing it.
+    // Do not sanitize the password, since all we do is salt & hash it.
     const { password } = req.body;
     // const passwordConfirm = req.body.passwordConfirm;
 
@@ -435,50 +405,6 @@ router.post(
           }
         ]
       });
-      // emailVer
-      //   .createTempUserAsync(newUser)
-      //   .then((existingPermUser, newTempUser) => {
-      //     debugger;
-      //     if (existingPermUser) {
-      //       req.flash('danger', 'Username Taken');
-      //       res.redirect('#');
-      //       return next();
-      //     } else if (newTempUser) {
-      //       const URL = newTempUser[emailVer.options.URLFieldName];
-      //       // Destructuring Assignment For The Win (https://www.npmjs.com/package/await-to-js)
-      //       emailVer
-      //         .sendVerificationEmailAsync(email, URL)
-      //         .then(sendInfo => {
-      //           logger.info('Email send info: %j', sendInfo);
-      //         })
-      //         .catch(sendErr => {
-      //           logger.error('Error sending verification email: %j', sendErr);
-      //           req.flash(
-      //             'danger',
-      //             'Oops, something went wrong on our end and we failed to send your verification email.'
-      //           );
-      //           res.redirect('#');
-      //           return next();
-      //         });
-      //     } else {
-      //       // otherwise if newTempUser is null
-      //       req.flash(
-      //         'warning',
-      //         "Hmm, it looks like you've already created an account! Check your email for a verification link."
-      //       );
-      //       res.redirect('#');
-      //       return next();
-      //     }
-      //   })
-      //   .catch(createErr => {
-      //     logger.error('Error creating temp user: %j', createErr);
-      //     req.flash(
-      //       'danger',
-      //       'Oops, something went wrong on our end and we failed to create your account.'
-      //     );
-      //     res.redirect('#');
-      //     return next();
-      //   });
 
       await emailVer.createTempUser(newUser, (createErr, existingPermUser, newTempUser) => {
         if (createErr) {
