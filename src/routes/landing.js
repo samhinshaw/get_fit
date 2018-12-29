@@ -15,6 +15,8 @@ import logger from '../methods/logger';
 import ensureAuthenticated from '../methods/auth';
 import User from '../models/user';
 
+require('dotenv').config();
+
 // const moment = extendMoment(Moment);
 
 // Define Async middleware wrapper to avoid try-catch
@@ -50,7 +52,7 @@ emailVer.configure(
       secure: true, // ssl
       auth: {
         user: 'welcome@getse.xyz',
-        pass: secretConfig.zohoWelcomePassword
+        pass: process.env.NODEJS_ZOHO_PASS
       }
     },
     verifyMailOptions: {
@@ -307,7 +309,7 @@ router.post(
       res.redirect('#');
       return next(errors);
       // temporarily hard-wiring adding access code
-    } else if (accessCode !== secretConfig.registrationSecret) {
+    } else if (accessCode !== process.env.NODEJS_REGISTRATION_SECRET) {
       logger.error('Access code provided: ');
       logger.error(accessCode);
       req.flash('danger', 'Incorrect Access Code');

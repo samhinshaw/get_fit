@@ -71,7 +71,7 @@ if (productionEnv) {
   // if we're in production, connect to our production database
   mongoURI = `mongodb+srv://nodejs:${process.env.MONGO_NODEJS_PASS}@${
     process.env.MONGO_PROD_CONNECTION
-  }`;
+  }/${process.env.MONGO_PROD_DBNAME}?retryWrites=true`;
   // If we're in production, we also need to specify the dbName to connect to
   mongoOptions.dbName = process.env.MONGO_PROD_DBNAME;
 } else {
@@ -130,7 +130,7 @@ app.use(express.static(path.join(__dirname, '../public')));
 
 app.use(
   session({
-    secret: secretConfig.session.secret,
+    secret: process.env.NODEJS_SESSION_SECRET,
     resave: true,
     saveUninitialized: true,
     // cookie: { secure: true },
