@@ -11,8 +11,13 @@ from pymongo import MongoClient  # mongodb operations
 import bson
 import myfitnesspal  # myfitnesspal API!
 import utils
+# bring in environment variables
+from dotenv import load_dotenv
 
 try:
+  # bring in dotenv config options
+  load_dotenv()
+
   # NOTES
   # - Later on I may wish to pull calorie goals straight from MFP
   # MFPcals.goals['calories']
@@ -46,38 +51,54 @@ try:
   else:
     sys.exit('You must provide a date and a user or a start date, end date, and user.')
 
+  # Set up environment (are we in production?)
+  productionEnv = os.getenv('NODE_ENV') == 'production'
+
   print('Connecting to MongoDB database...')
-  secretJSON = open(os.path.join('config', 'secret', 'secret_config.json')).read()
-  secretConfig = json.loads(secretJSON)
-  secretPyConfig = secretConfig['python']
 
   # This auth mechanism wasn't working for the longest time because port was being
   # brought in as a string, not an Int!! This makes sense that it would have
   # worked when specifying the URI though, because that entire thing is a string.
   # It also didn't work because I was using 'user' instead of 'username'
   # client = MongoClient(
-  #     host=secretPyConfig['host'],
-  #     port=int(secretPyConfig['port']),
-  #     username=secretPyConfig['user'],
-  #     password=secretPyConfig['password'],
-  #     authSource=secretPyConfig['authSource'],
-  #     authMechanism=secretPyConfig['authMechanism']
+  #     host=os.getenv('host'),
+  #     port=int(os.getenv('port')),
+  #     username=os.getenv('user'),
+  #     password=os.getenv('password'),
+  #     authSource=os.getenv('authSource'),
+  #     authMechanism=os.getenv('authMechanism')
   # )
 
   # Previous version for connecting.
-  mongoURI = \
-    "mongodb://" + \
-    secretPyConfig['user'] + \
-    ":" + \
-    secretPyConfig['password'] + \
-    "@" + \
-    secretPyConfig['host'] + \
-    ":" + \
-    str(secretPyConfig['port']) + \
-    "/" + \
-    secretPyConfig['authSource'] + \
-    "?authMechanism=" + \
-    secretPyConfig['authMechanism']
+
+  if productionEnv:
+    # Connect to the production server
+    mongoURI = \
+      "mongodb+srv://" + \
+      os.getenv('MONGO_GETFIT_PYTHON_USER') + \
+      ":" + \
+      os.getenv('MONGO_GETFIT_PYTHON_PASS') + \
+      "@" + \
+      os.getenv('MONGO_PROD_CONNECTION') + \
+      "/" + \
+      os.getenv('MONGO_PROD_DBNAME') + \
+      "?retryWrites=true"
+
+  else:
+    # Otherwise connect to our local development server
+    mongoURI = \
+      "mongodb://" + \
+      os.getenv('MONGO_GETFIT_PYTHON_USER') + \
+      ":" + \
+      os.getenv('MONGO_GETFIT_PYTHON_PASS') + \
+      "@" + \
+      os.getenv('MONGO_LOCAL_SERVICENAME') + \
+      ":" + \
+      str(os.getenv('MONGO_LOCAL_PORT')) + \
+      "/" + \
+      os.getenv('MONGO_PROD_DBNAME') + \
+      "?authMechanism=" + \
+      os.getenv('MONGO_LOCAL_AUTHMECH')
 
   client = MongoClient(mongoURI)
 
@@ -91,7 +112,7 @@ try:
   print('Pulling in MyFitnessPal information for ' + user.capitalize() + '...')
 
   # Attempt to get password (yipes!) from environment
-  auth = os.environ.get('MFP_PASS_' + mfp.upper())
+  auth = os.getenv('MFP_PASS_' + mfp.upper())
   # If present, auth should be possible
   authPossible = not not auth
   # If we got it, our user should be able to log in, so we can enable login
