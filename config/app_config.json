@@ -1,5 +1,4 @@
 {
-  "database": "mongodb://mongo:27017/get_fit",
   "serverPort": 8005,
   "startDate": "10-22-2018"
 }

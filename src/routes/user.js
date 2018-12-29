@@ -9,7 +9,7 @@ import ensureAuthenticated from '../methods/auth';
 import Entry from '../models/entry';
 import logger from '../methods/logger';
 
-const dbConfig = require('../../config/database.json');
+const appConfig = require('../../config/app_config.json');
 
 const moment = extendMoment(Moment);
 
@@ -245,7 +245,7 @@ router.get(
     res.render('user/index', {
       // Object to send data along with response
       moment,
-      startDate: moment.tz(dbConfig.startDate, 'MM-DD-YYYY', 'US/Pacific'),
+      startDate: moment.tz(appConfig.startDate, 'MM-DD-YYYY', 'US/Pacific'),
       entries: sortedEntries,
       // Here we're awaiting that mega-promise!
       weekSummaries: await promisedWeekSummaries,

@@ -50,7 +50,7 @@ const productionEnv = process.env.NODE_ENV === 'production';
 require('dotenv').config();
 
 // Bring in remaining config files
-const dbConfig = require('../config/database.json');
+const appConfig = require('../config/app_config.json');
 const googleCreds = require('../config/secret/client_secret.json');
 const secretConfig = require('../config/secret/secret_config.json');
 
@@ -262,7 +262,7 @@ app.use((req, res, next) => {
     res.locals.twoWeeksAgo = twoWeeksAgo;
 
     const startOfTracking = moment
-      .tz(dbConfig.startDate, 'MM-DD-YYYY', 'US/Pacific')
+      .tz(appConfig.startDate, 'MM-DD-YYYY', 'US/Pacific')
       .startOf('day');
     const customRange = {
       // We started Monday, Sept 18th
@@ -488,6 +488,6 @@ app.use((err, req, res, next) => {
 });
 
 // Start Server
-app.listen(dbConfig.serverPort, () => {
-  logger.info(`Server started on port ${dbConfig.serverPort}`);
+app.listen(appConfig.serverPort, () => {
+  logger.info(`Server started on port ${appConfig.serverPort}`);
 });
