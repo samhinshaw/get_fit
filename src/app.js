@@ -44,6 +44,12 @@ import logger from './methods/logger';
 // Passport Config Middleware
 import authMiddleware from './methods/passport';
 
+const productionEnv = process.env.NODE_ENV === 'production';
+
+// Bring in environment variable config file:
+require('dotenv').config();
+
+// Bring in remaining config files
 const dbConfig = require('../config/database.json');
 const googleCreds = require('../config/secret/client_secret.json');
 const secretConfig = require('../config/secret/secret_config.json');
@@ -62,13 +68,28 @@ const asyncMiddleware = fn => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch(next);
 };
 
-const mongoURI = `mongodb://${nodeConfig.user}:${nodeConfig.password}@${nodeConfig.host}:${
-  nodeConfig.port
-}/${nodeConfig.authSource}?authMechanism=${nodeConfig.authMechanism}`;
+// Set up our mongoDB connection URI and options
+let mongoURI;
+const mongoOptions = { useMongoClient: true };
+if (productionEnv) {
+  // if we're in production, connect to our production database
+  mongoURI = `mongodb+srv://nodejs:${process.env.MONGO_NODEJS_PASS}@${
+    process.env.MONGO_PROD_CONNECTION
+  }`;
+  // If we're in production, we also need to specify the dbName to connect to
+  mongoOptions.dbName = process.env.MONGO_PROD_DBNAME;
+} else {
+  // Otherwise, connect to our local instance.
+  mongoURI = `mongodb://${process.env.MONGO_GETFIT_NODE_USER}:${
+    process.env.MONGO_GETFIT_NODE_PASS
+  }@${process.env.MONGO_LOCAL_SERVICENAME}:${process.env.MONGO_LOCAL_PORT}/${
+    process.env.MONGO_PROD_DBNAME
+  }?authMechanism=${process.env.MONGO_LOCAL_AUTHMECH}`;
+}
 
 mongoose.connect(
   mongoURI,
-  { useMongoClient: true }
+  mongoOptions
 );
 
 const db = mongoose.connection;
