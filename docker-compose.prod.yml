@@ -10,3 +10,5 @@ services:
     command: ['yarn', 'run:prod']
     ports:
       - '8005:8005'
+    env_file:
+      - .env

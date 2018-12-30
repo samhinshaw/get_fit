@@ -46,9 +46,6 @@ import authMiddleware from './methods/passport';
 
 const productionEnv = process.env.NODE_ENV === 'production';
 
-// Bring in environment variable config file:
-require('dotenv').config();
-
 // Bring in remaining config files
 const appConfig = require('../config/app_config.json');
 const googleCreds = require('../config/secret/client_secret.json');

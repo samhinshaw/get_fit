@@ -6,5 +6,5 @@
       }
     }]
   ],
-  "plugins": ["babel-plugin-inline-import"]
+  "plugins": ["babel-plugin-inline-import", "inline-dotenv"]
 }

@@ -41,6 +41,7 @@
     "ajv-keywords": "^2.1.0",
     "async": "2.5.0",
     "await-to-js": "^2.0.1",
+    "babel-plugin-inline-dotenv": "^1.2.0",
     "babel-polyfill": "^6.26.0",
     "base64url": "3",
     "bcryptjs": "^2.4.3",

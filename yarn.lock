@@ -645,6 +645,13 @@ babel-plugin-check-es2015-constants@^6.22.0:
   dependencies:
     babel-runtime "^6.22.0"
 
+babel-plugin-inline-dotenv@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/babel-plugin-inline-dotenv/-/babel-plugin-inline-dotenv-1.2.0.tgz#29b4fdd8cb04ad6e72b54b09824bbaf65f1fc8cf"
+  integrity sha512-LOyw19nm4oPhaVPQFzW8l3RwgqG3hYVwdl+lKI8agJFGlFfLoOZLspRQ2radYtOZ+x2H5ThjqKhcqhfmzFv51g==
+  dependencies:
+    dotenv "^6.0.0"
+
 babel-plugin-inline-import@^2.0.6:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/babel-plugin-inline-import/-/babel-plugin-inline-import-2.0.6.tgz#8a3c179561b503bf4af319f3cad435e6b7b2863c"
@@ -2543,7 +2550,7 @@ dot-prop@^4.1.0:
   dependencies:
     is-obj "^1.0.0"
 
-dotenv@^6.2.0:
+dotenv@^6.0.0, dotenv@^6.2.0:
   version "6.2.0"
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-6.2.0.tgz#941c0410535d942c8becf28d3f357dbd9d476064"
   integrity sha512-HygQCKUBSFl8wKQZBSemMywRWcEDNidvNbjGVyZu3nbZ8qq9ubiPoGLMdRDpfSrpkkm9BXYFkpKxxFX38o/76w==
