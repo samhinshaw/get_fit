@@ -63,7 +63,7 @@ const asyncMiddleware = fn => (req, res, next) => {
 
 // Set up our mongoDB connection URI and options
 let mongoURI;
-const mongoOptions = {};
+const mongoOptions = { useNewUrlParser: true };
 if (productionEnv) {
   // if we're in production, connect to our production database
   mongoURI = `mongodb+srv://nodejs:${process.env.MONGO_NODEJS_PASS}@${
