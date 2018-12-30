@@ -1,2 +1,14 @@
+# Directories
 node_modules/
+config/
+__pycache__/
+dist/
+mongo/
+
+# Specific files
 .env
+
+# globs
+*.log
+*.md
+docker-compose*yml
