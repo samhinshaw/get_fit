@@ -286,7 +286,7 @@ router.post('/:date', ensureAuthenticated, (req, res) => {
   }
 
   // Python script options
-  const options = {
+  const pythonOptions = {
     // mode: 'json',
     pythonOptions: ['-u'], // this will let us see Python's print statements
     scriptPath: './data',
@@ -294,7 +294,7 @@ router.post('/:date', ensureAuthenticated, (req, res) => {
   };
 
   // Run python script
-  PythonShell.run('getMFP.py', options, (err, messages) => {
+  PythonShell.run('getMFP.py', pythonOptions, (err, messages) => {
     // Only throw error if exit code was nonzero.
     // For some reason I am getting errors with nonzero exit statuses
     if (err && err.exitCode !== 0) {
