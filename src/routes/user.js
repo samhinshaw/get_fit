@@ -18,25 +18,6 @@ const asyncMiddleware = fn => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch(next);
 };
 
-// const request = require('request');
-
-// IFTTT Configuration
-
-// const configureIFTTT = (user, requestType) => {
-//   const configOptions = {
-//     url: `https://maker.ifttt.com/trigger/${requestType}/with/key/JCavOg5Om_uGsh0R6McOC`,
-//     method: 'POST',
-//     headers: {
-//       // 'User-Agent': 'Super Agent/0.0.1',
-//       'Content-Type': 'application/x-www-form-urlencoded'
-//     },
-//     form: { value1: user }
-//   };
-//   return configOptions;
-// };
-
-// Initialize Moment & Today Object
-// moment().format(); // required by package entirely
 const router = express.Router();
 
 // Route to User's Calorie & Exercise Data

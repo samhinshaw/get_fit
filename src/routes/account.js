@@ -20,9 +20,6 @@ const moment = extendMoment(Moment);
 
 // Bring in config files
 
-// moment().format(); // required by package entirely
-const iftttToken = require('../../config/secret/ifttt.json');
-
 const router = express.Router();
 
 // Define Async middleware wrapper to avoid try-catch
@@ -166,7 +163,7 @@ router.post(
             user:
               res.locals.user.firstname.charAt(0).toUpperCase() +
               res.locals.user.firstname.slice(1),
-            partnerToken: iftttToken[res.locals.partner.username].token,
+            partnerToken: process.env[`IFTTT_TOKEN_${res.locals.partner.username.toUpperCase()}`],
             messageType: 'reward_request'
           }),
           (error, response) => {
@@ -322,7 +319,7 @@ router.post('/requests/respond', ensureAuthenticated, (req, res) => {
             user:
               res.locals.user.firstname.charAt(0).toUpperCase() +
               res.locals.user.firstname.slice(1),
-            partnerToken: iftttToken[res.locals.partner.username].token,
+            partnerToken: process.env[`IFTTT_TOKEN_${res.locals.partner.username.toUpperCase()}`],
             messageType: 'request_response'
           }),
           (error, response) => {

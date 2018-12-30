@@ -13,31 +13,6 @@ const appConfig = require('../../config/app_config.json');
 
 const moment = extendMoment(Moment);
 
-// Bring in user model
-
-// Define Async middleware wrapper to avoid try-catch
-// const asyncMiddleware = fn => (req, res, next) => {
-//   Promise.resolve(fn(req, res, next)).catch(next);
-// };
-
-// // IFTTT Configuration
-
-// function configureIFTTT(user, requestType) {
-//   const configOptions = {
-//     url: `https://maker.ifttt.com/trigger/${requestType}/with/key/JCavOg5Om_uGsh0R6McOC`,
-//     method: 'POST',
-//     headers: {
-//       // 'User-Agent': 'Super Agent/0.0.1',
-//       'Content-Type': 'application/x-www-form-urlencoded'
-//     },
-//     form: { value1: user }
-//   };
-//   return configOptions;
-// }
-
-// Initialize Moment & Today Object
-// moment().format(); // required by package entirely
-
 // Define Async middleware wrapper to avoid try-catch
 const asyncMiddleware = fn => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch(next);
