@@ -496,6 +496,8 @@ app.use((err, req, res, next) => {
 });
 
 // Start Server
-app.listen(appConfig.serverPort, () => {
+const server = app.listen(appConfig.serverPort, () => {
   logger.info(`Server started on port ${appConfig.serverPort}`);
 });
+
+export default server;
