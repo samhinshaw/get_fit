@@ -1,7 +1,6 @@
 # Directories
 node_modules/
-config/
-__pycache__/
+**/__pycache__/
 dist/
 mongo/
 
@@ -9,6 +8,6 @@ mongo/
 .env
 
 # globs
-*.log
-*.md
+**/*.log
+**/*.md
 docker-compose*yml
