@@ -1,6 +1,7 @@
 /* eslint-env jasmine */
 const Request = require('request');
-const server = require('./app');
+
+// const server = require('../src/app');
 
 describe('Server', () => {
   // let server;
@@ -10,12 +11,12 @@ describe('Server', () => {
     // server = require('./app');
   });
   afterAll(() => {
-    server.close();
+    // server.close();
   });
   describe('GET /', () => {
     const data = {};
     beforeAll(done => {
-      Request.get('http://localhost:8005/', (error, response, body) => {
+      Request.get('http://node:8005/', (error, response, body) => {
         data.status = response.statusCode;
         data.body = body;
         done();
