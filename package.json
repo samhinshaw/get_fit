@@ -13,7 +13,7 @@
     "up:prod": "docker-compose -f docker-compose.prod.yml up",
     "build:prod": "docker-compose -f docker-compose.prod.yml build",
     "down:prod": "docker-compose -f docker-compose.prod.yml down",
-    "dev:server": "nodemon src/app.js --exec babel-node",
+    "dev:server": "nodemon -L src/app.js --exec babel-node",
     "dev:ui": "webpack -d -w",
     "test:server": "jasmine --config=tests/config/jasmine.json",
     "clean:ui": "rm -rf ./dist",
