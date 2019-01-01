@@ -1,6 +1,6 @@
 # Start from a Python image instead of a Node image
 # Reference from: https://hub.docker.com/r/nikolaik/python-nodejs/dockerfile
-FROM python:3.6-jessie
+FROM python:3.7-stretch
 
 #############################
 ##   Python & Node Setup   ##
@@ -14,7 +14,7 @@ RUN \
   apt-get install -yqq apt-transport-https
 
 RUN \
-  echo "deb https://deb.nodesource.com/node_8.x jessie main" > /etc/apt/sources.list.d/nodesource.list && \
+  echo "deb https://deb.nodesource.com/node_8.x stretch main" > /etc/apt/sources.list.d/nodesource.list && \
   wget -qO- https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add - && \
   echo "deb https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list && \
   wget -qO- https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
