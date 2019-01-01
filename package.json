@@ -15,7 +15,7 @@
     "down:prod": "docker-compose -f docker-compose.prod.yml down",
     "dev:server": "nodemon -L src/app.js --exec babel-node",
     "dev:ui": "webpack -d -w",
-    "test": "yarn test:all",
+    "test": "yarn up:test",
     "test:all": "yarn test:server",
     "test:server": "babel-node tests/config/run.js",
     "clean:ui": "rm -rf ./dist",

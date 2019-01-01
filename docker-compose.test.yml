@@ -34,6 +34,6 @@ services:
       - NODE_ENV=testing
     env_file:
       - .env
-    command: ['yarn', 'test:server']
+    command: ['yarn', 'test:all']
     depends_on:
       - node
