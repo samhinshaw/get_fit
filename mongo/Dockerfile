@@ -3,7 +3,7 @@
 # This mongo image inherits from `debian:jessie-slim`, which is also the base of
 # the node images! 
 # https://github.com/nodejs/docker-node/issues/618
-FROM mongo:3.2
+FROM mongo:3.6-stretch
 
 # /docker-entrypoint-initdb.d already exists, so copy our init file to it.
 # This contains the logic to create our first users and setup admin accounts
