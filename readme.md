@@ -1,6 +1,6 @@
 # Get Fit!
 
-https://get-fit.xyz
+https://get-fit.xyz ![Build Status](https://img.shields.io/travis/com/samhinshaw/get_fit.svg?style=flat-square)
 
 Unfortunately, Get Fit is not 100% ready for public use yet, but you can follow the [Public Release Milestone](https://github.com/samhinshaw/get_fit/milestone/1) to keep track of my progress.
 
