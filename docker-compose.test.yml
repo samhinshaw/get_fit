@@ -11,15 +11,12 @@ services:
     # https://stackoverflow.com/questions/40801772/what-is-the-difference-between-docker-compose-ports-vs-expose
     expose:
       - 27017
-    # And add the environment variables within our secret .env file
   # Start backend Express.js server
   node:
     build: .
     # Set the NODE_ENV to the dev environment
     environment:
       - NODE_ENV=testing
-    env_file:
-      - .env
     command: ['yarn', 'run:prod']
     expose:
       - 8005
