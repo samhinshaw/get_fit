@@ -12,8 +12,6 @@ services:
     expose:
       - 27017
     # And add the environment variables within our secret .env file
-    env_file:
-      - .env
   # Start backend Express.js server
   node:
     build: .
@@ -32,8 +30,6 @@ services:
     # Set the NODE_ENV to the dev environment
     environment:
       - NODE_ENV=testing
-    env_file:
-      - .env
     command: ['yarn', 'test:all']
     depends_on:
       - node
