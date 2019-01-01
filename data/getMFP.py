@@ -121,7 +121,7 @@ try:
       ":" + \
       str(os.getenv('MONGO_LOCAL_PORT')) + \
       "/" + \
-      os.getenv('MONGO_PROD_DBNAME') + \
+      os.getenv('MONGO_INITDB_DATABASE') + \
       "?authMechanism=" + \
       os.getenv('MONGO_LOCAL_AUTHMECH')
 

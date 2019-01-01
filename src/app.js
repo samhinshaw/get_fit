@@ -91,7 +91,7 @@ if (productionEnv) {
   mongoURI = `mongodb://${process.env.MONGO_GETFIT_NODE_USER}:${
     process.env.MONGO_GETFIT_NODE_PASS
   }@${process.env.MONGO_LOCAL_SERVICENAME}:${process.env.MONGO_LOCAL_PORT}/${
-    process.env.MONGO_PROD_DBNAME
+    process.env.MONGO_INITDB_DATABASE
   }?authMechanism=${process.env.MONGO_LOCAL_AUTHMECH}`;
 }
 
