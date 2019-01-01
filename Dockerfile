@@ -2,7 +2,7 @@
 # the default node 8 image, which inherits from debian:jessie-slim, the same as
 # the mongo images. Relevant issue in node docker repo:
 # https://github.com/nodejs/docker-node/issues/618
-FROM node:8.14-jessie
+FROM node:8.12-jessie
 
 #######################
 ##    SETUP PYTHON   ##
