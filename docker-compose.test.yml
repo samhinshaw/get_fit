@@ -11,12 +11,51 @@ services:
     # https://stackoverflow.com/questions/40801772/what-is-the-difference-between-docker-compose-ports-vs-expose
     expose:
       - 27017
+    # Pass in environment variables specified by the Travis build environment
+    environment:
+      - MONGO_GETFIT_NODE_PASS
+      - MONGO_GETFIT_NODE_USER
+      - MONGO_GETFIT_PYTHON_PASS
+      - MONGO_GETFIT_PYTHON_USER
+      - MONGO_INITDB_DATABASE
+      - MONGO_INITDB_ROOT_PASSWORD
+      - MONGO_INITDB_ROOT_USERNAME
+      - GETFIT_EMAIL_AMELIA
+      - GETFIT_EMAIL_SAM
+      - GETFIT_FITNESS_GOAL_AMELIA
+      - GETFIT_FITNESS_GOAL_SAM
+      - GETFIT_HASHED_PASS_AMELIA
+      - GETFIT_HASHED_PASS_SAM
+      - GETFIT_MFP_NAME_AMELIA
+      - GETFIT_MFP_NAME_SAM
   # Start backend Express.js server
   node:
     build: .
     # Set the NODE_ENV to the dev environment
+    # Pass in environment variables specified by the Travis build environment
     environment:
       - NODE_ENV=testing
+      - GOOGLE_CLIENT_EMAIL
+      - GOOGLE_CLIENT_ID
+      - GOOGLE_CLIENT_X509_CERT_URL
+      - GOOGLE_PRIVATE_KEY
+      - GOOGLE_PRIVATE_KEY_ID
+      - GOOGLE_PROJECT_ID
+      - MONGO_GETFIT_NODE_PASS
+      - MONGO_GETFIT_NODE_USER
+      - MONGO_LOCAL_SERVICENAME
+      - MONGO_LOCAL_PORT
+      - MONGO_INITDB_DATABASE
+      - MONGO_LOCAL_AUTHMECH
+      - MONGO_GETFIT_PYTHON_PASS
+      - MONGO_GETFIT_PYTHON_USER
+      - NODEJS_REGISTRATION_SECRET
+      - NODEJS_SESSION_SECRET
+      - NODEJS_ZOHO_PASS
+      - MFP_PASS_AMELIAHO
+      - MFP_PASS_JETKNIFE
+      - IFTTT_TOKEN_SAM
+      - IFTTT_TOKEN_AMELIA
     command: ['yarn', 'run:prod']
     expose:
       - 8005
