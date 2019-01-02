@@ -9,22 +9,24 @@ FROM python:3.7-stretch
 # Install node prereqs, nodejs and yarn
 # Ref: https://deb.nodesource.com/setup_8.x
 # Ref: https://yarnpkg.com/en/docs/install
-RUN \
-  apt-get update && \
-  apt-get install -yqq apt-transport-https
 
-RUN \
-  echo "deb https://deb.nodesource.com/node_8.x stretch main" > /etc/apt/sources.list.d/nodesource.list && \
-  wget -qO- https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add - && \
-  echo "deb https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list && \
-  wget -qO- https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add - && \
-  apt-get update && \
-  apt-get install -yqq nodejs yarn && \
-  pip install -U pip && pip install pipenv && \
-  npm i -g npm@^6 && \
-  rm -rf /var/lib/apt/lists/*
+RUN apt-get update
+RUN apt-get install -yqq apt-transport-https
 
-RUN pip install arrow==0.10.0 \
+# Add sources and the public keys
+RUN echo "deb https://deb.nodesource.com/node_8.x stretch main" > /etc/apt/sources.list.d/nodesource.list
+RUN  wget -qO- https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add -
+RUN  echo "deb https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list
+RUN  wget -qO- https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+
+RUN apt-get update
+RUN  apt-get install -yqq nodejs yarn
+RUN  pip install -U pip && pip install pipenv
+RUN  npm i -g npm@^6
+RUN  rm -rf /var/lib/apt/lists/*
+
+RUN pip install               \
+  arrow==0.10.0               \
   bson==0.5.7                 \     
   myfitnesspal==1.11.0        \
   pymongo==3.7.2              \
