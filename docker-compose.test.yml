@@ -69,3 +69,10 @@ services:
     command: ['yarn', 'test:all']
     depends_on:
       - node
+  vault:
+    build: vault
+    cap_add:
+      - IPC_LOCK
+    # volumes:
+    #   # mount nothing to vault config to overwrite production configuration
+    #   - /vault/config/
