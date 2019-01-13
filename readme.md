@@ -1,6 +1,6 @@
 # Get Fit!
 
-![Build Status](https://img.shields.io/travis/com/samhinshaw/get_fit.svg?style=flat-square)
+[![Build Status](https://img.shields.io/travis/com/samhinshaw/get_fit.svg?style=flat-square)](https://travis-ci.com/samhinshaw/get_fit)
 
 https://get-fit.xyz
 
