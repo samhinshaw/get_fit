@@ -15,15 +15,15 @@ RUN apt-get install -yqq apt-transport-https
 
 # Add sources and the public keys
 RUN echo "deb https://deb.nodesource.com/node_8.x stretch main" > /etc/apt/sources.list.d/nodesource.list
-RUN  wget -qO- https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add -
-RUN  echo "deb https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list
-RUN  wget -qO- https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+RUN wget -qO- https://deb.nodesource.com/gpgkey/nodesource.gpg.key | apt-key add -
+RUN echo "deb https://dl.yarnpkg.com/debian/ stable main" > /etc/apt/sources.list.d/yarn.list
+RUN wget -qO- https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
 
 RUN apt-get update
-RUN  apt-get install -yqq nodejs yarn
-RUN  pip install -U pip && pip install pipenv
-RUN  npm i -g npm@^6
-RUN  rm -rf /var/lib/apt/lists/*
+RUN apt-get install -yqq nodejs yarn
+RUN pip install -U pip && pip install pipenv
+RUN npm i -g npm@^6
+RUN rm -rf /var/lib/apt/lists/*
 
 RUN pip install               \
   arrow==0.10.0               \
