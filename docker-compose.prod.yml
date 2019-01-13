@@ -4,6 +4,7 @@ services:
   # Start backend Express.js server
   node:
     build: .
+    image: samhinshaw/get_fit:$DOCKER_TAG
     # Set the NODE_ENV to the dev environment
     environment:
       - NODE_ENV=production

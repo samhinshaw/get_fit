@@ -9,14 +9,51 @@ env:
     - MONGO_PROD_DBNAME=get_fit
     - MONGO_LOCAL_PORT=27017
     - MONGO_LOCAL_SERVICENAME=mongo
-# Here `install: skip` means that we skip "yarn install" within the Travis VM,
-# since it will be executed in the docker container instead.
+
+# Do nothing as the install command, since we are using Docker
+install:
+
+# Build the test containers before the tests
+before_script: yarn build:test
+
+# When to run certain stages
+stages:
+  - build_tests
+  - tests
+  - cleanup_tests
+  - name: build_and_deploy_tagged
+    if: tag IS present
+  - name: build_and_deploy_release
+    if: branch =~ ^release
+
+# Run our tests
 jobs:
   include:
-    - stage: 'Build'
-      install: skip
+    # Build the test containers before the tests
+    - stage: 'build_tests'
+      name: 'Build Test Images'
       script: yarn build:test
-    - stage: 'Test'
+    # Run our tests
+    - stage: 'tests'
       name: 'Unit Tests'
-      install: skip
       script: yarn up:test
+    # Clean up after our tests
+    - stage: 'cleanup_tests'
+      name: 'Clean Up Tests'
+      script: yarn down:test
+    # Build & Deploy prod images if we're tagged
+    - stage: 'build_and_deploy_tagged'
+      name: 'Build & Deploy Tagged Prod Images'
+      env: DOCKER_TAG="$TRAVIS_TAG-$TRAVIS_BUILD_NUMBER"
+      script:
+        - yarn build:prod
+        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+        - yarn push:prod
+    # Build & Deploy prod images if we're  on a release branch
+    - stage: 'build_and_deploy_release'
+      name: 'Build & Deploy Release Prod Images'
+      env: DOCKER_TAG="$TRAVIS_BRANCH-$TRAVIS_BUILD_NUMBER"
+      script:
+        - yarn build:prod
+        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+        - yarn push:prod
