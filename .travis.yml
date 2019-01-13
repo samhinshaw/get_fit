@@ -11,10 +11,7 @@ env:
     - MONGO_LOCAL_SERVICENAME=mongo
 
 # Do nothing as the install command, since we are using Docker
-install:
-
-# Build the test containers before the tests
-before_script: yarn build:test
+install: ''
 
 # When to run certain stages
 stages:
