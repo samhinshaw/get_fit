@@ -5,17 +5,22 @@ const Request = require('request');
 
 describe('Server', () => {
   describe('GET /', () => {
-    it('Status 200', done => {
-      Request.get('http://node:8005/', (error, response) => {
+    const data = {};
+    beforeAll(done => {
+      Request.get('http://node:8005/', (error, response, body) => {
         if (error) console.error(error); // eslint-disable-line no-console
-        if (response) {
-          expect(response.statusCode).toBe(200);
-          done();
-        } else {
-          fail();
-          done();
-        }
+        console.log(response); // eslint-disable-line no-console
+        data.status = response.statusCode;
+        data.body = body;
+        done();
       });
     });
+    it(
+      'Status 200',
+      () => {
+        expect(data.status).toBe(200);
+      },
+      10000
+    );
   });
 });
