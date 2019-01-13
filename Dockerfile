@@ -23,10 +23,6 @@ RUN mkdir -p /app
 # Change directory so that our commands run inside this new directory
 WORKDIR /app
 
-# For some reason nodemon & snyk need to be install globally
-RUN yarn global add nodemon
-# RUN yarn global add snyk
-
 # Copy dependency definitions
 COPY ./package.json /app
 COPY ./yarn.lock /app
