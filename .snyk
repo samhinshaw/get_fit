@@ -145,13 +145,13 @@ ignore:
 patch:
   'npm:debug:20170905':
     - email-verification > mongoose > mquery > debug:
-        patched: '2018-12-16T22:44:00.218Z'
+        patched: '2019-01-14T06:42:14.379Z'
   'npm:ms:20170412':
     - email-verification > mongoose > mquery > debug > ms:
-        patched: '2018-12-16T22:44:00.218Z'
+        patched: '2019-01-14T06:42:14.379Z'
   'npm:ms:20151024':
     - email-verification > mongoose > ms:
-        patched: '2018-12-16T22:55:29.580Z'
+        patched: '2019-01-14T06:42:14.379Z'
   'npm:hoek:20180212':
     - node-pre-gyp > hawk > boom > hoek:
         patched: '2018-09-19T16:14:20.034Z'
