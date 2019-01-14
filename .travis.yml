@@ -15,9 +15,15 @@ install: ''
 
 # When to run certain stages
 stages:
-  - build_tests
-  # - tests
-  # - cleanup_tests
+  - name: build_tests
+    # Don't run!
+    if: false IS true
+  - name: tests
+    # Don't run!
+    if: false IS true
+  - name: cleanup_tests
+    # Don't run!
+    if: false IS true
   - name: build_and_deploy_tagged
     if: tag IS present
   - name: build_and_deploy_release
