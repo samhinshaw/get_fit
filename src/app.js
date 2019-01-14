@@ -95,8 +95,6 @@ if (productionEnv) {
   }?authMechanism=${process.env.MONGO_LOCAL_AUTHMECH}`;
 }
 
-logger.info(`Connecting to ${mongoURI}`);
-
 mongoose.connect(
   mongoURI,
   mongoOptions
@@ -104,12 +102,15 @@ mongoose.connect(
 
 const db = mongoose.connection;
 
+logger.info(db);
+
 // Check connection
 db.once('open', () => {
   logger.info('Connected to MongoDB');
 });
 // Check for DB errors
 db.on('error', err => {
+  logger.error("I'm a database error!");
   logger.error(err);
 });
 
@@ -405,7 +406,7 @@ app.get('/api/user_weight', ensureAuthenticated, (req, res) => {
       // Get all of the rows from the spreadsheet.
       weightDoc.getRows(1, (getErr, rows) => {
         if (getErr) {
-          logger.info('row fetch error: ');
+          logger.info('google sheet row fetch error: ');
           logger.error(getErr);
         }
         // initialize empty array for us to gather pruned rows
