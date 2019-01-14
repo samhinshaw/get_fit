@@ -59,4 +59,5 @@ jobs:
       script:
         - echo "Deploying Image $DOCKER_TAG"
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-        - yarn push
+        - docker images
+        - docker push samhinshaw/get_fit:$DOCKER_TAG
