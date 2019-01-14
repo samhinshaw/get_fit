@@ -95,6 +95,8 @@ if (productionEnv) {
   }?authMechanism=${process.env.MONGO_LOCAL_AUTHMECH}`;
 }
 
+logger.info(`Connecting to ${mongoURI}`);
+
 mongoose.connect(
   mongoURI,
   mongoOptions
