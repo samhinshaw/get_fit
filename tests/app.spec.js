@@ -18,14 +18,12 @@ describe('Server', () => {
         .catch(err => {
           // eslint-disable-next-line no-console
           console.error(err);
+          done();
         });
+      done();
     });
-    it(
-      'Status 200',
-      () => {
-        expect(data.status).toBe(200);
-      },
-      10000
-    );
+    it('Status 200', () => {
+      expect(data.status).toBe(200);
+    });
   });
 });
