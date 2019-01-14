@@ -16,18 +16,12 @@ install: ''
 # When to run certain stages
 stages:
   - name: build_tests
-    # Don't run!
-    if: false IS true
   - name: tests
     # Don't run!
     if: false IS true
   - name: cleanup_tests
     # Don't run!
     if: false IS true
-  - name: deploy_tagged
-    if: tag IS present
-  - name: deploy_release
-    if: branch =~ ^release
 
 # Run our tests
 jobs:
@@ -44,20 +38,9 @@ jobs:
     - stage: 'cleanup_tests'
       name: 'Clean Up Tests'
       script: yarn down:test
-    # Build & Deploy prod images if we're tagged
-    - stage: 'deploy_tagged'
-      name: 'Deploy Tagged Image'
-      env: DOCKER_TAG="$TRAVIS_TAG-$TRAVIS_BUILD_NUMBER"
-      script:
-        - echo "Deploying Image $DOCKER_TAG"
-        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-        - yarn push
-    # Build & Deploy prod images if we're  on a release branch
-    - stage: 'deploy_release'
-      name: 'Deploy Release Image'
-      env: DOCKER_TAG="$TRAVIS_BRANCH-$TRAVIS_BUILD_NUMBER"
-      script:
-        - echo "Deploying Image $DOCKER_TAG"
-        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-        - docker images
-        - docker push samhinshaw/get_fit:$DOCKER_TAG
+
+deploy:
+  provider: script
+  script: bash deploy/docker-push.sh
+  on:
+    condition: (branch =~ ^release) OR (tag IS present)
