@@ -24,9 +24,9 @@ stages:
   - name: cleanup_tests
     # Don't run!
     if: false IS true
-  - name: build_and_deploy_tagged
+  - name: deploy_tagged
     if: tag IS present
-  - name: build_and_deploy_release
+  - name: deploy_release
     if: branch =~ ^release
 
 # Run our tests
