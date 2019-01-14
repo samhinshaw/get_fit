@@ -102,17 +102,14 @@ mongoose.connect(
 
 const db = mongoose.connection;
 
-logger.info(db);
+logger.info(JSON.stringify(db));
 
 // Check connection
 db.once('open', () => {
   logger.info('Connected to MongoDB');
 });
 // Check for DB errors
-db.on('error', err => {
-  logger.error("I'm a database error!");
-  logger.error(err);
-});
+db.on('error', db.on('error', logger.error.bind(console, 'db error: ')));
 
 // initialize app
 const app = express();
