@@ -11,7 +11,8 @@ env:
     - MONGO_LOCAL_SERVICENAME=mongo
 
 # Build Images before we start
-before_script: yarn build:test
+before_script:
+  - yarn build:test
 
 # Do nothing as the install command, since we are using Docker
 install:
@@ -46,8 +47,6 @@ after_success:
 deploy:
   provider: script
   script: bash deploy/docker-push.sh
-  on:
-    condition: $TRAVIS_BRANCH =~ ^release || -v $TRAVIS_TAG
 
 after_deploy:
   - snyk monitor

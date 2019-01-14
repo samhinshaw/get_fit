@@ -1,11 +1,17 @@
 #!/bin/bash
 
+if [[ $TRAVIS_BRANCH == release* || -n "$TRAVIS_TAG" ]]; then
+  echo "Beginning Deploy"
+else 
+  exit 0
+fi
+
 # Log in to DockerHub
 echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
 # If this build was tagged, generate a docker tag with that tag. 
 # Otherwise, generate a docker tag from the release branch name.
-if [[ -v TRAVIS_TAG ]]; then
+if [[ -n "$TRAVIS_TAG" ]]; then
   DOCKER_TAG="$TRAVIS_TAG-$TRAVIS_BUILD_NUMBER"
 else
   # Cut any preceding branch at "/"
