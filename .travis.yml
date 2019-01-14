@@ -45,19 +45,18 @@ jobs:
       name: 'Clean Up Tests'
       script: yarn down:test
     # Build & Deploy prod images if we're tagged
-    - stage: 'build_and_deploy_tagged'
-      name: 'Build & Deploy Tagged Prod Images'
+    - stage: 'deploy_tagged'
+      name: 'Deploy Tagged Image'
       env: DOCKER_TAG="$TRAVIS_TAG-$TRAVIS_BUILD_NUMBER"
       script:
-        - yarn build:prod
+        - echo "Deploying Image $DOCKER_TAG"
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-        - yarn push:prod
+        - yarn push
     # Build & Deploy prod images if we're  on a release branch
-    - stage: 'build_and_deploy_release'
-      name: 'Build & Deploy Release Prod Images'
+    - stage: 'deploy_release'
+      name: 'Deploy Release Image'
       env: DOCKER_TAG="$TRAVIS_BRANCH-$TRAVIS_BUILD_NUMBER"
       script:
-        - echo $DOCKER_TAG
-        - yarn build:prod
+        - echo "Deploying Image $DOCKER_TAG"
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-        - yarn push:prod
+        - yarn push
