@@ -1,20 +1,24 @@
 /* eslint-env jasmine */
-const Request = require('request');
-
-// const server = require('../src/app');
+import axios from 'axios';
 
 describe('Server', () => {
   describe('GET /', () => {
     const data = {};
     beforeAll(done => {
+      // eslint-disable-next-line no-console
       console.log('Getting http://node:8005/');
-      Request.get('http://node:8005/', (error, response, body) => {
-        if (error) console.error(error);
-        console.log(response);
-        data.status = response.statusCode;
-        data.body = body;
-        done();
-      });
+      axios
+        .get('http://node:8005/')
+        .then(response => {
+          // eslint-disable-next-line no-console
+          console.log(response);
+          data.status = response.statusCode;
+          done();
+        })
+        .catch(err => {
+          // eslint-disable-next-line no-console
+          console.error(err);
+        });
     });
     it(
       'Status 200',
