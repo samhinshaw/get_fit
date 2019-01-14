@@ -43,4 +43,4 @@ deploy:
   provider: script
   script: bash deploy/docker-push.sh
   on:
-    condition: (branch =~ ^release) OR (tag IS present)
+    condition: $TRAVIS_BRANCH =~ ^release || -v $TRAVIS_TAG
