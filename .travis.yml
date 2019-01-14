@@ -57,6 +57,7 @@ jobs:
       name: 'Build & Deploy Release Prod Images'
       env: DOCKER_TAG="$TRAVIS_BRANCH-$TRAVIS_BUILD_NUMBER"
       script:
+        - echo $DOCKER_TAG
         - yarn build:prod
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
         - yarn push:prod
