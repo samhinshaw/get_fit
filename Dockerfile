@@ -1,6 +1,6 @@
 # Start from a Python & Node Image
 # Reference from: https://hub.docker.com/r/nikolaik/python-nodejs/dockerfile
-FROM samhinshaw/python-node:latest
+FROM samhinshaw/python-node:1.0.1
 
 # Install Python Dependencies
 
