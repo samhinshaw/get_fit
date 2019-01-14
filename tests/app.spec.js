@@ -7,9 +7,10 @@ describe('Server', () => {
   describe('GET /', () => {
     const data = {};
     beforeAll(done => {
+      console.log('Getting http://node:8005/');
       Request.get('http://node:8005/', (error, response, body) => {
-        if (error) console.error(error); // eslint-disable-line no-console
-        console.log(response); // eslint-disable-line no-console
+        if (error) console.error(error);
+        console.log(response);
         data.status = response.statusCode;
         data.body = body;
         done();
