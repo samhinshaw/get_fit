@@ -31,6 +31,8 @@ services:
   # Start backend Express.js server
   node:
     build: .
+    # Specify the name of the image to be built
+    image: samhinshaw/get_fit:${DOCKER_TAG:-latest}
     # Set the NODE_ENV to the dev environment
     # Pass in environment variables specified by the Travis build environment
     environment:
