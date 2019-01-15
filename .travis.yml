@@ -10,29 +10,12 @@ env:
     - MONGO_LOCAL_PORT=27017
     - MONGO_LOCAL_SERVICENAME=mongo
 
-# Build Images before we start
-before_script:
-  - yarn build:test
+# Make the install command build the containers
+install: yarn build:test
 
-# Do nothing as the install command, since we are using Docker
-install: ''
+script: yarn up:test
 
-# When to run certain stages
-stages:
-  - 'tests'
-  - 'test cleanup'
-
-# Run our tests
-jobs:
-  include:
-    # Run our tests
-    - stage: 'tests'
-      name: 'Unit Tests'
-      script: yarn up:test
-    # Clean up after our tests
-    - stage: 'test cleanup'
-      name: 'Clean Up Tests'
-      script: yarn down:test
+after_script: yarn down:test
 
 # skip_cleanup prevents travis from resetting the working directory so we can
 # deploy properly
