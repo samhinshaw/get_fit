@@ -102,8 +102,6 @@ mongoose.connect(
 
 const db = mongoose.connection;
 
-logger.info(JSON.stringify(db));
-
 // Check connection
 db.once('open', () => {
   logger.info('Connected to MongoDB');
