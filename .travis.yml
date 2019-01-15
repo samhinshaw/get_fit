@@ -28,9 +28,10 @@ deploy:
     script: bash deploy/docker-push.sh
     # prevent travis from resetting the working dir so we can deploy
     skip_cleanup: true
+    # Run on all branches and let our script handle the conditionals
     on:
       all_branches: true
-  # deploy releases
+  # deploy GitHub releases (push local tags to GitHub)
   - provider: releases
     api_key: $GITHUB_PAT
     # prevent travis from resetting the working dir so we can deploy
