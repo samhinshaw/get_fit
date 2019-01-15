@@ -25,7 +25,7 @@ after_script: ''
 deploy:
   # deploy tags
   - provider: script
-    script: bash scripts/deploy.sh
+    script: bash deploy/docker-push.sh
     # prevent travis from resetting the working dir so we can deploy
     skip_cleanup: true
     on:
