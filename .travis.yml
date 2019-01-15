@@ -15,9 +15,7 @@ before_script:
   - yarn build:test
 
 # Do nothing as the install command, since we are using Docker
-install:
-  - snyk protect
-  - snyk test
+install: ''
 
 # When to run certain stages
 stages:
@@ -36,9 +34,6 @@ jobs:
       name: 'Clean Up Tests'
       script: yarn down:test
 
-after_success:
-  - snyk monitor
-
 # skip_cleanup prevents travis from resetting the working directory so we can
 # deploy properly
 deploy:
@@ -55,6 +50,3 @@ deploy:
     on:
       branch: master
       tags: true
-
-after_deploy:
-  - snyk monitor
