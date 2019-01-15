@@ -21,13 +21,8 @@ install:
 
 # When to run certain stages
 stages:
-  - name: tests
-    # Don't run!
-    if: false IS true
-  - name: cleanup_tests
-    # Don't run!
-    if: false IS true
-  - deploy
+  - tests
+  - cleanup_tests
 
 # Run our tests
 jobs:
