@@ -14,21 +14,24 @@ env:
 install: yarn build:test
 
 script: yarn up:test
+# run tests!
 
 after_script: yarn down:test
+# bring down the test containers we used
 
-# skip_cleanup prevents travis from resetting the working directory so we can
-# deploy properly
+# deploy!
 deploy:
   # deploy tags
   - provider: script
     script: bash scripts/deploy.sh
+    # prevent travis from resetting the working dir so we can deploy
     skip_cleanup: true
     on:
       all_branches: true
   # deploy releases
   - provider: releases
     api_key: $GITHUB_PAT
+    # prevent travis from resetting the working dir so we can deploy
     skip_cleanup: true
     on:
       branch: master
