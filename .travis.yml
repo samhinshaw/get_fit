@@ -44,9 +44,15 @@ jobs:
 after_success:
   - snyk monitor
 
+# skip_cleanup prevents travis from resetting the working directory so we can
+# deploy properly
 deploy:
-  provider: script
-  script: bash deploy/docker-push.sh
+  # deploy tags
+  - provider: script
+    script: bash scripts/deploy.sh
+    skip_cleanup: true
+    on:
+      all_branches: true
 
 after_deploy:
   - snyk monitor
