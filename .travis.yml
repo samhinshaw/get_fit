@@ -28,11 +28,11 @@ stages:
 jobs:
   include:
     # Run our tests
-    - stage: 'tests'
+    - stage: 'Tests'
       name: 'Unit Tests'
       script: yarn up:test
     # Clean up after our tests
-    - stage: 'cleanup_tests'
+    - stage: 'Clean Up Tests'
       name: 'Clean Up Tests'
       script: yarn down:test
 
