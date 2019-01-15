@@ -19,18 +19,18 @@ install: ''
 
 # When to run certain stages
 stages:
-  - tests
-  - cleanup_tests
+  - 'tests'
+  - 'test cleanup'
 
 # Run our tests
 jobs:
   include:
     # Run our tests
-    - stage: 'Tests'
+    - stage: 'tests'
       name: 'Unit Tests'
       script: yarn up:test
     # Clean up after our tests
-    - stage: 'Clean Up Tests'
+    - stage: 'test cleanup'
       name: 'Clean Up Tests'
       script: yarn down:test
 
