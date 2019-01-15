@@ -107,7 +107,9 @@ db.once('open', () => {
   logger.info('Connected to MongoDB');
 });
 // Check for DB errors
-db.on('error', db.on('error', logger.error.bind(console, 'db error: ')));
+db.on('error', err => {
+  logger.error('Database error: %j', err);
+});
 
 // initialize app
 const app = express();
