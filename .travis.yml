@@ -13,11 +13,13 @@ env:
 # Make the install command build the containers
 install: yarn build:test
 
-script: yarn up:test
 # run tests!
+# script: 'yarn up:test'
+script: ''
 
-after_script: yarn down:test
 # bring down the test containers we used
+# after_script: yarn down:test
+after_script: ''
 
 # deploy!
 deploy:
