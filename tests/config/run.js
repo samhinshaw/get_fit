@@ -7,6 +7,7 @@ jasmine.loadConfigFile('tests/config/jasmine.json');
 
 // remove default reporter logs
 jasmine.getEnv().clearReporters();
+
 // add jasmine-spec-reporter
 jasmine.getEnv().addReporter(
   new SpecReporter({

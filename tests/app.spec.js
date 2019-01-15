@@ -6,12 +6,12 @@ describe('Server', () => {
     const data = {};
     beforeAll(done => {
       // eslint-disable-next-line no-console
-      console.log('Getting http://node:8005/');
+      console.warn('Getting http://node:8005/');
       axios
         .get('http://node:8005/')
         .then(response => {
           // eslint-disable-next-line no-console
-          console.log(response);
+          console.warn(response);
           data.status = response.statusCode;
           done();
         })
