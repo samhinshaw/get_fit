@@ -11,7 +11,7 @@ env:
     - MONGO_LOCAL_SERVICENAME=mongo
 
 # Make the install command build the containers
-install: yarn build:test
+install: bash ci/build.sh
 
 # run tests!
 # script: 'yarn up:test'
@@ -25,7 +25,7 @@ after_script: ''
 deploy:
   # deploy tags
   - provider: script
-    script: bash deploy/docker-push.sh
+    script: bash ci/docker-push.sh
     # prevent travis from resetting the working dir so we can deploy
     skip_cleanup: true
     # Run on all branches and let our script handle the conditionals
