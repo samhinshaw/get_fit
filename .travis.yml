@@ -13,8 +13,10 @@ env:
 # Make the install command build the containers
 install: bash ci/build.sh
 
+before_script: yarn up:test
+
 # run tests!
-script: yarn up:test
+script: docker exec get_fit_jasmine yarn test:all
 
 # bring down the test containers we used
 after_script: yarn down:test
