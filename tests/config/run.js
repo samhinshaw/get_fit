@@ -8,6 +8,7 @@ const jasmine = new Jasmine();
 // Find the backend address for the given environment
 const backendHost = process.env.NODE_ENV === 'development' ? 'localhost' : 'node';
 
+// Load configuration file
 jasmine.loadConfigFile('tests/config/jasmine.json');
 
 // remove default reporter logs
