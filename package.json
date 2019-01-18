@@ -122,6 +122,7 @@
     "prettier": "^1.13.7",
     "sass-loader": "^6.0.6",
     "style-loader": "^0.19.1",
+    "tcp-port-used": "^1.0.1",
     "webpack": "^3.10.0",
     "webpack-dev-server": "^2.11.1"
   },
