@@ -26,14 +26,19 @@ jasmine.addReporter(
 );
 
 // Don't start the tests until the Node.js server is up and running
-tcpPortUsed.waitUntilUsedOnHost(8005, backendHost).then(
-  () => {
-    // Then start tests
-    jasmine.execute();
-  },
-  err => {
-    // Otherwise log errors
-    // eslint-disable-next-line no-console
-    console.error('Error on check:', err.message);
-  }
-);
+tcpPortUsed
+  .waitUntilUsedOnHost(
+    // look for port 8005
+    8005,
+    // on our target host, either "localhost" or "node"
+    backendHost,
+    // wait 100ms between pings
+    100,
+    // wait 20sec in total for the port to be used
+    20 * 1000
+  )
+  // Then start tests
+  .then(() => jasmine.execute())
+  // Otherwise log errors
+  // eslint-disable-next-line no-console
+  .catch(err => console.error('Error on check:', err.message));
