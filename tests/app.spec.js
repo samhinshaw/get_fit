@@ -10,8 +10,8 @@ describe('Server', () => {
   });
 
   describe('GET /', () => {
-    console.log(`Connecting to http://${backendAddress}:8005/`);
     it('Status 200', done => {
+      console.log(`Connecting to http://${backendAddress}:8005/`);
       axios
         .get(`http://${backendAddress}:8005/`)
         .then(resp => {
