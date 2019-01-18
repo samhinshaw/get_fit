@@ -10,7 +10,10 @@ describe('Server', () => {
   });
 
   describe('GET /', () => {
-    const backendAddress = `http://${backendHost}:8005/`;
+    let backendAddress;
+    beforeAll(() => {
+      backendAddress = `http://${backendHost}:8005/`;
+    });
     it('Status 200', done => {
       console.log(`Connecting to ${backendAddress}`);
       axios
