@@ -36,8 +36,6 @@ tcpPortUsed
   )
   // Then start tests
   .then(() => {
-    // eslint-disable-next-line no-console
-    console.log('Waiting for backend to be available...');
     // Then wait another 10 seconds for good measure
     setTimeout(() => {
       jasmine.execute();
