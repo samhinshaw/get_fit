@@ -6,6 +6,8 @@ describe('Server', () => {
   // container), otherwise use node (inside a container)
   let backendHost;
   beforeAll(() => {
+    // Set default timeout
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 10 * 1000;
     backendHost = process.env.NODE_ENV === 'development' ? 'localhost' : 'node';
   });
 

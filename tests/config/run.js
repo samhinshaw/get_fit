@@ -10,9 +10,6 @@ const backendHost = process.env.NODE_ENV === 'development' ? 'localhost' : 'node
 
 jasmine.loadConfigFile('tests/config/jasmine.json');
 
-// Set default timeout
-jasmine.DEFAULT_TIMEOUT_INTERVAL = 10 * 1000;
-
 // remove default reporter logs
 jasmine.clearReporters();
 
