@@ -1,8 +1,5 @@
 #!/bin/bash
 
-echo "Travis Tag: $TRAVIS_TAG"
-echo "Travis Branch: $TRAVIS_BRANCH"
-
 # If this build was tagged, generate a docker tag with that tag. 
 # Otherwise, generate a docker tag from the release branch name.
 if [[ -n "$TRAVIS_TAG" ]]; then
