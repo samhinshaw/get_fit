@@ -16,6 +16,7 @@ describe('Server', () => {
         .get(`http://${backendAddress}:8005/`)
         .then(resp => {
           // eslint-disable-next-line no-console
+          console.warn(resp);
           expect(resp.status).toBe(200);
           done();
         })
