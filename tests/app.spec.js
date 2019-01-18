@@ -4,16 +4,17 @@ import axios from 'axios';
 describe('Server', () => {
   // Use localhost if we're in development (running our tests outside of a
   // container), otherwise use node (inside a container)
-  let backendAddress;
+  let backendHost;
   beforeAll(() => {
-    backendAddress = process.env.NODE_ENV === 'development' ? 'localhost' : 'node';
+    backendHost = process.env.NODE_ENV === 'development' ? 'localhost' : 'node';
   });
 
   describe('GET /', () => {
+    const backendAddress = `http://${backendHost}:8005/`;
     it('Status 200', done => {
-      console.log(`Connecting to http://${backendAddress}:8005/`);
+      console.log(`Connecting to ${backendAddress}`);
       axios
-        .get(`http://${backendAddress}:8005/`)
+        .get(backendAddress)
         .then(resp => {
           // eslint-disable-next-line no-console
           console.warn(resp);
@@ -23,7 +24,7 @@ describe('Server', () => {
         .catch(err => {
           // eslint-disable-next-line no-console
           console.error(err);
-          fail('The request failed.');
+          fail(`The request to ${backendAddress} failed.`);
           done();
         });
     });
