@@ -4,7 +4,6 @@ services:
   mongo:
     # Build the Dockerfile in the root of the mongo/ folder
     build: mongo
-    container_name: get_fit_mongo
     image: get_fit_mongo:${DOCKER_TAG:-latest}
     # Expose the default mongoDB port. In contrast to the
     # docker-compose.test.yml, here we use the more traditional "ports"
@@ -34,7 +33,6 @@ services:
   # Start backend Express.js server
   node:
     build: .
-    container_name: get_fit_node
     image: samhinshaw/get_fit:${DOCKER_TAG:-latest}
     # Set the NODE_ENV to the dev environment
     # Pass in environment variables specified by the Travis build environment
@@ -68,12 +66,10 @@ services:
       - mongo
 
   jasmine:
-    container_name: get_fit_jasmine
     image: samhinshaw/get_fit:${DOCKER_TAG:-latest}
     # Set the NODE_ENV to the dev environment
     environment:
       - NODE_ENV=testing
-    tty: true
-    command: ['bash']
+    command: ['yarn', 'test:all']
     depends_on:
       - node
