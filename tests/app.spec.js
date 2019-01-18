@@ -1,7 +1,7 @@
 /* eslint-env jasmine */
 import axios from 'axios';
 
-describe('Server', () => {
+describe('The server', () => {
   // Use localhost if we're in development (running our tests outside of a
   // container), otherwise use node (inside a container)
   let backendHost;
@@ -11,12 +11,12 @@ describe('Server', () => {
     backendHost = process.env.NODE_ENV === 'development' ? 'localhost' : 'node';
   });
 
-  describe('GET /', () => {
+  describe('serves /', () => {
     let backendAddress;
     beforeAll(() => {
       backendAddress = `http://${backendHost}:8005/`;
     });
-    it('Status 200', done => {
+    it('with status 200', done => {
       // eslint-disable-next-line no-console
       console.log(`Connecting to ${backendAddress}`);
       axios
