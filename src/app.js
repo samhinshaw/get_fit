@@ -115,7 +115,7 @@ db.on('error', err => {
 const app = express();
 
 // Let Express know it's behind a nginx proxy
-app.set('trust proxy', '127.0.0.1');
+app.set('trust proxy', 'loopback');
 
 // Set environment
 app.use((req, res, next) => {
