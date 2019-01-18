@@ -2,10 +2,17 @@
 import axios from 'axios';
 
 describe('Server', () => {
+  // Use localhost if we're in development (running our tests outside of a
+  // container), otherwise use node (inside a container)
+  let backendAddress;
+  beforeAll(() => {
+    backendAddress = process.env.NODE_ENV === 'development' ? 'localhost' : 'node';
+  });
+
   describe('GET /', () => {
     it('Status 200', done => {
       axios
-        .get('http://localhost:8005/')
+        .get(`http://${backendAddress}:8005/`)
         .then(resp => {
           // eslint-disable-next-line no-console
           expect(resp.status).toBe(200);
