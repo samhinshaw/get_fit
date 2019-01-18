@@ -14,7 +14,7 @@ env:
 install: bash ci/build.sh
 
 # run tests!
-script: 'yarn up:test'
+script: yarn up:test
 
 # bring down the test containers we used
 after_script: yarn down:test
