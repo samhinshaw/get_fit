@@ -3,27 +3,20 @@ import axios from 'axios';
 
 describe('Server', () => {
   describe('GET /', () => {
-    const data = {};
-    beforeAll(done => {
-      // eslint-disable-next-line no-console
-      console.warn('Getting http://node:8005/');
+    it('Status 200', done => {
       axios
-        .get('http://node:8005/')
-        .then(response => {
+        .get('http://localhost:8005/')
+        .then(resp => {
           // eslint-disable-next-line no-console
-          console.warn(response);
-          data.status = response.statusCode;
+          expect(resp.status).toBe(200);
           done();
         })
         .catch(err => {
           // eslint-disable-next-line no-console
           console.error(err);
+          fail('The request failed.');
           done();
         });
-      done();
-    });
-    it('Status 200', () => {
-      expect(data.status).toBe(200);
     });
   });
 });
