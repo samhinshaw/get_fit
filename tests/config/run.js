@@ -1,6 +1,7 @@
 import Jasmine from 'jasmine';
 import { SpecReporter } from 'jasmine-spec-reporter';
 import tcpPortUsed from 'tcp-port-used';
+import axios from 'axios';
 
 // Instantiate Jasmine
 const jasmine = new Jasmine();
@@ -23,7 +24,7 @@ jasmine.addReporter(
   })
 );
 
-// Don't start the tests until the Node.js server is up and running
+// Debug!!
 tcpPortUsed
   .waitUntilUsedOnHost(
     // look for port 8005
@@ -37,11 +38,37 @@ tcpPortUsed
   )
   // Then start tests
   .then(() => {
-    // Then wait another 10 seconds for good measure
-    setTimeout(() => {
-      jasmine.execute();
-    }, 10 * 1000);
+    axios
+      .get(`http://node:8005/`)
+      .then(resp => {
+        // eslint-disable-next-line no-console
+        console.warn(resp);
+      })
+      .catch(err => {
+        // eslint-disable-next-line no-console
+        console.error('Test request failed!');
+        // eslint-disable-next-line no-console
+        console.error(err);
+      });
   })
+  // Otherwise log errors
+  // eslint-disable-next-line no-console
+  .catch(err => console.error('Error on check:', err.message));
+
+// Don't start the tests until the Node.js server is up and running
+tcpPortUsed
+  .waitUntilUsedOnHost(
+    // look for port 8005
+    8005,
+    // on our target host, either "localhost" or "node"
+    backendHost,
+    // wait 100ms between pings
+    5 * 1000,
+    // wait 20sec in total for the port to be used
+    20 * 1000
+  )
+  // Then start tests
+  .then(() => jasmine.execute())
   // Otherwise log errors
   // eslint-disable-next-line no-console
   .catch(err => console.error('Error on check:', err.message));
