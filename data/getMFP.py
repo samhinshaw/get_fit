@@ -17,6 +17,7 @@ import logging
 
 # Set up environment (are we in production?)
 productionEnv = os.getenv('NODE_ENV') == 'production'
+developmentEnv = os.getenv('NODE_ENV') == 'development'
 
 # define log levels
 log_levels = {"production": "WARNING", "development": "DEBUG", "testing": "INFO"}
@@ -42,10 +43,12 @@ logger = logging.getLogger('get-fit-py')
 logger.addHandler(fileHandler)
 logger.addHandler(consoleHandler)
 
-# bring in dotenv config options (located in the project root)
-load_dotenv('../.env')
-
 try:
+
+  # bring in dotenv config options in development (located in the project root)
+  if developmentEnv:
+    load_dotenv('../.env')
+
   # NOTES
   # - Later on I may wish to pull calorie goals straight from MFP
   # MFPcals.goals['calories']

@@ -1,8 +1,6 @@
 // bring in express for routing
 import express from 'express';
 
-// import { parse, format, isValid, addMinutes } from 'date-fns';
-
 import path from 'path'; // core module included with Node.js
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
@@ -12,30 +10,24 @@ import { extendMoment } from 'moment-range';
 import expressValidator from 'express-validator';
 import expressSanitizer from 'express-sanitizer';
 import cookieParser from 'cookie-parser';
-// const flash = require('connect-flash');
 import expMessages from 'express-messages';
 import passport from 'passport';
-// import _ from 'lodash';
 import helmet from 'helmet';
 import GoogleSpreadsheet from 'google-spreadsheet';
 import Promise from 'bluebird';
-// import winston from 'winston';
+import dotenv from 'dotenv';
 
 // Include custom middleware
 import { queryCustomPeriodsFromMongo, getPendingRequests } from './middlewares/mongoMiddleware';
 import ensureAuthenticated from './methods/auth';
 
 // Bring in route files
-// const data = require('./routes/data');
 import account from './routes/account';
 import landing from './routes/landing';
 import user from './routes/user';
 import partner from './routes/partner';
 
 // Include document Schemas
-// import Request from './models/request';
-// import Period from './models/period';
-// import Entry from './models/entry';
 import User from './models/user';
 
 // Bring in winston logger
@@ -45,6 +37,12 @@ import logger from './methods/logger';
 import authMiddleware from './methods/passport';
 
 const productionEnv = process.env.NODE_ENV === 'production';
+const developmentEnv = process.env.NODE_ENV === 'development';
+
+// Only apply .env file config in development
+if (developmentEnv) {
+  dotenv.config();
+}
 
 // Bring in remaining config files
 const appConfig = require('../config/app_config.json');
