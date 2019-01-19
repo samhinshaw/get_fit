@@ -1,7 +1,6 @@
 import Jasmine from 'jasmine';
 import { SpecReporter } from 'jasmine-spec-reporter';
 import tcpPortUsed from 'tcp-port-used';
-import axios from 'axios';
 
 // Instantiate Jasmine
 const jasmine = new Jasmine();
