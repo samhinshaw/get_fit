@@ -1,16 +1,6 @@
 # Start from a Python & Node Image
 # Reference from: https://hub.docker.com/r/nikolaik/python-nodejs/dockerfile
-FROM samhinshaw/python-node:1.0.1
-
-# Install Python Dependencies
-
-RUN pip install               \
-  arrow==0.10.0               \
-  bson==0.5.7                 \     
-  myfitnesspal==1.11.0        \
-  pymongo==3.7.2              \
-  python-dateutil==2.6.1      \
-  python-dotenv==0.1.0
+FROM samhinshaw/python-node:1.1.0
 
 #################
 ##   BACKEND   ##
