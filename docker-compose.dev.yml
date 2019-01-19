@@ -5,6 +5,7 @@ services:
     # Build the Dockerfile in the root of the mongo/ folder
     build: mongo
     image: get_fit_mongo:latest
+    container_name: get_fit_mongo
     # Expose the default mongoDB port. In contrast to the
     # docker-compose.test.yml, here we use the more traditional "ports"
     # configuration. This means that this port is exposed to our local machine,
@@ -19,6 +20,7 @@ services:
   node:
     build: .
     image: get_fit:latest
+    container_name: get_fit_node
     # Set the NODE_ENV to the dev environment
     environment:
       - NODE_ENV=development
@@ -45,6 +47,7 @@ services:
   ui:
     build: .
     image: get_fit:latest
+    container_name: get_fit_ui
     # Set the NODE_ENV to the dev environment
     environment:
       - NODE_ENV=development
