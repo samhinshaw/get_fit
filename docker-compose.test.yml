@@ -73,7 +73,6 @@ services:
     # Set the NODE_ENV to the dev environment
     environment:
       - NODE_ENV=testing
-    tty: true
-    command: ['bash']
+    command: ['yarn', 'test:all']
     depends_on:
       - node
