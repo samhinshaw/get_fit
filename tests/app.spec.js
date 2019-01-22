@@ -7,7 +7,7 @@ describe('The server', () => {
   let backendHost;
   beforeAll(() => {
     // Set default timeout
-    jasmine.DEFAULT_TIMEOUT_INTERVAL = 10 * 1000;
+    jasmine.DEFAULT_TIMEOUT_INTERVAL = 20 * 1000; // 20 seconds
     backendHost = process.env.NODE_ENV === 'development' ? 'localhost' : 'node';
   });
 
