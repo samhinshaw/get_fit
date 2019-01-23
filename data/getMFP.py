@@ -103,9 +103,9 @@ try:
     # Connect to the production server
     mongoURI = \
       "mongodb+srv://" + \
-      os.getenv('MONGO_GETFIT_PYTHON_USER') + \
+      os.getenv('MONGO_PROD_PYTHON_USER') + \
       ":" + \
-      os.getenv('MONGO_GETFIT_PYTHON_PASS') + \
+      os.getenv('MONGO_PROD_PYTHON_PASS') + \
       "@" + \
       os.getenv('MONGO_PROD_CONNECTION') + \
       "/" + \
@@ -116,9 +116,9 @@ try:
     # Otherwise connect to our local development server
     mongoURI = \
       "mongodb://" + \
-      os.getenv('MONGO_GETFIT_PYTHON_USER') + \
+      os.getenv('MONGO_DEV_PYTHON_USER') + \
       ":" + \
-      os.getenv('MONGO_GETFIT_PYTHON_PASS') + \
+      os.getenv('MONGO_DEV_PYTHON_PASS') + \
       "@" + \
       os.getenv('MONGO_LOCAL_SERVICENAME') + \
       ":" + \

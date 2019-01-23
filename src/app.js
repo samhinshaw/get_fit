@@ -79,18 +79,18 @@ let mongoURI;
 const mongoOptions = { useNewUrlParser: true };
 if (productionEnv) {
   // if we're in production, connect to our production database
-  mongoURI = `mongodb+srv://nodejs:${process.env.MONGO_NODEJS_PASS}@${
-    process.env.MONGO_PROD_CONNECTION
-  }/${process.env.MONGO_PROD_DBNAME}?retryWrites=true`;
+  mongoURI = `mongodb+srv://${process.env.MONGO_PROD_NODE_USER}:${
+    process.env.MONGO_PROD_NODEJS_PASS
+  }@${process.env.MONGO_PROD_CONNECTION}/${process.env.MONGO_PROD_DBNAME}?retryWrites=true`;
   // If we're in production, we also need to specify the dbName to connect to
   mongoOptions.dbName = process.env.MONGO_PROD_DBNAME;
 } else {
   // Otherwise, connect to our local instance.
-  mongoURI = `mongodb://${process.env.MONGO_GETFIT_NODE_USER}:${
-    process.env.MONGO_GETFIT_NODE_PASS
-  }@${process.env.MONGO_LOCAL_SERVICENAME}:${process.env.MONGO_LOCAL_PORT}/${
-    process.env.MONGO_INITDB_DATABASE
-  }?authMechanism=${process.env.MONGO_LOCAL_AUTHMECH}`;
+  mongoURI = `mongodb://${process.env.MONGO_DEV_NODE_USER}:${process.env.MONGO_DEV_NODE_PASS}@${
+    process.env.MONGO_LOCAL_SERVICENAME
+  }:${process.env.MONGO_LOCAL_PORT}/${process.env.MONGO_INITDB_DATABASE}?authMechanism=${
+    process.env.MONGO_LOCAL_AUTHMECH
+  }`;
 }
 
 mongoose.connect(

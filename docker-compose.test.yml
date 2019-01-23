@@ -13,15 +13,10 @@ services:
     # https://stackoverflow.com/questions/40801772/what-is-the-difference-between-docker-compose-ports-vs-expose
     expose:
       - 27017
+    env_file:
+      - unsecure.env
     # Pass in environment variables specified by the Travis build environment
     environment:
-      - MONGO_GETFIT_NODE_PASS
-      - MONGO_GETFIT_NODE_USER
-      - MONGO_GETFIT_PYTHON_PASS
-      - MONGO_GETFIT_PYTHON_USER
-      - MONGO_INITDB_DATABASE
-      - MONGO_INITDB_ROOT_PASSWORD
-      - MONGO_INITDB_ROOT_USERNAME
       - GETFIT_EMAIL_AMELIA
       - GETFIT_EMAIL_SAM
       - GETFIT_FITNESS_GOAL_AMELIA
@@ -36,6 +31,8 @@ services:
     build: .
     image: samhinshaw/get_fit:${DOCKER_TAG:-latest}
     container_name: get_fit_node
+    env_file:
+      - unsecure.env
     # Set the NODE_ENV to the dev environment
     # Pass in environment variables specified by the Travis build environment
     environment:
@@ -46,14 +43,6 @@ services:
       - GOOGLE_PRIVATE_KEY
       - GOOGLE_PRIVATE_KEY_ID
       - GOOGLE_PROJECT_ID
-      - MONGO_GETFIT_NODE_PASS
-      - MONGO_GETFIT_NODE_USER
-      - MONGO_LOCAL_SERVICENAME
-      - MONGO_LOCAL_PORT
-      - MONGO_INITDB_DATABASE
-      - MONGO_LOCAL_AUTHMECH
-      - MONGO_GETFIT_PYTHON_PASS
-      - MONGO_GETFIT_PYTHON_USER
       - NODEJS_REGISTRATION_SECRET
       - NODEJS_SESSION_SECRET
       - NODEJS_ZOHO_PASS
@@ -71,6 +60,8 @@ services:
     image: samhinshaw/get_fit:${DOCKER_TAG:-latest}
     container_name: get_fit_jasmine
     # Set the NODE_ENV to the dev environment
+    env_file:
+      - unsecure.env
     environment:
       - NODE_ENV=testing
     command: ['yarn', 'test:all']

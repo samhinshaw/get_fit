@@ -16,6 +16,7 @@ services:
     # And add the environment variables within our secret .env file
     env_file:
       - .env
+      - unsecure.env
   # Start backend Express.js server
   node:
     build: .
@@ -30,6 +31,7 @@ services:
     # And add the environment variables within our secret .env file
     env_file:
       - .env
+      - unsecure.env
     # Mount the codebase to the container for live-reloading
     volumes:
       - ./:/app/
@@ -48,6 +50,9 @@ services:
     build: .
     image: get_fit:latest
     container_name: get_fit_ui
+    env_file:
+      - .env
+      - unsecure.env
     # Set the NODE_ENV to the dev environment
     environment:
       - NODE_ENV=development
