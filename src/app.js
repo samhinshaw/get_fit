@@ -51,6 +51,8 @@ if (!productionEnv) {
   dotenv.config({ path: '../unsecure.env' });
 }
 
+console.log(JSON.stringify(process.env));
+
 // Bring in remaining config files
 const appConfig = require('../config/app_config.json');
 
