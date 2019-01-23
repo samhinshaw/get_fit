@@ -53,8 +53,6 @@ if (!productionEnv) {
   mongoose.set('debug', true);
 }
 
-console.log(JSON.stringify(process.env));
-
 // Bring in remaining config files
 const appConfig = require('../config/app_config.json');
 
