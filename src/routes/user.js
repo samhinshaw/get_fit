@@ -4,6 +4,7 @@ import express from 'express';
 import _ from 'lodash';
 import Moment from 'moment-timezone';
 import { extendMoment } from 'moment-range';
+
 import ensureAuthenticated from '../methods/auth';
 
 import Entry from '../models/entry';

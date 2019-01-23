@@ -13,7 +13,6 @@ import cookieParser from 'cookie-parser';
 import expMessages from 'express-messages';
 import passport from 'passport';
 import helmet from 'helmet';
-import GoogleSpreadsheet from 'google-spreadsheet';
 import Promise from 'bluebird';
 import dotenv from 'dotenv';
 
@@ -26,6 +25,7 @@ import account from './routes/account';
 import landing from './routes/landing';
 import user from './routes/user';
 import partner from './routes/partner';
+import api from './routes/api';
 
 // Include document Schemas
 import User from './models/user';
@@ -46,22 +46,6 @@ if (developmentEnv) {
 
 // Bring in remaining config files
 const appConfig = require('../config/app_config.json');
-
-// Set up google credentials with secret parameters. Docker doesn't parse
-// start/end quotes within .env files, so make sure those are not present
-const googleCreds = {
-  type: 'service_account',
-  project_id: process.env.GOOGLE_PROJECT_ID,
-  private_key_id: process.env.GOOGLE_PRIVATE_KEY_ID,
-  // docker doesn't parse newlines in .env files, so we need to replace manually
-  private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
-  client_email: process.env.GOOGLE_CLIENT_EMAIL,
-  client_id: process.env.GOOGLE_CLIENT_ID,
-  auth_uri: 'https://accounts.google.com/o/oauth2/auth',
-  token_uri: 'https://accounts.google.com/o/oauth2/token',
-  auth_provider_x509_cert_url: 'https://www.googleapis.com/oauth2/v1/certs',
-  client_x509_cert_url: process.env.GOOGLE_CLIENT_X509_CERT_URL
-};
 
 mongoose.Promise = Promise;
 
@@ -353,107 +337,12 @@ app.get('/', (req, res) => {
   }
 });
 
-// Send user data to client side (via cookie) when user is logged in
-app.get('/api/user_data', ensureAuthenticated, (req, res) => {
-  if (req.user === undefined) {
-    // The user is not logged in
-    res.json({});
-  } else {
-    // Sened everything EXCEPT PASSWORD
-    // Blacklist method. Only needs to change if blacklist changes
-    // First define function to omit object keys
-    // const removeProps = (...propsToFilter) => obj => {
-    //   const newObj = Object.assign({}, obj);
-    //   propsToFilter.forEach(key => delete newObj[key]);
-    //   return newObj;
-    // };
-    // However, overinclusive!! Includes properties/keys such as '_maxListeners'
-    // const userJSON = removeProps('_id', 'password', '__v')(req.user);
-    // res.json(userJSON);
-    // Whitelist method--must be updated if user model changes
-    res.json({
-      username: res.locals.user.username,
-      firstname: res.locals.user.firstname,
-      lastname: res.locals.user.lastname,
-      email: res.locals.user.email,
-      partner: res.locals.user.partner,
-      mfp: res.locals.user.mfp,
-      currentPoints: res.locals.user.currentPoints,
-      fitnessGoal: res.locals.user.fitnessGoal
-    });
-  }
-});
-
-// Send user data to client side (via cookie) when user is logged in
-app.get('/api/user_weight', ensureAuthenticated, (req, res) => {
-  if (req.user.username !== 'sam') {
-    // The user is not logged in
-    res.json({});
-  } else {
-    const weightDoc = new GoogleSpreadsheet('1q15E449k_0KP_elfptM7oyVx_qXsss9_K4ESExlM2MI'); // 2016 spreadsheet
-    // const weightDoc = new GoogleSpreadsheet('13XR4qkzeMDVRPkiB3vUGV7n25sLqBpyLlE6yBC22aSM'); // All weight data
-
-    weightDoc.useServiceAccountAuth(googleCreds, authErr => {
-      if (authErr) {
-        logger.info('auth error: ');
-        logger.error(authErr);
-      }
-      // Get all of the rows from the spreadsheet.
-      weightDoc.getRows(1, (getErr, rows) => {
-        if (getErr) {
-          logger.info('google sheet row fetch error: ');
-          logger.error(getErr);
-        }
-        // initialize empty array for us to gather pruned rows
-        const prunedRows = [];
-        // For each row in the array of rows, return just the weight & date
-        rows.forEach(row => {
-          const prunedRow = {
-            date: row.date,
-            weight: row.weight
-          };
-          prunedRows.push(prunedRow);
-        });
-
-        res.json({
-          rows: prunedRows
-        });
-      });
-    });
-  }
-});
-
-// Why doesn't this async version work?
-
-// Update: I figured it out! I was using async/await wrong here...
-// we can still update it to work properly
-
-// app.get('/', async (req, res) => {
-//   if (!res.locals.loggedIn) {
-//     res.render('account_login');
-//   } else {
-//     const userEntries = await mongoMiddleware.getSortedEntries(
-//       res.locals.user.username,
-//       startDate,
-//       endDate
-//     );
-//     const partnerEntries = await mongoMiddleware.getSortedEntries(
-//       res.locals.partner.username,
-//       startDate,
-//       endDate
-//     );
-//     res.render('overview', {
-//       userEntries: await userEntries,
-//       partnerEntries: await partnerEntries
-//     });
-//   }
-// });
-
 // app.use('/data', data);
 app.use('/', landing);
 app.use('/account', account);
 app.use('/user', user);
 app.use('/partner', partner);
+app.use('/api', api);
 
 app.get('*', (req, res) => {
   logger.warn(`404ing at ${req.url}`);
