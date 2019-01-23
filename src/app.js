@@ -87,6 +87,9 @@ if (productionEnv) {
   }`;
 }
 
+console.log('Connecting to...');
+console.log(mongoURI);
+
 mongoose.connect(
   mongoURI,
   mongoOptions
