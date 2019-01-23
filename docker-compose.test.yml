@@ -59,9 +59,10 @@ services:
   jasmine:
     image: samhinshaw/get_fit:${DOCKER_TAG:-latest}
     container_name: get_fit_jasmine
-    # Set the NODE_ENV to the dev environment
+    # bring in unsecure variables
     env_file:
       - unsecure.env
+    # Set the NODE_ENV to the testing environment
     environment:
       - NODE_ENV=testing
     command: ['yarn', 'test:all']

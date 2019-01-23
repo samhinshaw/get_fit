@@ -101,6 +101,7 @@ const db = mongoose.connection;
 db.once('open', () => {
   logger.info('Connected to MongoDB');
 });
+
 // Check for DB errors
 db.on('error', err => {
   logger.error('Database error: %j', err);
@@ -141,7 +142,6 @@ app.use(
     resave: true,
     saveUninitialized: true,
     // cookie: { secure: true },
-    // store: new MongoStore({ mongooseConnection: connection })
     store: new MongoStore({ mongooseConnection: mongoose.connection })
   })
 );
