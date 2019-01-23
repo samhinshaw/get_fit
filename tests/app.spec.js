@@ -1,48 +1,36 @@
 /* eslint-env jasmine */
-const Request = require('request');
+import axios from 'axios';
 
-// const server = require('../src/app');
-
-describe('Server', () => {
-  // let server;
+describe('The server', () => {
+  // Use localhost if we're in development (running our tests outside of a
+  // container), otherwise use node (inside a container)
+  let backendHost;
   beforeAll(() => {
-    // use this if we're not
-    // eslint-disable-next-line global-require
-    // server = require('./app');
+    // Set default timeout
+    backendHost = process.env.NODE_ENV === 'development' ? 'localhost' : 'node';
   });
-  afterAll(() => {
-    // server.close();
-  });
-  describe('GET /', () => {
-    const data = {};
-    beforeAll(done => {
-      Request.get('http://node:8005/', (error, response, body) => {
-        data.status = response.statusCode;
-        data.body = body;
-        done();
-      });
+
+  describe('serves /', () => {
+    let backendAddress;
+    beforeAll(() => {
+      backendAddress = `http://${backendHost}:8005/`;
     });
-    it('Status 200', () => {
-      expect(data.status).toBe(200);
+    it('with status 200', done => {
+      // eslint-disable-next-line no-console
+      console.log(`Connecting to ${backendAddress}`);
+      axios
+        .get(backendAddress)
+        .then(resp => {
+          // eslint-disable-next-line no-console
+          expect(resp.status).toBe(200);
+          done();
+        })
+        .catch(err => {
+          // eslint-disable-next-line no-console
+          console.error(err);
+          fail(`The request to ${backendAddress} failed.`);
+          done();
+        });
     });
-    // it('Body', () => {
-    //   expect(data.body).toBe('The Polyglot Developer');
-    // });
   });
-  // describe('GET /test', () => {
-  //   const data = {};
-  //   beforeAll(done => {
-  //     Request.get('http://localhost:3000/test', (error, response, body) => {
-  //       data.status = response.statusCode;
-  //       data.body = JSON.parse(body);
-  //       done();
-  //     });
-  //   });
-  //   it('Status 200', () => {
-  //     expect(data.status).toBe(500);
-  //   });
-  //   it('Body', () => {
-  //     expect(data.body.message).toBe('This is an error response');
-  //   });
-  // });
 });
