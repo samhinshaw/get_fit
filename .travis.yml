@@ -3,20 +3,12 @@ language: node_js
 cache: yarn
 services:
   - docker
-env:
-  global:
-    - MONGO_INITDB_DATABASE=get_fit
-    - MONGO_PROD_DBNAME=get_fit
-    - MONGO_LOCAL_PORT=27017
-    - MONGO_LOCAL_SERVICENAME=mongo
-# Here `install: skip` means that we skip "yarn install" within the Travis VM,
-# since it will be executed in the docker container instead.
-jobs:
-  include:
-    - stage: 'Build'
-      install: skip
-      script: yarn build:test
-    - stage: 'Test'
-      name: 'Unit Tests'
-      install: skip
-      script: yarn up:test
+
+# Make the install command build the containers
+install: bash ci/build.sh
+
+# run tests!
+script: yarn up:test
+
+# bring down the test containers we used
+after_script: yarn down:test
