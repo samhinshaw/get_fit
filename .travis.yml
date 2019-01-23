@@ -9,6 +9,7 @@ env:
     - MONGO_PROD_DBNAME=get_fit
     - MONGO_LOCAL_PORT=27017
     - MONGO_LOCAL_SERVICENAME=mongo
+    - DOCKER_USERNAME=samhinshaw
 
 # Make the install command build the containers
 install: bash ci/build.sh
