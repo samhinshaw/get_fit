@@ -5,6 +5,9 @@
 # https://github.com/nodejs/docker-node/issues/618
 FROM mongo:3.6-stretch
 
+# Bring in the Mongo configuration file
+COPY mongo.conf /etc/
+
 # /docker-entrypoint-initdb.d already exists, so copy our init file to it.
 # This contains the logic to create our first users and setup admin accounts
 # COPY init.js /docker-entrypoint-initdb.d/init.js
