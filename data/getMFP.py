@@ -45,9 +45,12 @@ logger.addHandler(consoleHandler)
 
 try:
 
-  # bring in dotenv config options in development (located in the project root)
+  # In development, bring in .env file containing secret options
   if developmentEnv:
     load_dotenv('../.env')
+  # In development OR testing, bring in unsecure.env config options
+  if not productionEnv:
+    load_dotenv('../unsecure.env')
 
   # NOTES
   # - Later on I may wish to pull calorie goals straight from MFP

@@ -41,7 +41,12 @@ const developmentEnv = process.env.NODE_ENV === 'development';
 
 // Only apply .env file config in development
 if (developmentEnv) {
-  dotenv.config();
+  dotenv.config({ path: '../.env' });
+}
+
+// Only apply unsecure.env in development or testing
+if (!productionEnv) {
+  dotenv.config({ path: '../unsecure.env' });
 }
 
 // Bring in remaining config files
