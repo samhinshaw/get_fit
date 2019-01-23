@@ -89,13 +89,16 @@ if (productionEnv) {
   }`;
 }
 
-console.log('Connecting to...');
-console.log(mongoURI);
+// Declare a function to connect to mongo so that we can retry the connection
+// should it error-out.
+const connectToMongo = function connectToMongo() {
+  return mongoose.connect(
+    mongoURI,
+    mongoOptions
+  );
+};
 
-mongoose.connect(
-  mongoURI,
-  mongoOptions
-);
+connectToMongo();
 
 const db = mongoose.connection;
 
@@ -107,6 +110,7 @@ db.once('open', () => {
 // Check for DB errors
 db.on('error', err => {
   logger.error('Database error: %j', err);
+  setTimeout(connectToMongo, 5000);
 });
 
 // initialize app
