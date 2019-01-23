@@ -23,18 +23,6 @@ jasmine.addReporter(
   })
 );
 
-// Debug!!
-tcpPortUsed.waitUntilUsedOnHost(
-  // look for port 8005
-  8005,
-  // on our target host, either "localhost" or "node"
-  backendHost,
-  // wait 100ms between pings
-  5 * 1000,
-  // wait 20sec in total for the port to be used
-  20 * 1000
-);
-
 // Don't start the tests until the Node.js server is up and running
 tcpPortUsed
   .waitUntilUsedOnHost(
