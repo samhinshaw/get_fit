@@ -46,9 +46,11 @@ if (developmentEnv) {
   dotenv.config({ path: '../.env' });
 }
 
-// Only apply unsecure.env in development or testing
 if (!productionEnv) {
+  // Only apply unsecure.env in development or testing
   dotenv.config({ path: '../unsecure.env' });
+  // Also set mongoose to debug mode in these environments
+  mongoose.set('debug', true);
 }
 
 console.log(JSON.stringify(process.env));
