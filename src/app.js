@@ -4,7 +4,6 @@ import express from 'express';
 import path from 'path'; // core module included with Node.js
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
-import session from 'express-session';
 import Moment from 'moment-timezone';
 import { extendMoment } from 'moment-range';
 import expressValidator from 'express-validator';
@@ -15,10 +14,13 @@ import passport from 'passport';
 import helmet from 'helmet';
 import Promise from 'bluebird';
 import dotenv from 'dotenv';
+// Import middleware packages
+import session from 'express-session';
+import connectSession from 'connect-mongo';
+import connectFlash from 'connect-flash';
 
 // Include custom middleware
 import { queryCustomPeriodsFromMongo, getPendingRequests } from './middlewares/mongoMiddleware';
-import ensureAuthenticated from './methods/auth';
 
 // Bring in route files
 import account from './routes/account';
@@ -52,9 +54,10 @@ if (!productionEnv) {
 // Bring in remaining config files
 const appConfig = require('../config/app_config.json');
 
+// Tell mongoose to use Node.js' Promise implementation
 mongoose.Promise = Promise;
 
-const MongoStore = require('connect-mongo')(session);
+const MongoStore = connectSession(session);
 
 const moment = extendMoment(Moment);
 
@@ -139,7 +142,7 @@ app.use(
 );
 
 // Messages Middleware (pretty client messaging)
-app.use(require('connect-flash')());
+app.use(connectFlash());
 
 app.use((req, res, next) => {
   res.locals.messages = expMessages(req, res);
