@@ -47,7 +47,6 @@ services:
   # Since we've bind mounted our codebase into both containers, the changes will
   # be reflected live for our backend container.
   ui:
-    build: .
     image: get_fit:latest
     container_name: get_fit_ui
     env_file:
