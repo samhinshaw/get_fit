@@ -2,7 +2,7 @@
 
 ### Authentication Cookies
 
-To get a url with authentication, we just need to pass the authentication cookie! Get the authentication cookie from an authenticated session with browser dev tools: [Application] -> [Cookies], and replace `<cookie string>` with the value, and (if necessary), `connect.sid` with the cookie name. 
+To get a url with authentication, we just need to pass the authentication cookie! Get the authentication cookie from an authenticated session with browser dev tools: [Application] -> [Cookies], and replace `<cookie string>` with the value, and (if necessary), `connect.sid` with the cookie name.
 
 For `curl`:
 
