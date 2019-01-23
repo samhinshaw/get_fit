@@ -3,7 +3,7 @@ version: '3' # this specifies the docker-compose version
 services:
   # Start backend Express.js server
   node:
-    build: .
+    image: samhinshaw/get_fit:${DOCKER_TAG:-latest}
     # Set the NODE_ENV to the dev environment
     environment:
       - NODE_ENV=production

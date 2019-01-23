@@ -20,7 +20,7 @@ services:
   # Start backend Express.js server
   node:
     build: .
-    image: get_fit:latest
+    image: samhinshaw/get_fit:${DOCKER_TAG:-latest}
     container_name: get_fit_node
     # Set the NODE_ENV to the dev environment
     environment:
@@ -47,7 +47,6 @@ services:
   # Since we've bind mounted our codebase into both containers, the changes will
   # be reflected live for our backend container.
   ui:
-    build: .
     image: get_fit:latest
     container_name: get_fit_ui
     env_file:
