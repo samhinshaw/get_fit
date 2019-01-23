@@ -25,8 +25,6 @@ services:
       - GETFIT_HASHED_PASS_SAM
       - GETFIT_MFP_NAME_AMELIA
       - GETFIT_MFP_NAME_SAM
-    networks:
-      - app
 
   # Start backend Express.js server
   node:
@@ -57,8 +55,6 @@ services:
       - 8005
     depends_on:
       - mongo
-    networks:
-      - app
 
   jasmine:
     image: samhinshaw/get_fit:${DOCKER_TAG:-latest}
@@ -72,10 +68,3 @@ services:
     command: ['yarn', 'test:all']
     depends_on:
       - node
-    networks:
-      - app
-
-networks:
-  app:
-    driver: bridge
-    enable_ipv6: false
