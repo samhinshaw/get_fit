@@ -6,6 +6,8 @@ import logger from '../methods/logger';
 
 const router = express.Router();
 
+const googlePrivateKey = process.env.GOOGLE_PRIVATE_KEY || '';
+
 // Set up google credentials with secret parameters. Docker doesn't parse
 // start/end quotes within .env files, so make sure those are not present
 const googleCreds = {
@@ -13,7 +15,7 @@ const googleCreds = {
   project_id: process.env.GOOGLE_PROJECT_ID,
   private_key_id: process.env.GOOGLE_PRIVATE_KEY_ID,
   // docker doesn't parse newlines in .env files, so we need to replace manually
-  private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
+  private_key: googlePrivateKey.replace(/\\n/g, '\n'),
   client_email: process.env.GOOGLE_CLIENT_EMAIL,
   client_id: process.env.GOOGLE_CLIENT_ID,
   auth_uri: 'https://accounts.google.com/o/oauth2/auth',
