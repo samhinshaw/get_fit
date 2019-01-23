@@ -4,7 +4,6 @@ import express from 'express';
 import path from 'path'; // core module included with Node.js
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
-import session from 'express-session';
 import Moment from 'moment-timezone';
 import { extendMoment } from 'moment-range';
 import expressValidator from 'express-validator';
@@ -15,10 +14,13 @@ import passport from 'passport';
 import helmet from 'helmet';
 import Promise from 'bluebird';
 import dotenv from 'dotenv';
+// Import middleware packages
+import session from 'express-session';
+import connectSession from 'connect-mongo';
+import connectFlash from 'connect-flash';
 
 // Include custom middleware
 import { queryCustomPeriodsFromMongo, getPendingRequests } from './middlewares/mongoMiddleware';
-import ensureAuthenticated from './methods/auth';
 
 // Bring in route files
 import account from './routes/account';
@@ -41,15 +43,26 @@ const developmentEnv = process.env.NODE_ENV === 'development';
 
 // Only apply .env file config in development
 if (developmentEnv) {
-  dotenv.config();
+  dotenv.config({ path: '../.env' });
+}
+
+if (!productionEnv) {
+  // Only apply unsecure.env in development or testing
+  dotenv.config({ path: '../unsecure.env' });
+}
+
+// Set mongoose to debug mode in testing or dev environments
+if (!productionEnv) {
+  mongoose.set('debug', true);
 }
 
 // Bring in remaining config files
 const appConfig = require('../config/app_config.json');
 
+// Tell mongoose to use Node.js' Promise implementation
 mongoose.Promise = Promise;
 
-const MongoStore = require('connect-mongo')(session);
+const MongoStore = connectSession(session);
 
 const moment = extendMoment(Moment);
 
@@ -77,10 +90,16 @@ if (productionEnv) {
   }`;
 }
 
-mongoose.connect(
-  mongoURI,
-  mongoOptions
-);
+// Declare a function to connect to mongo so that we can retry the connection
+// should it error-out.
+const connectToMongo = function connectToMongo() {
+  return mongoose.connect(
+    mongoURI,
+    mongoOptions
+  );
+};
+
+connectToMongo();
 
 const db = mongoose.connection;
 
@@ -88,9 +107,11 @@ const db = mongoose.connection;
 db.once('open', () => {
   logger.info('Connected to MongoDB');
 });
+
 // Check for DB errors
 db.on('error', err => {
   logger.error('Database error: %j', err);
+  setTimeout(connectToMongo, 5000);
 });
 
 // initialize app
@@ -128,13 +149,12 @@ app.use(
     resave: true,
     saveUninitialized: true,
     // cookie: { secure: true },
-    // store: new MongoStore({ mongooseConnection: connection })
     store: new MongoStore({ mongooseConnection: mongoose.connection })
   })
 );
 
 // Messages Middleware (pretty client messaging)
-app.use(require('connect-flash')());
+app.use(connectFlash());
 
 app.use((req, res, next) => {
   res.locals.messages = expMessages(req, res);
