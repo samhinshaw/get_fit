@@ -3,24 +3,15 @@ language: node_js
 cache: yarn
 services:
   - docker
-env:
-  global:
-    - MONGO_INITDB_DATABASE=get_fit
-    - MONGO_PROD_DBNAME=get_fit
-    - MONGO_LOCAL_PORT=27017
-    - MONGO_LOCAL_SERVICENAME=mongo
-    - DOCKER_USERNAME=samhinshaw
 
 # Make the install command build the containers
 install: bash ci/build.sh
 
 # run tests!
-# script: 'yarn up:test'
-script: ''
+script: yarn up:test
 
 # bring down the test containers we used
-# after_script: yarn down:test
-after_script: ''
+after_script: yarn down:test
 
 # deploy!
 deploy:
