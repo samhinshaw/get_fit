@@ -6,6 +6,7 @@ services:
     build: mongo
     image: get_fit_mongo:${DOCKER_TAG:-latest}
     container_name: get_fit_mongo
+    command: --bind_ip_all
     # Expose the default mongoDB port. In contrast to the
     # docker-compose.test.yml, here we use the more traditional "ports"
     # configuration. This means that this port is exposed to our local machine,
