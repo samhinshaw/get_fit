@@ -23,14 +23,6 @@ deploy:
     # Run on all branches and let our script handle the conditionals
     on:
       all_branches: true
-  # deploy GitHub releases (push local tags to GitHub)
-  - provider: releases
-    api_key: $GITHUB_PAT
-    # prevent travis from resetting the working dir so we can deploy
-    skip_cleanup: true
-    on:
-      branch: master
-      tags: true
 
 notifications:
   webhooks:
