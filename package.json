@@ -1,6 +1,6 @@
 {
   "name": "get_fit",
-  "version": "1.0.0",
+  "version": "0.0.2",
   "description": "Fitness Tracker for MyFitnessPal",
   "main": "app.js",
   "scripts": {
