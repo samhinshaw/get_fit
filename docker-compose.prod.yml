@@ -7,7 +7,7 @@ services:
     # Set the NODE_ENV to the dev environment
     environment:
       - NODE_ENV=production
-    command: ['yarn', 'run:prod']
+    restart: always
     ports:
       - '8005:8005'
     env_file:
