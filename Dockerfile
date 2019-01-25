@@ -13,9 +13,10 @@ RUN mkdir -p /app
 # Change directory so that our commands run inside this new directory
 WORKDIR /app
 
-# Copy dependency definitions
+# Copy dependency definitions and Snyk policy file
 COPY ./package.json /app
 COPY ./yarn.lock /app
+COPY ./.snyk /app
 
 # Install dependecies
 RUN yarn install

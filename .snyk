@@ -6,6 +6,9 @@ ignore:
     - connect-mongo > mongodb > mongodb-core > bson:
         reason: no fix
         expires: '2018-03-30T19:29:59.167Z'
+      email-verification > mongoose > mongodb > bson:
+        reason: None given
+        expires: '2019-02-24T05:21:59.539Z'
     - mongoose > bson:
         reason: no fix
         expires: '2018-03-30T19:29:59.168Z'
@@ -99,7 +102,7 @@ ignore:
   'npm:ms:20170412':
     - email-verification > mongoose > ms:
         reason: None given
-        expires: '2019-01-15T22:45:39.877Z'
+        expires: '2019-02-24T05:21:59.539Z'
   'npm:deep-extend:20180409':
     - node-pre-gyp > rc > deep-extend:
         reason: None given
@@ -140,18 +143,18 @@ ignore:
   SNYK-JS-MPATH-72672:
     - email-verification > mongoose > mpath:
         reason: None given
-        expires: '2019-01-15T22:45:39.876Z'
+        expires: '2019-02-24T05:21:59.539Z'
 # patches apply the minimum changes required to fix a vulnerability
 patch:
   'npm:debug:20170905':
     - email-verification > mongoose > mquery > debug:
-        patched: '2018-12-16T22:44:00.218Z'
+        patched: '2019-01-25T05:20:35.342Z'
   'npm:ms:20170412':
     - email-verification > mongoose > mquery > debug > ms:
-        patched: '2018-12-16T22:44:00.218Z'
+        patched: '2019-01-25T05:20:35.342Z'
   'npm:ms:20151024':
     - email-verification > mongoose > ms:
-        patched: '2018-12-16T22:55:29.580Z'
+        patched: '2019-01-25T05:20:35.342Z'
   'npm:hoek:20180212':
     - node-pre-gyp > hawk > boom > hoek:
         patched: '2018-09-19T16:14:20.034Z'
