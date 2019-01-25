@@ -44,16 +44,13 @@ const developmentEnv = process.env.NODE_ENV === 'development';
 // Only apply .env file config in development
 if (developmentEnv) {
   dotenv.config({ path: '../.env' });
+  // Set mongoose to debug mode in dev environment
+  mongoose.set('debug', true);
 }
 
 if (!productionEnv) {
   // Only apply unsecure.env in development or testing
   dotenv.config({ path: '../unsecure.env' });
-}
-
-// Set mongoose to debug mode in testing or dev environments
-if (!productionEnv) {
-  mongoose.set('debug', true);
 }
 
 // Bring in remaining config files
