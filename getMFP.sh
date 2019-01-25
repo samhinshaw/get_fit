@@ -16,7 +16,7 @@ python data/getMFP.py `TZ=':America/Vancouver' date '+%Y-%m-%d' -d 'yesterday'` 
 # Update yesterday and today
 # python data/getMFP.py `TZ=':America/Vancouver' date '+%Y-%m-%d'` `TZ=':America/Vancouver' date '+%Y-%m-%d' -d 'yesterday'` 'sam' 'jetknife'
 
-# Both OSes get today 
+# Both OSes get today
 # `TZ=':America/Vancouver' date '+%Y-%m-%d'`
 
 # macOS get yesterday
