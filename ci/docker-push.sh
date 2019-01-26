@@ -23,8 +23,5 @@ fi
 # Then, let the user know what image we're pushing
 echo "Pushing Image $DOCKER_TAG"
 
-# Debug statement to list images
-docker images
-
 # Push our node image to my DockerHub
 docker push samhinshaw/get_fit:$DOCKER_TAG
