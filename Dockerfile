@@ -6,6 +6,8 @@ FROM samhinshaw/python-node:1.1.0
 ##   BACKEND   ##
 #################
 
+EXPOSE 8005
+
 # Create a directory where our app will be placed
 # (-p creates the intermediate directories /usr/src if they don’t already exist)
 RUN mkdir -p /app
