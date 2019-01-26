@@ -43,4 +43,4 @@ RUN yarn build:server
 #################
 
 # Default command is to spin up server in production mode
-CMD ["yarn", "prod"]
+CMD ["yarn", "run:prod"]
