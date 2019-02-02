@@ -40,29 +40,28 @@ import authMiddleware from './methods/passport';
 const productionEnv = process.env.NODE_ENV === 'production';
 const developmentEnv = process.env.NODE_ENV === 'development';
 
-if (developmentEnv) {
-  // Set mongoose to debug mode in dev environment
-  mongoose.set('debug', true);
-}
-
-// Bring in remaining config files
+// Bring in app config file
 const appConfig = require('../config/app_config.json');
-
-// Tell mongoose to use Node.js' Promise implementation
-mongoose.Promise = Promise;
-
-const MongoStore = connectSession(session);
-
-const moment = extendMoment(Moment);
 
 // Define Async middleware wrapper to avoid try-catch
 const asyncMiddleware = fn => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch(next);
 };
 
+const moment = extendMoment(Moment);
+
+// ************************** //
+// * Configure Mongo Driver * //
+// ************************** //
+
+// Set mongoose to debug mode in dev environment
+mongoose.set('debug', !!developmentEnv);
+// Tell mongoose to use Node.js' Promise implementation
+mongoose.Promise = Promise;
+const MongoStore = connectSession(session);
 // Set up our mongoDB connection URI and options
 let mongoURI;
-const mongoOptions = { useNewUrlParser: true };
+const mongoOptions = { useNewUrlParser: true, useFindAndModify: false, useCreateIndex: true };
 if (productionEnv) {
   // if we're in production, connect to our production database
   mongoURI = `mongodb+srv://${process.env.MONGO_PROD_NODE_USER}:${
@@ -87,9 +86,7 @@ const connectToMongo = function connectToMongo() {
     mongoOptions
   );
 };
-
 connectToMongo();
-
 const db = mongoose.connection;
 
 // Check connection
