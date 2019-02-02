@@ -97,6 +97,7 @@ db.once('open', () => {
 // Check for DB errors
 db.on('error', err => {
   logger.error('Database error: %j', err);
+  console.trace();
   db.disconnect();
   setTimeout(connectToMongo, 5000);
 });
