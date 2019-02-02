@@ -97,6 +97,7 @@ db.once('open', () => {
 // Check for DB errors
 db.on('error', err => {
   logger.error('Database error: %j', err);
+  db.disconnect();
   setTimeout(connectToMongo, 5000);
 });
 
@@ -135,7 +136,7 @@ app.use(
     resave: true,
     saveUninitialized: true,
     // cookie: { secure: true },
-    store: new MongoStore({ mongooseConnection: mongoose.connection })
+    store: new MongoStore({ mongooseConnection: db })
   })
 );
 
@@ -391,6 +392,14 @@ app.use((err, req, res, next) => {
 // Start Server
 const server = app.listen(appConfig.serverPort, () => {
   logger.info(`Server started on port ${appConfig.serverPort}`);
+});
+
+// If our node process exits or is killed, close the db connection
+process.on('SIGINT', () => {
+  db.disconnect();
+});
+process.on('SIGTERM', () => {
+  db.disconnect();
 });
 
 export default server;
