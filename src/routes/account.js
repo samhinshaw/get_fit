@@ -54,6 +54,7 @@ router.get('/', ensureAuthenticated, (req, res) => {
     }
   });
 });
+
 router.post('/', ensureAuthenticated, (req, res) => {
   const userObject = {};
 
