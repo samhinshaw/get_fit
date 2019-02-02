@@ -20,7 +20,7 @@ services:
   # Start backend Express.js server
   node:
     build: .
-    image: samhinshaw/get_fit:${DOCKER_TAG:-latest}
+    image: get_fit:latest
     container_name: get_fit_node
     # Set the NODE_ENV to the dev environment
     environment:
