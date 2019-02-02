@@ -43,6 +43,7 @@
   },
   "homepage": "https://getse.xyz",
   "dependencies": {
+    "@mdi/font": "^2.1.19",
     "ajv": "^5.2.4",
     "ajv-keywords": "^2.1.0",
     "async": "2.5.0",
