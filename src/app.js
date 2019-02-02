@@ -98,7 +98,7 @@ db.once('open', () => {
 db.on('error', err => {
   logger.error('Database error: %j', err);
   console.trace();
-  db.disconnect();
+  db.close();
   setTimeout(connectToMongo, 5000);
 });
 
@@ -397,10 +397,10 @@ const server = app.listen(appConfig.serverPort, () => {
 
 // If our node process exits or is killed, close the db connection
 process.on('SIGINT', () => {
-  db.disconnect();
+  db.close();
 });
 process.on('SIGTERM', () => {
-  db.disconnect();
+  db.close();
 });
 
 export default server;
