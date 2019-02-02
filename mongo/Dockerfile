@@ -3,7 +3,7 @@
 # This mongo image inherits from `debian:jessie-slim`, which is also the base of
 # the node images!
 # https://github.com/nodejs/docker-node/issues/618
-FROM mongo:3.6-stretch
+FROM mongo:4.0.5-xenial
 
 # Bring in the Mongo configuration file
 COPY mongo.conf /etc/
