@@ -283,7 +283,7 @@ router.post('/:date', ensureAuthenticated, (req, res) => {
       logger.error('Error updating from MyFitnessPal:');
       if (err.traceback) {
         logger.error(err.traceback);
-        delete err.traceback; // eslint-disable-line no-param-reassign
+        delete err.traceback;
       }
       logger.error(err);
       res.status(500).json({ message: 'Error updating from MyFitnessPal', type: 'danger' });
