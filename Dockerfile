@@ -34,11 +34,11 @@ COPY ./ /app
 ##    BUILD    ##
 #################
 
-# package front-end code
-RUN yarn build:ui
+# Transpile backend code
+RUN yarn babel
 
-# transpile back-end code
-RUN yarn build:server
+# Bundle assets
+RUN yarn webpack
 
 #################
 ##    START    ##
