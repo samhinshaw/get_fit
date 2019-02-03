@@ -11,6 +11,7 @@ from pymongo import MongoClient  # mongodb operations
 import bson
 import myfitnesspal  # myfitnesspal API!
 import utils
+from urllib import parse
 import logging
 
 # Set up environment (are we in production?)
@@ -82,30 +83,30 @@ try:
     # Connect to the production server
     mongoURI = \
       "mongodb+srv://" + \
-      os.getenv('MONGO_PROD_PYTHON_USER') + \
+      parse.quote_plus(os.getenv('MONGO_PROD_PYTHON_USER')) + \
       ":" + \
-      os.getenv('MONGO_PROD_PYTHON_PASS') + \
+      parse.quote_plus(os.getenv('MONGO_PROD_PYTHON_PASS')) + \
       "@" + \
-      os.getenv('MONGO_PROD_CONNECTION') + \
+      parse.quote_plus(os.getenv('MONGO_PROD_CONNECTION')) + \
       "/" + \
-      os.getenv('MONGO_PROD_DBNAME') + \
+      parse.quote_plus(os.getenv('MONGO_PROD_DBNAME')) + \
       "?retryWrites=true"
 
   else:
     # Otherwise connect to our local development server
     mongoURI = \
       "mongodb://" + \
-      os.getenv('MONGO_DEV_PYTHON_USER') + \
+      parse.quote_plus(os.getenv('MONGO_DEV_PYTHON_USER')) + \
       ":" + \
-      os.getenv('MONGO_DEV_PYTHON_PASS') + \
+      parse.quote_plus(os.getenv('MONGO_DEV_PYTHON_PASS')) + \
       "@" + \
-      os.getenv('MONGO_LOCAL_SERVICENAME') + \
+      parse.quote_plus(os.getenv('MONGO_LOCAL_SERVICENAME')) + \
       ":" + \
-      str(os.getenv('MONGO_LOCAL_PORT')) + \
+      parse.quote_plus(str(os.getenv('MONGO_LOCAL_PORT'))) + \
       "/" + \
-      os.getenv('MONGO_INITDB_DATABASE') + \
+      parse.quote_plus(os.getenv('MONGO_INITDB_DATABASE')) + \
       "?authMechanism=" + \
-      os.getenv('MONGO_LOCAL_AUTHMECH')
+      parse.quote_plus(os.getenv('MONGO_LOCAL_AUTHMECH'))
 
   client = MongoClient(mongoURI)
 
