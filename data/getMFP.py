@@ -78,21 +78,6 @@ try:
 
   logger.info('Connecting to MongoDB database...')
 
-  # This auth mechanism wasn't working for the longest time because port was being
-  # brought in as a string, not an Int!! This makes sense that it would have
-  # worked when specifying the URI though, because that entire thing is a string.
-  # It also didn't work because I was using 'user' instead of 'username'
-  # client = MongoClient(
-  #     host=os.getenv('host'),
-  #     port=int(os.getenv('port')),
-  #     username=os.getenv('user'),
-  #     password=os.getenv('password'),
-  #     authSource=os.getenv('authSource'),
-  #     authMechanism=os.getenv('authMechanism')
-  # )
-
-  # Previous version for connecting.
-
   if productionEnv:
     # Connect to the production server
     mongoURI = \
