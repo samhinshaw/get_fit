@@ -129,7 +129,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(expressSanitizer()); // this line follows bodyParser() instantiations
 
 // Route for static assests such as CSS and JS
-app.use(express.static(path.join(__dirname, 'public')));
+app.use('/', express.static('public'));
 
 app.use(
   session({
