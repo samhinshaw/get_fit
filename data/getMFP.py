@@ -163,8 +163,8 @@ try:
 
     # A specific error is better than a silent error
     try:
-      MFPexer = MFPclient.get_exercise(date.year, date.month, date.day)
-      exerEntries = MFPexer[0].entries
+      exercise_entries = mfp_date.exercises
+      cardio_entries = exercise_entries[0].entries
 
     except:
       logger.error('We were not able to retrieve your exercise for this date!')
