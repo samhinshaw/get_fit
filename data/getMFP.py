@@ -26,7 +26,7 @@ log_level_for_env = log_levels.get(os.getenv('NODE_ENV'))
 # Set up logging options
 logging.basicConfig(level=log_level_for_env)
 # Set up a file to write logs to
-fileHandler = logging.FileHandler('/app/python.log')
+fileHandler = logging.FileHandler('/app/logs/python.log')
 fileHandler.setLevel(log_level_for_env)
 # create a console handler too
 consoleHandler = logging.StreamHandler()
