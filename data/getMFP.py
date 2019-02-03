@@ -11,8 +11,6 @@ from pymongo import MongoClient  # mongodb operations
 import bson
 import myfitnesspal  # myfitnesspal API!
 import utils
-# bring in environment variables
-from dotenv import load_dotenv
 import logging
 
 # Set up environment (are we in production?)
@@ -44,13 +42,6 @@ logger.addHandler(fileHandler)
 logger.addHandler(consoleHandler)
 
 try:
-
-  # In development, bring in .env file containing secret options
-  if developmentEnv:
-    load_dotenv('../.env')
-  # In development OR testing, bring in unsecure.env config options
-  if not productionEnv:
-    load_dotenv('../unsecure.env')
 
   # NOTES
   # - Later on I may wish to pull calorie goals straight from MFP
