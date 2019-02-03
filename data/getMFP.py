@@ -324,11 +324,11 @@ try:
     # construct object for db insertion
     mfp_date_data = {
       'date': date.datetime,
-      'total_cals': total_cals,
-      'goal_cals': goal_cals,
-      'net_cals': net_cals,
+      'totalCals': total_cals,
+      'goalCals': goal_cals,
+      'netCals': net_cals,
       'exercise': exercises,
-      'is_empty': is_empty,
+      'isEmpty': is_empty,
       'complete': mfp_date.complete,
       'points': total_days_points,
       'user': user,
