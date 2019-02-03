@@ -1,6 +1,6 @@
 # Start from a Python & Node Image
 # Reference from: https://hub.docker.com/r/nikolaik/python-nodejs/dockerfile
-FROM samhinshaw/python-node:2.0.0
+FROM samhinshaw/python-node:2.1.0
 
 #################
 ##   BACKEND   ##
