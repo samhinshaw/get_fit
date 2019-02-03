@@ -14,10 +14,6 @@ import utils
 from urllib import parse
 import logging
 
-# Set up environment (are we in production?)
-productionEnv = os.getenv('NODE_ENV') == 'production'
-developmentEnv = os.getenv('NODE_ENV') == 'development'
-
 # define log levels
 log_levels = {
   "production": "WARNING",
@@ -53,29 +49,29 @@ try:
   # MFPcals.goals['calories']
 
   now = arrow.now('US/Pacific')
-  thisMorning = now.floor('day')
-  thisEvening = now.ceil('day')
+  this_morning = now.floor('day')
+  this_evening = now.ceil('day')
 
   if len(sys.argv) == 4:
-    inputDate = sys.argv[1]
+    input_date = sys.argv[1]
     user = sys.argv[2]
     mfp = sys.argv[3]
-    inputDate = arrow.get(inputDate, 'YYYY-MM-DD', tzinfo='US/Pacific')
-    startDate = inputDate
-    endDate = inputDate
+    input_date = arrow.get(input_date, 'YYYY-MM-DD', tzinfo='US/Pacific')
+    start_date = input_date
+    end_date = input_date
   elif len(sys.argv) == 5:
-    firstDate = sys.argv[1]
-    secondDate = sys.argv[2]
+    first_date = sys.argv[1]
+    second_date = sys.argv[2]
     user = sys.argv[3]
     mfp = sys.argv[4]
-    firstDate = arrow.get(firstDate, 'YYYY-MM-DD', tzinfo='US/Pacific')
-    secondDate = arrow.get(secondDate, 'YYYY-MM-DD', tzinfo='US/Pacific')
-    if firstDate <= secondDate:
-      startDate = firstDate
-      endDate = secondDate
-    elif firstDate > secondDate:
-      startDate = secondDate
-      endDate = firstDate
+    first_date = arrow.get(first_date, 'YYYY-MM-DD', tzinfo='US/Pacific')
+    second_date = arrow.get(second_date, 'YYYY-MM-DD', tzinfo='US/Pacific')
+    if first_date <= second_date:
+      start_date = first_date
+      end_date = second_date
+    elif first_date > second_date:
+      start_date = second_date
+      end_date = first_date
     else:
       sys.exit('Error parsing the dates you provided.')
   else:
@@ -83,7 +79,7 @@ try:
 
   logger.info('Connecting to MongoDB database...')
 
-  if productionEnv:
+  if os.getenv('NODE_ENV') == 'production':
     # Connect to the production server
     mongoURI = \
       "mongodb+srv://" + \
@@ -119,7 +115,7 @@ try:
   possibleExercises = db.exercises
 
   # Pull in the user's exercise groups
-  exerciseGroups = db.users.find_one({'username': user}, {'exerciseGroups': 1})
+  exercise_groups = db.users.find_one({'username': user}, {'exerciseGroups': 1})
 
   logger.info('Pulling in MyFitnessPal information for ' + user.capitalize() + '...')
 
@@ -128,30 +124,30 @@ try:
   # If present, auth should be possible
   authPossible = not not auth
   # If we got it, our user should be able to log in, so we can enable login
-  MFPclient = myfitnesspal.Client(mfp, password=auth, login=authPossible)
+  mfp_user = myfitnesspal.Client(mfp, password=auth, login=authPossible)
 
   for date in arrow.Arrow.range(
-    frame='day', start=startDate, end=endDate, tz='US/Pacific'
+    frame='day', start=start_date, end=end_date, tz='US/Pacific'
   ):
     logger.info('Loading data from ' + date.format('MMMM DD, YYYY'))
     # Try/Except is mostly for if the API fails
     try:
-      MFPcals = MFPclient.get_date(date.year, date.month, date.day)
+      mfp_date = mfp_user.get_date(date.year, date.month, date.day)
 
       # Check to see if the totals object is empty. If so, the entry is most
       # likely empty, and we can just return zero values for everything
-      if 'calories' in MFPcals.totals:
-        totalCals = MFPcals.totals['calories']
-        goalCals = MFPcals.goals['calories']
-        netCals = goalCals - totalCals
-        isEmpty = False
-        calPoints = round((netCals / 100), 2)
+      if 'calories' in mfp_date.totals:
+        total_cals = mfp_date.totals['calories']
+        goal_cals = mfp_date.goals['calories']
+        net_cals = goal_cals - total_cals
+        is_empty = False
+        cal_points = round((net_cals / 100), 2)
       else:
-        totalCals = 0
-        goalCals = 0
-        netCals = 0
-        isEmpty = True
-        calPoints = 0
+        total_cals = 0
+        goal_cals = 0
+        net_cals = 0
+        is_empty = True
+        cal_points = 0
 
     except:
       sys.exit('There was an error retrieving your data from MyFitnessPal.')
@@ -166,14 +162,15 @@ try:
       exercise_entries = mfp_date.exercises
       cardio_entries = exercise_entries[0].entries
 
-    except:
-      logger.error('We were not able to retrieve your exercise for this date!')
+    except Exception as get_exercise_exception:
+      logger.warning('We were not able to retrieve your exercise data for this date!')
+      raise get_exercise_exception
 
     logger.info('Processing MyFitnessPal data...')
 
     # set up empty exercise array to handle multiple exercises in a day
     exercises = []
-    totalExerPoints = 0
+    total_exercise_points = 0
 
     # set up empty array especially to handle walking (via RunKeeper pocket track)
     walking = {
@@ -191,108 +188,106 @@ try:
       'icon': 'walking.png',
     }
 
-    print(exerEntries)
-
     # loop through all of the exercises in a day (if more than 0) This might be
     # ideal as a while loop, but this works fine too. I like it because we can
     # use _entry without manually counting.
-    if len(exerEntries) > 0:
-      for _entry in range(0, len(exerEntries)):
+    if len(cardio_entries) > 0:
+      for _entry in range(0, len(cardio_entries)):
 
         # rename complex variables
-        exerName = exerEntries[_entry].name.lower()
-        exerMins = exerEntries[_entry]['minutes']
-        exerCals = exerEntries[_entry]['calories burned']
+        exercise_name = cardio_entries[_entry].name.lower()
+        exercise_minutes = cardio_entries[_entry]['minutes']
+        exercise_calories = cardio_entries[_entry]['calories burned']
 
-        # Since exerEntries is an MFP Client object, we can't do a {}.get() on it
+        # Since cardio_entries is an MFP Client object, we can't do a {}.get() on it
         # and provide a default value. So check for None here.
-        if exerMins is None:
-          exerMins = 0
+        if exercise_minutes is None:
+          exercise_minutes = 0
 
         # To find our exercise, we have to generate substrings of the exercise
         # name. Let's scan our word for each length that is valid. We'll start
         # with the total length of the string and go down to a minimum length of
         # 3. Note: have to specify that range is decreasing
-        exerNameSubstrings = utils.generate_substrings(exerName, escape=True)
-        numberOfQueries = 0
+        exercise_name_substrings = utils.generate_substrings(exercise_name, escape=True)
+        number_of_queries = 0
         # Python has a for/else setup which lets us run the else block if the for
         # loop runs without a break.
-        for substrings in exerNameSubstrings.values():
+        for substrings in exercise_name_substrings.values():
           regex = "^" + "$|^".join(substrings) + "$"
           # Instead of multiple queries, we can construct one regex for each
           # substring length to match with. That way we're only every hitting the
           # database for N - 3 times, where N is the length of the exercise name.
-          exerNameRegex = bson.regex.Regex(regex)
+          exercise_name_regex = bson.regex.Regex(regex)
 
-          queryResults = utils \
-            .query_exercise_group(username=user, exercise_name=exerNameRegex, database=db)
-          numberOfQueries += 1
-          exerciseGroups = list(queryResults)
-          if exerciseGroups:
+          query_results = utils \
+            .query_exercise_group(username=user, exercise_name=exercise_name_regex, database=db)
+          number_of_queries += 1
+          exercise_groups = list(query_results)
+          if exercise_groups:
             # For now, let's just pull the first hit blindly. We're starting with
             # the longest possible query string, so if we found more than one hit
             # of the same length, they are likely of equal importance. We could
             # probably refine this more in the future by using Mongo's text search
             # function with scoring.
-            exerciseGroup = exerciseGroups[0].get('exerciseGroup')
+            exercise_group = exercise_groups[0].get('exerciseGroup')
             # and we found our hit, so no need to query more!
             break
 
         # If no hits at all, use sensible defaults
         else:
-          exerciseGroup = {"group": None, "pointsPerHour": 0, "exercises": exerName}
+          exercise_group = {"group": None, "pointsPerHour": 0, "exercises": exercise_name}
 
-        pointsPerHour = exerciseGroup.get('pointsPerHour', 0)
-        matchedExercise = exerciseGroup.get('exercises', exerName)
+        points_per_hour = exercise_group.get('pointsPerHour', 0)
+        matched_exercise = exercise_group.get('exercises', exercise_name)
 
         # Assign icons. We have already assigned sanitized names, so we can do a
         # simply dictionary replacement.
 
-        exerciseIconSearch = db.exercises.find_one(
+        exercise_icon_search = db.exercises.find_one(
           {
-            'exercise': matchedExercise,
+            'exercise': matched_exercise,
           }, {
             '_id': 0,
             'image': 1,
           }
         )
 
-        if exerciseIconSearch is None:
-          exerciseIcon = 'exercise.png'
+        if exercise_icon_search is None:
+          exercise_icon = 'exercise.png'
         else:
-          exerciseIcon = exerciseIconSearch.get('image', 'exercise.png')
+          exercise_icon = exercise_icon_search.get('image', 'exercise.png')
 
-        points = (exerMins / 60) * pointsPerHour
+        points = (exercise_minutes / 60) * points_per_hour
 
         # NOW, if this is walking or step-counting, let's concatenate the values
-        if matchedExercise == "walking":
+        if matched_exercise == "walking":
           # let's use 2 decimal places for now, and then shorten to 1 after concat
           points = round(points, 2)
           walking['points'] += points
-          walking['minutes'] += exerMins
-          walking['cals'] += exerCals
-        elif matchedExercise == "steps":
+          walking['minutes'] += exercise_minutes
+          walking['cals'] += exercise_calories
+        elif matched_exercise == "steps":
           try:
             # let's use 2 decimal places for now, and then shorten to 1 after concat
             points = round(points, 2)
             steps['points'] += points
-            steps['cals'] += exerCals
-            steps['minutes'] += exerMins
+            steps['cals'] += exercise_calories
+            steps['minutes'] += exercise_minutes
           except TypeError:
-            logger.error(matchedExercise + "could not be properly added")
+            logger.error(matched_exercise + "could not be properly added")
         else:
           # Round to 1 decimal place
           points = round(points, 1)
-          totalExerPoints += points
+          total_exercise_points += points
 
           # Leave out step-counting for now
           exercises.append(
             {
-              'name': matchedExercise,
-              'minutes': exerMins,
-              'cals': exerCals,
+              'name': matched_exercise,
+              'minutes': exercise_minutes,
+              'cals': exercise_calories,
               'points': points,
-              'icon': exerciseIcon,
+              'icon': exercise_icon,
             }
           )
 
@@ -302,40 +297,40 @@ try:
       # take the total number of points from walking and round them before saving
       walking['points'] = round(walking['points'], 1)
       # then add them to that day's total exercise points
-      totalExerPoints += walking['points']
+      total_exercise_points += walking['points']
       exercises.append(walking)
     if steps['points'] > 0:
       # take the total number of points from walking and round them before saving
       steps['points'] = round(steps['points'], 1)
       # then add them to that day's total exercise points
-      totalExerPoints += steps['points']
+      total_exercise_points += steps['points']
       exercises.append(steps)
 
     # Double check everything got rounded properly
-    totalExerPoints = round(totalExerPoints, 1)
-    calPoints = round(calPoints, 1)
+    total_exercise_points = round(total_exercise_points, 1)
+    cal_points = round(cal_points, 1)
 
     # If day is complete, total points!
-    if MFPcals.complete:
-      totalDaysPoints = calPoints + totalExerPoints
-      totalDaysPoints = round(totalDaysPoints, 1)
+    if mfp_date.complete:
+      total_days_points = cal_points + total_exercise_points
+      total_days_points = round(total_days_points, 1)
     # Otherwise, if it's still the same day, give it 0 points
-    elif thisMorning <= date <= thisEvening:
-      totalDaysPoints = 0
+    elif this_morning <= date <= this_evening:
+      total_days_points = 0
     # Otherwise, if it's an old day, give it -3 points!
     else:
-      totalDaysPoints = -3
+      total_days_points = -3
 
     # construct object for db insertion
-    MFPdata = {
+    mfp_date_data = {
       'date': date.datetime,
-      'totalCals': totalCals,
-      'goalCals': goalCals,
-      'netCals': netCals,
+      'total_cals': total_cals,
+      'goal_cals': goal_cals,
+      'net_cals': net_cals,
       'exercise': exercises,
-      'isEmpty': isEmpty,
-      'complete': MFPcals.complete,
-      'points': totalDaysPoints,
+      'is_empty': is_empty,
+      'complete': mfp_date.complete,
+      'points': total_days_points,
       'user': user,
       'lastUpdated': now.datetime,
     }
@@ -359,16 +354,17 @@ try:
           'date': date.datetime,
           'user': user,
         }, {
-          '$set': MFPdata,
+          '$set': mfp_date_data,
         }, upsert=False
       )
     else:
       logger.warning('No data found yet for this date, creating record...')
-      entries.insert_one(MFPdata)
+      entries.insert_one(mfp_date_data)
 
   # Close our connection to the mongoDB Database
   client.close()
 
-except Exception as globalException:
+except Exception as global_exception:
   client.close()
-  raise globalException
+  logger.exception(global_exception)
+  raise global_exception
