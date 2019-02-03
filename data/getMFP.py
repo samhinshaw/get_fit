@@ -19,7 +19,11 @@ productionEnv = os.getenv('NODE_ENV') == 'production'
 developmentEnv = os.getenv('NODE_ENV') == 'development'
 
 # define log levels
-log_levels = {"production": "WARNING", "development": "DEBUG", "testing": "INFO"}
+log_levels = {
+  "production": "WARNING",
+  "testing": "INFO",
+  "development": "DEBUG",
+}
 
 log_level_for_env = log_levels.get(os.getenv('NODE_ENV'))
 
@@ -119,7 +123,7 @@ try:
 
   logger.info('Pulling in MyFitnessPal information for ' + user.capitalize() + '...')
 
-  # Attempt to get password (yipes!) from environment
+  # Attempt to get password from environment (yipes!)
   auth = os.getenv('MFP_PASS_' + mfp.upper())
   # If present, auth should be possible
   authPossible = not not auth
@@ -177,9 +181,17 @@ try:
       'minutes': 0,
       'cals': 0,
       'points': 0,
-      'icon': 'walking.png'
+      'icon': 'walking.png',
     }
-    steps = {'name': 'steps', 'minutes': 0, 'cals': 0, 'points': 0, 'icon': 'walking.png'}
+    steps = {
+      'name': 'steps',
+      'minutes': 0,
+      'cals': 0,
+      'points': 0,
+      'icon': 'walking.png',
+    }
+
+    print(exerEntries)
 
     # loop through all of the exercises in a day (if more than 0) This might be
     # ideal as a while loop, but this works fine too. I like it because we can
@@ -241,7 +253,7 @@ try:
             'exercise': matchedExercise,
           }, {
             '_id': 0,
-            'image': 1
+            'image': 1,
           }
         )
 
@@ -280,7 +292,7 @@ try:
               'minutes': exerMins,
               'cals': exerCals,
               'points': points,
-              'icon': exerciseIcon
+              'icon': exerciseIcon,
             }
           )
 
@@ -325,7 +337,7 @@ try:
       'complete': MFPcals.complete,
       'points': totalDaysPoints,
       'user': user,
-      'lastUpdated': now.datetime
+      'lastUpdated': now.datetime,
     }
 
     logger.info('Writing data to MongoDB...')
@@ -334,15 +346,21 @@ try:
     # the query matters when querying by subdocument in mongodb!!!!! OH for the love
     # of hell!! We have to use this structure of query instead, where the order will
     # NOT matter
-    # {'date.year': 2017, 'date.month': 9, 'date.day': 15}
+    # {
+    #   'date.year': 2017,
+    #   'date.month': 9,
+    #   'date.day': 15,
+    # }
 
     if entries.find_one({'date': date.datetime, 'user': user}):
       logger.warning('Found existing data for date, overwriting...')
       entries.update_one(
         {
           'date': date.datetime,
-          'user': user
-        }, {'$set': MFPdata}, upsert=False
+          'user': user,
+        }, {
+          '$set': MFPdata,
+        }, upsert=False
       )
     else:
       logger.warning('No data found yet for this date, creating record...')
