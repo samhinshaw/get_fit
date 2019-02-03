@@ -35,10 +35,10 @@ services:
     # Mount the codebase to the container for live-reloading
     volumes:
       - ./:/app/
-      # Mount nothing to the node_modules folder so that it can be overwritten
-      # within the container. (Trailing slash important.)
-      # This SO post contains a few different techniques for tackling this problem, as well
-      # as the solution I've used here.
+      # Mount nothing to the node_modules folder so that the results of the
+      # image build do not get overwritten. (Trailing slash important.) This SO
+      # post contains a few different techniques for tackling this problem, as
+      # well as the solution I've used here:
       # https://stackoverflow.com/questions/29181032/add-a-volume-to-docker-but-exclude-a-sub-folder
       - /app/node_modules/
   # Start Webpack. This just operates on the `public/src` to generate
@@ -59,9 +59,9 @@ services:
     # Mount the codebase to the container for live-reloading
     volumes:
       - ./:/app/
-      # Mount nothing to the node_modules folder so that it can be overwritten
-      # within the container. (Trailing slash important.)
-      # This SO post contains a few different techniques for tackling this problem, as well
-      # as the solution I've used here.
+      # Mount nothing to the node_modules folder so that the results of the
+      # image build do not get overwritten. (Trailing slash important.) This SO
+      # post contains a few different techniques for tackling this problem, as
+      # well as the solution I've used here:
       # https://stackoverflow.com/questions/29181032/add-a-volume-to-docker-but-exclude-a-sub-folder
       - /app/node_modules/
