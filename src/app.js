@@ -13,7 +13,6 @@ import expMessages from 'express-messages';
 import passport from 'passport';
 import helmet from 'helmet';
 import Promise from 'bluebird';
-import dotenv from 'dotenv';
 // Import middleware packages
 import session from 'express-session';
 import connectSession from 'connect-mongo';
@@ -41,36 +40,28 @@ import authMiddleware from './methods/passport';
 const productionEnv = process.env.NODE_ENV === 'production';
 const developmentEnv = process.env.NODE_ENV === 'development';
 
-// Only apply .env file config in development
-if (developmentEnv) {
-  dotenv.config({ path: '../.env' });
-  // Set mongoose to debug mode in dev environment
-  mongoose.set('debug', true);
-}
-
-if (!productionEnv) {
-  // Only apply unsecure.env in development or testing
-  dotenv.config({ path: '../unsecure.env' });
-}
-
-// Bring in remaining config files
+// Bring in app config file
 const appConfig = require('../config/app_config.json');
-
-// Tell mongoose to use Node.js' Promise implementation
-mongoose.Promise = Promise;
-
-const MongoStore = connectSession(session);
-
-const moment = extendMoment(Moment);
 
 // Define Async middleware wrapper to avoid try-catch
 const asyncMiddleware = fn => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch(next);
 };
 
+const moment = extendMoment(Moment);
+
+// ************************** //
+// * Configure Mongo Driver * //
+// ************************** //
+
+// Set mongoose to debug mode in dev environment
+mongoose.set('debug', !!developmentEnv);
+// Tell mongoose to use Node.js' Promise implementation
+mongoose.Promise = Promise;
+const MongoStore = connectSession(session);
 // Set up our mongoDB connection URI and options
 let mongoURI;
-const mongoOptions = { useNewUrlParser: true };
+const mongoOptions = { useNewUrlParser: true, useFindAndModify: false, useCreateIndex: true };
 if (productionEnv) {
   // if we're in production, connect to our production database
   mongoURI = `mongodb+srv://${process.env.MONGO_PROD_NODE_USER}:${
@@ -95,9 +86,7 @@ const connectToMongo = function connectToMongo() {
     mongoOptions
   );
 };
-
 connectToMongo();
-
 const db = mongoose.connection;
 
 // Check connection
@@ -108,6 +97,8 @@ db.once('open', () => {
 // Check for DB errors
 db.on('error', err => {
   logger.error('Database error: %j', err);
+  console.trace();
+  db.close();
   setTimeout(connectToMongo, 5000);
 });
 
@@ -138,7 +129,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(expressSanitizer()); // this line follows bodyParser() instantiations
 
 // Route for static assests such as CSS and JS
-app.use(express.static(path.join(__dirname, '../public')));
+app.use('/', express.static('public'));
 
 app.use(
   session({
@@ -146,7 +137,7 @@ app.use(
     resave: true,
     saveUninitialized: true,
     // cookie: { secure: true },
-    store: new MongoStore({ mongooseConnection: mongoose.connection })
+    store: new MongoStore({ mongooseConnection: db })
   })
 );
 
@@ -402,6 +393,14 @@ app.use((err, req, res, next) => {
 // Start Server
 const server = app.listen(appConfig.serverPort, () => {
   logger.info(`Server started on port ${appConfig.serverPort}`);
+});
+
+// If our node process exits or is killed, close the db connection
+process.on('SIGINT', () => {
+  db.close();
+});
+process.on('SIGTERM', () => {
+  db.close();
 });
 
 export default server;

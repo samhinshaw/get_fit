@@ -1,10 +1,12 @@
 # Start from a Python & Node Image
 # Reference from: https://hub.docker.com/r/nikolaik/python-nodejs/dockerfile
-FROM samhinshaw/python-node:1.1.0
+FROM samhinshaw/python-node:2.1.0
 
 #################
 ##   BACKEND   ##
 #################
+
+EXPOSE 8005
 
 # Create a directory where our app will be placed
 # (-p creates the intermediate directories /usr/src if they don’t already exist)
@@ -32,15 +34,15 @@ COPY ./ /app
 ##    BUILD    ##
 #################
 
-# package front-end code
-RUN yarn build:ui
+# Transpile backend code
+RUN yarn babel
 
-# transpile back-end code
-RUN yarn build:server
+# Bundle assets
+RUN yarn webpack
 
 #################
 ##    START    ##
 #################
 
 # Default command is to spin up server in production mode
-CMD ["yarn", "prod"]
+CMD ["yarn", "run:prod"]

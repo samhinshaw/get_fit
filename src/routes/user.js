@@ -79,8 +79,8 @@ router.get(
         netCals: 0,
         isEmpty: true,
         complete: false,
-        points: -1,
-        user: res.locals.user.username
+        points: 0,
+        user: res.locals.user.username,
       };
     });
 
@@ -280,7 +280,12 @@ router.post('/:date', ensureAuthenticated, (req, res) => {
     // Only throw error if exit code was nonzero.
     // For some reason I am getting errors with nonzero exit statuses
     if (err && err.exitCode !== 0) {
-      logger.error('Error updating from MyFitnessPal: %j', err);
+      logger.error('Error updating from MyFitnessPal:');
+      if (err.traceback) {
+        logger.error(err.traceback);
+        delete err.traceback;
+      }
+      logger.error(err);
       res.status(500).json({ message: 'Error updating from MyFitnessPal', type: 'danger' });
       // res.status(500).json(err);
     } else {
