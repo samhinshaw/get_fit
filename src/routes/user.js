@@ -51,22 +51,22 @@ router.get(
       {
         date: {
           $gte: res.locals.twoWeeksAgo.toDate(),
-          $lte: res.locals.today.toDate()
+          $lte: res.locals.today.toDate(),
         },
-        user: res.locals.user.username
+        user: res.locals.user.username,
       },
       (err, response) => {
         if (err) {
           logger.error(err);
         }
         return response;
-      }
+      },
     );
 
     // Not the best solution, but currently my way for merging an array of empty
     // dates with an array of the existing entries. Maybe it'd just be better to
     // create a new empty entry every day.
-    const displayRangeFilled = displayRangeArray.map(emptyDate => {
+    const displayRangeFilled = displayRangeArray.map((emptyDate) => {
       const dateIndex = entries.findIndex(entry => moment(entry.date).isSame(emptyDate));
       if (dateIndex > -1) {
         return entries[dateIndex];
@@ -99,7 +99,7 @@ router.get(
     //
     // First get Sundays in the past two weeks
     const sundays = [];
-    sortedEntries.map(entry => {
+    sortedEntries.map((entry) => {
       if (moment(entry.date).format('ddd') === 'Sun') {
         sundays.push(entry.date);
       }
@@ -124,7 +124,7 @@ router.get(
       weeks.push({
         key: `week ${index}`,
         startDate,
-        endDate
+        endDate,
       });
       // Make ESLint happy that we're returning a value. Our actual return is
       // done via an array push, so as to not have an array with lots of
@@ -136,22 +136,22 @@ router.get(
     // Summarize each week into various key statistics
     // =======================================
     // For each week...
-    const weekSummaries = weeks.map(async week => {
+    const weekSummaries = weeks.map(async (week) => {
       // Get the entries that week
       const entriesOfWeek = await Entry.find(
         {
           date: {
             $gte: week.startDate,
-            $lte: week.endDate
+            $lte: week.endDate,
           },
-          user: res.locals.user.username
+          user: res.locals.user.username,
         },
         (err, response) => {
           if (err) {
             logger.error(err);
           }
           return response;
-        }
+        },
       );
       // Figure out how many days you hit your calorie goal!
       const successfulDays = entriesOfWeek.reduce((successDays, entry) => {
@@ -209,7 +209,7 @@ router.get(
         points,
         successfulDays,
         workouts,
-        workoutMinutes
+        workoutMinutes,
       };
     });
 
@@ -233,10 +233,10 @@ router.get(
       weekSummaries: await promisedWeekSummaries,
       routeInfo: {
         heroType: 'user',
-        route: '/user'
-      }
+        route: '/user',
+      },
     });
-  })
+  }),
 );
 
 // Route to Weight Data
@@ -244,8 +244,8 @@ router.get('/weight', ensureAuthenticated, (req, res) => {
   res.render('user/weight', {
     routeInfo: {
       heroType: 'user',
-      route: '/user/weight'
-    }
+      route: '/user/weight',
+    },
   });
 });
 
@@ -272,7 +272,7 @@ router.post('/:date', ensureAuthenticated, (req, res) => {
     // mode: 'json',
     pythonOptions: ['-u'], // this will let us see Python's print statements
     scriptPath: './data',
-    args: [startDate, endDate, res.locals.user.username, res.locals.user.mfp]
+    args: [startDate, endDate, res.locals.user.username, res.locals.user.mfp],
   };
 
   // Run python script
@@ -293,7 +293,7 @@ router.post('/:date', ensureAuthenticated, (req, res) => {
       logger.info('Success updating user data from MFP.');
       res.status(200).json({
         message: 'Success updating user data from MyFitnessPal',
-        type: 'success'
+        type: 'success',
       });
       // res.status(200).json(result);
     }

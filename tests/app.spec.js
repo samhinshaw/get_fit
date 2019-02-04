@@ -15,17 +15,17 @@ describe('The server', () => {
     beforeAll(() => {
       backendAddress = `http://${backendHost}:8005/`;
     });
-    it('with status 200', done => {
+    it('with status 200', (done) => {
       // eslint-disable-next-line no-console
       console.log(`Connecting to ${backendAddress}`);
       axios
         .get(backendAddress)
-        .then(resp => {
+        .then((resp) => {
           // eslint-disable-next-line no-console
           expect(resp.status).toBe(200);
           done();
         })
-        .catch(err => {
+        .catch((err) => {
           // eslint-disable-next-line no-console
           console.error(err);
           fail(`The request to ${backendAddress} failed.`);

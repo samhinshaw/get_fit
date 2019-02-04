@@ -12,30 +12,30 @@ const giftSchema = new Schema(
   {
     reward: {
       type: String,
-      required: false
+      required: false,
     },
     displayName: {
       type: String,
-      required: false
+      required: false,
     },
     points: {
       type: Number,
-      required: false
+      required: false,
     },
     sender: {
       type: String,
-      required: true
+      required: true,
     },
     timeSent: {
       type: Date,
-      required: true
+      required: true,
     },
     message: {
       type: String,
-      required: false
-    }
+      required: false,
+    },
   },
-  { collection: 'gifts' }
+  { collection: 'gifts' },
 );
 
 const Gift = mongoose.model('gift', giftSchema);

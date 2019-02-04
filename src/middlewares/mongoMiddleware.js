@@ -86,9 +86,9 @@ export async function queryCustomPeriodsFromMongo(user, customRange) {
     {
       date: {
         $gte: customRange.startDate.toDate(),
-        $lte: customRange.endDate.toDate()
+        $lte: customRange.endDate.toDate(),
       },
-      user
+      user,
     },
     // for now JUST return the number of points!
     { points: 1 },
@@ -97,17 +97,17 @@ export async function queryCustomPeriodsFromMongo(user, customRange) {
         logger.error(err);
       }
       return res;
-    }
+    },
   );
 
   const requests = await Request.find(
     {
       timeRequested: {
         $gte: customRange.startDate.toDate(),
-        $lte: customRange.endDate.toDate()
+        $lte: customRange.endDate.toDate(),
       },
       requester: user,
-      status: ['approved', 'unapproved']
+      status: ['approved', 'unapproved'],
     },
     // just return the number of points
     { pointCost: 1 },
@@ -116,7 +116,7 @@ export async function queryCustomPeriodsFromMongo(user, customRange) {
         logger.error(err);
       }
       return res;
-    }
+    },
   );
 
   // For each date that exists in this period, sum the points
@@ -132,7 +132,7 @@ export async function queryCustomPeriodsFromMongo(user, customRange) {
   if (customRange.key === 'sinceStart') {
     const customPeriodRequests = requests.reduce(
       (points, request) => points + request.pointCost,
-      0
+      0,
     );
     totalForPeriod = customPeriodPoints - customPeriodRequests;
   } else {
@@ -144,7 +144,7 @@ export async function queryCustomPeriodsFromMongo(user, customRange) {
     startDate: customRange.startDate,
     endDate: customRange.endDate,
     points: totalForPeriod.toFixed(1),
-    user
+    user,
   };
 }
 
@@ -173,7 +173,7 @@ export async function getPendingRequests(partner) {
   const requests = await Request.find(
     {
       requester: partner,
-      status: 'unapproved'
+      status: 'unapproved',
     },
     (err, res) => {
       if (err) {
@@ -181,7 +181,7 @@ export async function getPendingRequests(partner) {
       }
       // If we get the results back, reorder the dates
       return res;
-    }
+    },
   );
   return requests;
 }

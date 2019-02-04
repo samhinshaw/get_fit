@@ -12,26 +12,26 @@ const periodSchema = new Schema(
   {
     key: {
       type: String,
-      required: true
+      required: true,
     },
     startDate: {
       type: Date,
-      required: true
+      required: true,
     },
     endDate: {
       type: Date,
-      required: true
+      required: true,
     },
     points: {
       type: Number,
-      required: false
+      required: false,
     },
     user: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
-  { collection: 'periods' }
+  { collection: 'periods' },
 );
 
 const Period = mongoose.model('period', periodSchema);

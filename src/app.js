@@ -92,7 +92,7 @@ db.once('open', () => {
 });
 
 // Check for DB errors
-db.on('error', err => {
+db.on('error', (err) => {
   logger.error('Database error: %j', err);
   console.trace();
   db.close();
@@ -128,15 +128,13 @@ app.use(expressSanitizer()); // this line follows bodyParser() instantiations
 // Route for static assests such as CSS and JS
 app.use('/', express.static('public'));
 
-app.use(
-  session({
-    secret: process.env.NODEJS_SESSION_SECRET,
-    resave: true,
-    saveUninitialized: true,
-    // cookie: { secure: true },
-    store: new MongoStore({ mongooseConnection: db }),
-  })
-);
+app.use(session({
+  secret: process.env.NODEJS_SESSION_SECRET,
+  resave: true,
+  saveUninitialized: true,
+  // cookie: { secure: true },
+  store: new MongoStore({ mongooseConnection: db }),
+}));
 
 // Messages Middleware (pretty client messaging)
 app.use(connectFlash());
@@ -154,92 +152,88 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // Form Validation Middleware
-app.use(
-  expressValidator({
-    errorFormatter: (param, msg, value) => {
-      const namespace = param.split('.');
-      const root = namespace.shift();
-      let formParam = root;
+app.use(expressValidator({
+  errorFormatter: (param, msg, value) => {
+    const namespace = param.split('.');
+    const root = namespace.shift();
+    let formParam = root;
 
-      while (namespace.length) {
-        formParam += `[${namespace.shift()}]`;
-      }
-      return {
-        param: formParam,
-        msg,
-        value,
-      };
-    },
-  })
-);
+    while (namespace.length) {
+      formParam += `[${namespace.shift()}]`;
+    }
+    return {
+      param: formParam,
+      msg,
+      value,
+    };
+  },
+}));
 
 // Init global user variable
-app.use(
-  asyncMiddleware(async (req, res, next) => {
-    if (req.user) {
-      // Though we wouldn't normally allow this, allow alteration of the req
-      // object here.
-      // eslint-disable-next-line no-param-reassign
-      req.user.password = null;
+app.use(asyncMiddleware(async (req, res, next) => {
+  if (req.user) {
+    // Though we wouldn't normally allow this, allow alteration of the req
+    // object here.
+    // eslint-disable-next-line no-param-reassign
+    req.user.password = null;
+  }
+  // This '||' will assign to NULL if req.user does not exist
+  res.locals.user = req.user || null;
+
+  // also store 'logged-in' status
+  res.locals.loggedIn = !!req.user;
+
+  // Temporarily mock blank partner (if none)
+  if (req.user) {
+    if (req.user.partner == null || req.user.partner === '') {
+      res.locals.partner = {
+        firstname: '',
+        lastname: '',
+        username: '',
+        email: '',
+        mfp: '',
+        partner: '',
+        fitnessGoal: '',
+        password: null,
+        currentPoints: 0,
+      };
+    } else if (!(await User.findOne({ username: req.user.partner }))) {
+      // Otherwise if no user located in database, insert dummy user for now
+      res.locals.partner = {
+        firstname: '',
+        lastname: '',
+        username: '',
+        email: '',
+        mfp: '',
+        partner: '',
+        fitnessGoal: '',
+        password: null,
+        currentPoints: 0,
+      };
+    } else {
+      res.locals.partner = await User.findOne({
+        username: req.user.partner,
+      });
     }
-    // This '||' will assign to NULL if req.user does not exist
-    res.locals.user = req.user || null;
+  }
 
-    // also store 'logged-in' status
-    res.locals.loggedIn = !!req.user;
-
-    // Temporarily mock blank partner (if none)
-    if (req.user) {
-      if (req.user.partner == null || req.user.partner === '') {
-        res.locals.partner = {
-          firstname: '',
-          lastname: '',
-          username: '',
-          email: '',
-          mfp: '',
-          partner: '',
-          fitnessGoal: '',
-          password: null,
-          currentPoints: 0,
-        };
-      } else if (!(await User.findOne({ username: req.user.partner }))) {
-        // Otherwise if no user located in database, insert dummy user for now
-        res.locals.partner = {
-          firstname: '',
-          lastname: '',
-          username: '',
-          email: '',
-          mfp: '',
-          partner: '',
-          fitnessGoal: '',
-          password: null,
-          currentPoints: 0,
-        };
-      } else {
-        res.locals.partner = await User.findOne({
-          username: req.user.partner,
-        });
-      }
-    }
-
-    // Set capitalized names
-    if (req.user) {
-      res.locals.userName =
+  // Set capitalized names
+  if (req.user) {
+    res.locals.userName =
         res.locals.user.firstname.charAt(0).toUpperCase() + res.locals.user.firstname.slice(1);
-      res.locals.partnerName =
+    res.locals.partnerName =
         res.locals.partner.firstname.charAt(0).toUpperCase() +
         res.locals.partner.firstname.slice(1).toLowerCase();
 
-      res.locals.userLastName =
+    res.locals.userLastName =
         res.locals.user.lastname.charAt(0).toUpperCase() + res.locals.user.lastname.slice(1);
-      res.locals.partnerLastName =
+    res.locals.partnerLastName =
         res.locals.partner.lastname.charAt(0).toUpperCase() +
         res.locals.partner.lastname.slice(1).toLowerCase();
-    }
+  }
 
-    next();
-  })
-);
+  next();
+}));
 
 // Set cookies so we can access user object on client side
 app.use(cookieParser());
@@ -276,54 +270,50 @@ app.use((req, res, next) => {
 // ------------------------------------------------------------------------------//
 // --------------- MIDDLEWARE TO CALCULATE POINTS & PURCHASES -------------------//
 // ------------------------------------------------------------------------------//
-app.use(
-  asyncMiddleware(async (req, res, next) => {
-    // Workaround for now will simply not run this middleware if not logged in
-    // In the future, can probably think of a better way to architect this
-    if (req.user) {
-      // Don't need try, catch anymore since asyncMiddleware (see top of app.js) is
-      // handling async errors
+app.use(asyncMiddleware(async (req, res, next) => {
+  // Workaround for now will simply not run this middleware if not logged in
+  // In the future, can probably think of a better way to architect this
+  if (req.user) {
+    // Don't need try, catch anymore since asyncMiddleware (see top of app.js) is
+    // handling async errors
 
-      // Get and concat all point tallies
-      // const userWeeks = await mongoMiddleware.queryWeeksFromMongo(res.locals.user.username);
-      const userCustom = await queryCustomPeriodsFromMongo(
-        res.locals.user.username,
-        res.locals.customRange
-      );
+    // Get and concat all point tallies
+    // const userWeeks = await mongoMiddleware.queryWeeksFromMongo(res.locals.user.username);
+    const userCustom = await queryCustomPeriodsFromMongo(
+      res.locals.user.username,
+      res.locals.customRange,
+    );
       // const partnerWeeks = await mongoMiddleware.queryWeeksFromMongo(res.locals.partner.username);
-      const partnerCustom = await queryCustomPeriodsFromMongo(
-        res.locals.partner.username,
-        res.locals.customRange
-      );
+    const partnerCustom = await queryCustomPeriodsFromMongo(
+      res.locals.partner.username,
+      res.locals.customRange,
+    );
 
-      const pointTally = {
-        user: parseFloat(userCustom.points),
-        partner: parseFloat(partnerCustom.points),
-      };
+    const pointTally = {
+      user: parseFloat(userCustom.points),
+      partner: parseFloat(partnerCustom.points),
+    };
 
       // make the point tallies array available to the view engine
-      res.locals.pointTally = pointTally;
-    }
-    next();
-  })
-);
+    res.locals.pointTally = pointTally;
+  }
+  next();
+}));
 
-app.use(
-  asyncMiddleware(async (req, res, next) => {
-    // only look for the pending requests if user is logged in
-    if (req.user) {
-      // Don't need try, catch anymore since asyncMiddleware (see top of app.js) is
-      // handling async errors
+app.use(asyncMiddleware(async (req, res, next) => {
+  // only look for the pending requests if user is logged in
+  if (req.user) {
+    // Don't need try, catch anymore since asyncMiddleware (see top of app.js) is
+    // handling async errors
 
-      // Get pending requests -- we want to find the ones our PARTNER has
-      // requested, because we only have a field in the document for requester,
-      // not requestee. So we want to see what we have yet to approve
-      const pendingRequests = await getPendingRequests(res.locals.partner.username);
-      res.locals.pendingRequests = pendingRequests;
-    }
-    next();
-  })
-);
+    // Get pending requests -- we want to find the ones our PARTNER has
+    // requested, because we only have a field in the document for requester,
+    // not requestee. So we want to see what we have yet to approve
+    const pendingRequests = await getPendingRequests(res.locals.partner.username);
+    res.locals.pendingRequests = pendingRequests;
+  }
+  next();
+}));
 
 // ------------------------------------------------------------------------------//
 
@@ -332,14 +322,14 @@ app.get('/', (req, res) => {
     res.render('landing_page', {
       routeInfo: {
         heroType: 'landing_page',
-        route: `/`,
+        route: '/',
       },
     });
   } else {
     res.render('landing_page', {
       routeInfo: {
         heroType: 'landing_page',
-        route: `/`,
+        route: '/',
       },
     });
   }

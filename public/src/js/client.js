@@ -16,12 +16,12 @@ const handlers = {
     // Get all "navbar-burger" elements
     const navbarBurgers = Array.prototype.slice.call(
       document.querySelectorAll('.navbar-burger'),
-      0
+      0,
     );
     // Check if there are any nav burgers
     if (navbarBurgers.length > 0) {
       // Add a click event on each of them
-      navbarBurgers.forEach(element => {
+      navbarBurgers.forEach((element) => {
         element.addEventListener('click', () => {
           // Get the target from the "data-target" attribute
           let { target } = element.dataset;
@@ -36,7 +36,7 @@ const handlers = {
   },
   updateEntry: () => {
     // UPDATE THIS to listen for click within column, not for click on each button
-    $('.update-entry').on('click', e => {
+    $('.update-entry').on('click', (e) => {
       // First stop the click from enacting its default behavior. If this is a
       // link, it will stop navigation. If this is a link to nowhere (href='#'),
       // it will stop the browser from going to the top of the page. This isn't
@@ -62,28 +62,26 @@ const handlers = {
           window.location.reload();
         },
         // handle errors
-        error: err => {
+        error: (err) => {
           $(e.currentTarget).removeClass('is-loading');
-          $('#notification-entry').append(
-            `
+          $('#notification-entry').append(`
               <div class="messages">
                 <div class="notification landing-page-notification is-${err.responseJSON.type}">
                   <button class="delete"></button>
                   <p>${err.responseJSON.message}</p>
                 </div>
               </div>
-            `
-          );
+            `);
           // Since we're creating a new .messages div, (after DOMContentLoaded
           // fired) there's no event handler yet! So we gotta make sure we add
           // it again.
           handlers.dismissMessagesNotification();
-        }
+        },
       });
     });
   },
   dismissMessagesNotification: () => {
-    $('.messages').on('click', e => {
+    $('.messages').on('click', (e) => {
       // before we delete anything, check to see if this is the last alert
       if (
         $(e.target)
@@ -103,7 +101,7 @@ const handlers = {
     });
   },
   dismissNotification: () => {
-    $('.footer-notification, .landing-page-notification ').on('click', e => {
+    $('.footer-notification, .landing-page-notification ').on('click', (e) => {
       // before we delete anything, check to see if this is the last alert
       $(e.currentTarget)
         .addClass('is-hidden')
@@ -111,7 +109,7 @@ const handlers = {
     });
   },
   replyToRequest: () => {
-    $('#request-container').on('click', e => {
+    $('#request-container').on('click', (e) => {
       // currentTarget is where the listener is attached
       // target is the actual click target
       const clickTarget = $(e.target);
@@ -147,7 +145,7 @@ const handlers = {
     });
   },
   watchModal: () => {
-    $('#request-modal').on('click', e => {
+    $('#request-modal').on('click', (e) => {
       // If the background, close, or cancel buttons were clicked...
       if (
         $(e.target).hasClass('delete') ||
@@ -178,7 +176,7 @@ const handlers = {
             message: $('#request-modal input[name="message"]').val(),
             // If approval = true, type will be 'approved'.
             // If approval = false, type will be 'denied'
-            type: approval ? 'approved' : 'denied'
+            type: approval ? 'approved' : 'denied',
           },
           // handle successes!
           success: () => {
@@ -186,10 +184,10 @@ const handlers = {
             window.location.reload();
           },
           // handle errors
-          error: err => {
+          error: (err) => {
             if (err) Rollbar.error(err);
             // window.location.reload();
-          }
+          },
         });
       }
     });
@@ -246,11 +244,11 @@ const handlers = {
     checkFields() {
       let delayedAction;
       const route = window.location.pathname;
-      $('.validated-input').change(e => {
+      $('.validated-input').change((e) => {
         clearTimeout(delayedAction);
         const payload = {
           name: e.currentTarget.name,
-          value: e.currentTarget.value
+          value: e.currentTarget.value,
         };
         delayedAction = setTimeout(() => {
           // If we're querying checking password, don't need to leave client-side!
@@ -261,21 +259,21 @@ const handlers = {
                 e.currentTarget,
                 payload.name,
                 'danger',
-                'Your password must be at least 5 characters.'
+                'Your password must be at least 5 characters.',
               );
             } else if (password === payload.value) {
               this.addValidationMarkup(
                 e.currentTarget,
                 payload.name,
                 'success',
-                'These passwords match.'
+                'These passwords match.',
               );
             } else {
               this.addValidationMarkup(
                 e.currentTarget,
                 payload.name,
                 'danger',
-                'These passwords do not match.'
+                'These passwords do not match.',
               );
             }
           } else {
@@ -285,27 +283,27 @@ const handlers = {
               dataType: 'json',
               data: payload,
               // handle successes!
-              success: res => {
+              success: (res) => {
                 this.addValidationMarkup(e.currentTarget, payload.name, res.classType, res.message);
               },
               // handle errors
-              error: err => {
+              error: (err) => {
                 if (err) Rollbar.error(err);
-              }
+              },
             });
           }
         }, 500);
       });
     },
     findPartnerByUsername() {
-      $('#partnerUsernameInput').on('change keyup paste', e => {
+      $('#partnerUsernameInput').on('change keyup paste', (e) => {
         setTimeout(() => {
           const route = window.location.pathname;
           const { target } = e;
           const username = $('#partnerUsername input[name="partner"]').val();
           const payload = {
             name: 'partner',
-            value: username
+            value: username,
           };
           $.ajax({
             type: 'POST',
@@ -313,7 +311,7 @@ const handlers = {
             dataType: 'json',
             data: payload,
             // handle successes!
-            success: res => {
+            success: (res) => {
               this.addPartnerEmailField(target, payload.name, res.classType, res.message);
               // If username comes back as missing, let user input email.
               if (['danger', 'warning', 'info'].includes(res.classType)) {
@@ -323,9 +321,9 @@ const handlers = {
               }
             },
             // handle errors
-            error: err => {
+            error: (err) => {
               if (err) Rollbar.error(err);
-            }
+            },
           });
         }, 500);
       });
@@ -342,7 +340,7 @@ const handlers = {
       $('#partnerUsername').after(`
       <p id="${name}Validation" class="help is-${type}">${message}</p>
       `);
-    }
+    },
   },
   toggleCopyrightModal: () => {
     // Function to listen for: copyright logo/modal
@@ -363,7 +361,7 @@ const handlers = {
     copyrightModalBackground.addEventListener('click', () => {
       copyrightModal.classList.toggle('is-active');
     });
-  }
+  },
 };
 
 // Process all actions after DOM content has loaded

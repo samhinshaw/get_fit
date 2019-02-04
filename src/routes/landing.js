@@ -48,24 +48,24 @@ emailVer.configure(
       secure: true, // ssl
       auth: {
         user: 'welcome@getse.xyz',
-        pass: process.env.NODEJS_ZOHO_PASS
-      }
+        pass: process.env.NODEJS_ZOHO_PASS,
+      },
     },
     verifyMailOptions: {
       from: 'Sam <welcome@getse.xyz>',
       subject: 'Please confirm account',
       html:
         '<p>Please verify your account by clicking <a href="${URL}">this link</a>. If you are unable to do so, copy and paste the following link into your browser:</p><p>${URL}</p>', // eslint-disable-line no-template-curly-in-string
-      text: 'Please confirm your account by clicking the following link: ${URL}' // eslint-disable-line no-template-curly-in-string
+      text: 'Please confirm your account by clicking the following link: ${URL}', // eslint-disable-line no-template-curly-in-string
     },
     shouldSendConfirmation: false,
     confirmMailOptions: {
       from: 'Sam <welcome@getse.xyz>',
       subject: 'Successfully verified!',
       html: '<p>Your account has been successfully verified.</p>',
-      text: 'Your account has been successfully verified.'
+      text: 'Your account has been successfully verified.',
     },
-    hashingFunction: saltAndHash
+    hashingFunction: saltAndHash,
   },
   (err, options) => {
     if (err) {
@@ -73,7 +73,7 @@ emailVer.configure(
       return;
     }
     logger.debug(`configured:  ${typeof options === 'object'}`);
-  }
+  },
 );
 
 emailVer
@@ -94,8 +94,8 @@ router.get('/register', (req, res) => {
     res.render('register', {
       routeInfo: {
         heroType: 'dark',
-        route: `/register`
-      }
+        route: '/register',
+      },
     });
   }
 });
@@ -109,8 +109,8 @@ router.get('/login', (req, res) => {
     res.render('login', {
       routeInfo: {
         heroType: 'dark',
-        route: `/login`
-      }
+        route: '/login',
+      },
     });
   }
 });
@@ -122,7 +122,7 @@ router.post('/login', (req, res, next) => {
       req.flash('danger', authErr.message);
       return next(authErr);
     }
-    req.logIn(user, loginErr => {
+    req.logIn(user, (loginErr) => {
       if (loginErr) {
         req.flash('danger', loginErr.message);
         return next(loginErr);
@@ -131,7 +131,7 @@ router.post('/login', (req, res, next) => {
         'username',
         req.user.username,
 
-        { maxAge: 2592000000, signed: false }
+        { maxAge: 2592000000, signed: false },
       );
       // secure: true for HTTPS only
       // res.cookie('userid', req.user.id, { maxAge: 2592000000, secure: true, signed: false });
@@ -165,15 +165,15 @@ router.get('/overview', ensureAuthenticated, (req, res) => {
     'bicyclist',
     'walking',
     'weight_lifter',
-    'horse_racing'
+    'horse_racing',
   ];
   const exerciseEmoji = possibleEmojis[Math.floor(Math.random() * possibleEmojis.length)];
   res.render('overview', {
     routeInfo: {
       heroType: 'dark',
-      route: `/overview`
+      route: '/overview',
     },
-    emoji: emoji.get(exerciseEmoji)
+    emoji: emoji.get(exerciseEmoji),
   });
 });
 
@@ -181,8 +181,8 @@ router.get('/help', (req, res) => {
   res.render('help', {
     routeInfo: {
       heroType: 'dark',
-      route: `/help`
-    }
+      route: '/help',
+    },
   });
 });
 
@@ -190,8 +190,8 @@ router.get('/privacy', (req, res) => {
   res.render('privacy', {
     routeInfo: {
       heroType: 'dark',
-      route: `/privacy`
-    }
+      route: '/privacy',
+    },
   });
 });
 
@@ -205,7 +205,7 @@ router.post('/login/resend', (req, res, next) => {
     .normalizeEmail();
   const errors = req.validationErrors();
   if (errors) {
-    errors.forEach(error => {
+    errors.forEach((error) => {
       req.flash('danger', error.msg);
     });
     res.redirect('/login/help');
@@ -214,12 +214,12 @@ router.post('/login/resend', (req, res, next) => {
 
   emailVer
     .resendVerificationEmailAsync(email)
-    .then(user => {
+    .then((user) => {
       if (!user) {
         // Handle tempuser expiration
         req.flash(
           'danger',
-          'Either your verification code expired, or no user was found with that email address. Please sign up again.'
+          'Either your verification code expired, or no user was found with that email address. Please sign up again.',
         );
         res.redirect('/login/help');
         return next();
@@ -229,7 +229,7 @@ router.post('/login/resend', (req, res, next) => {
       res.redirect('/login/help');
       return next();
     })
-    .catch(err => {
+    .catch((err) => {
       logger.error('error resending verification email: %j', err);
       req.flash('danger', 'Error resending verification email');
       res.redirect('/login/help');
@@ -299,7 +299,7 @@ router.post(
 
     if (errors) {
       // Or handle errors with flash
-      errors.forEach(error => {
+      errors.forEach((error) => {
         req.flash('danger', error.msg);
       });
       res.redirect('#');
@@ -323,14 +323,14 @@ router.post(
     // QUITE A BIT.
     const existingUserUsername = await User.findOne(
       {
-        username
+        username,
       },
       (queryErr, user) => {
         if (queryErr) {
           logger.error('Error finding existing user: %j', queryErr);
         }
         return user;
-      }
+      },
     );
 
     if (existingUserUsername) {
@@ -341,14 +341,14 @@ router.post(
     }
     const existingUserEmail = await User.findOne(
       {
-        email
+        email,
       },
       (queryErr, user) => {
         if (queryErr) {
           logger.error('Error finding existing user: %j', queryErr);
         }
         return user;
-      }
+      },
     );
 
     if (existingUserEmail) {
@@ -379,17 +379,17 @@ router.post(
           {
             group: 'Very Light Exercise',
             pointsPerHour: 0.5,
-            exercises: ['walking', 'stretching']
+            exercises: ['walking', 'stretching'],
           },
           {
             group: 'Light Exercise',
             pointsPerHour: 1,
-            exercises: ['yoga', 'hiking']
+            exercises: ['yoga', 'hiking'],
           },
           {
             group: 'Cardio',
             pointsPerHour: 2,
-            exercises: ['jogging', 'running', 'dancing', 'paddleboarding', 'parkour']
+            exercises: ['jogging', 'running', 'dancing', 'paddleboarding', 'parkour'],
           },
           {
             group: 'Cross Training',
@@ -398,10 +398,10 @@ router.post(
               'low intensity strength training',
               'high intensity strength training',
               'bodyweight training',
-              'kelly tape'
-            ]
-          }
-        ]
+              'kelly tape',
+            ],
+          },
+        ],
       });
 
       await emailVer.createTempUser(newUser, (createErr, existingPermUser, newTempUser) => {
@@ -409,7 +409,7 @@ router.post(
           logger.error('Error creating temp user: %j', createErr);
           req.flash(
             'danger',
-            'Oops, something went wrong on our end and we failed to create your account.'
+            'Oops, something went wrong on our end and we failed to create your account.',
           );
           res.redirect('#');
           return next();
@@ -422,7 +422,7 @@ router.post(
           logger.info('Temp user already exists');
           req.flash(
             'warning',
-            "Hmm, it looks like you've already created an account! Check your email for a verification link."
+            "Hmm, it looks like you've already created an account! Check your email for a verification link.",
           );
           res.redirect('#');
           return next();
@@ -435,7 +435,7 @@ router.post(
             logger.error('Error sending verification email: %j', sendErr);
             req.flash(
               'danger',
-              'Oops, something went wrong on our end and we failed to send your verification email.'
+              'Oops, something went wrong on our end and we failed to send your verification email.',
             );
             res.redirect('#');
             return next();
@@ -453,7 +453,7 @@ router.post(
           //    b) Invite user to Get Fit if email address is unregistered
           if (withPartner) {
             // 1. Check to see if username matches
-            const foundPartner = await User.findOne({ username: partner }, err => {
+            const foundPartner = await User.findOne({ username: partner }, (err) => {
               if (err) logger.error(err);
             });
             if (foundPartner) {
@@ -461,14 +461,14 @@ router.post(
               //        i) Invite user to be partner
             } else if (partnerEmail) {
               // 2. Check to see if email is taken
-              const partnerByEmail = await User.findOne({ email: partnerEmail }, err => {
+              const partnerByEmail = await User.findOne({ email: partnerEmail }, (err) => {
                 if (err) logger.error(err);
               });
               if (partnerByEmail) {
                 //    a) Inform user that email address is registered (and they should check username)
                 req.flash(
                   'danger',
-                  "The email address you entered for your partner is already registered&mdash;make sure you have your partner's username correct!"
+                  "The email address you entered for your partner is already registered&mdash;make sure you have your partner's username correct!",
                 );
                 res.redirect('#');
                 return next();
@@ -485,7 +485,7 @@ router.post(
       });
     }
     return false;
-  })
+  }),
 );
 
 router.post(
@@ -501,11 +501,11 @@ router.post(
       if (value.length < 3) {
         res.status(200).json({
           message: 'Your username must be at least 3 characters.',
-          classType: 'danger'
+          classType: 'danger',
         });
       } else {
         // Otherwise, check for the user in the database!
-        const user = await User.findOne({ username: value }, err => {
+        const user = await User.findOne({ username: value }, (err) => {
           if (err) logger.error(err);
         });
         if (user) {
@@ -513,7 +513,7 @@ router.post(
         } else {
           res.status(200).json({
             message: 'This username is available',
-            classType: 'success'
+            classType: 'success',
           });
         }
       }
@@ -529,38 +529,38 @@ router.post(
         // Or handle errors with flash
         res.status(200).json({
           message: 'This is not a valid email address',
-          classType: 'danger'
+          classType: 'danger',
         });
       } else {
-        const userByEmail = await User.findOne({ email: value }, err => {
+        const userByEmail = await User.findOne({ email: value }, (err) => {
           if (err) logger.error(err);
         });
         if (userByEmail) {
           res.status(200).json({
             message: 'This email address is already registered.',
-            classType: 'danger'
+            classType: 'danger',
           });
         } else {
           res.status(200).json({
             message: 'This email address is unregistered.',
-            classType: 'success'
+            classType: 'success',
           });
         }
       }
     } else if (name === 'partner') {
-      const partner = await User.findOne({ username: value }, err => {
+      const partner = await User.findOne({ username: value }, (err) => {
         if (err) logger.error(err);
       });
       if (partner) {
         res.status(200).json({
           message: "This user is already registered. We'll send them a partner request!",
-          classType: 'success'
+          classType: 'success',
         });
       } else {
         res.status(200).json({
           message:
             "This user is not yet registered! Input their email address and we'll invite them to Get Fit!",
-          classType: 'info'
+          classType: 'info',
         });
       }
     } else if (name === 'partnerEmail') {
@@ -575,29 +575,29 @@ router.post(
         // Or handle errors with flash
         res.status(200).json({
           message: 'This is not a valid email address',
-          classType: 'danger'
+          classType: 'danger',
         });
       } else {
-        const partnerByEmail = await User.findOne({ email: value }, err => {
+        const partnerByEmail = await User.findOne({ email: value }, (err) => {
           if (err) logger.error(err);
         });
         if (partnerByEmail) {
           res.status(200).json({
             message:
               "This email address is already registered&mdash;make sure you have your partner's username correct!",
-            classType: 'danger'
+            classType: 'danger',
           });
         } else {
           res.status(200).json({
             message: "This email address is unregistered, we'll invite them!",
-            classType: 'success'
+            classType: 'success',
           });
         }
       }
     }
     // console.log('response obj: ', res);
     // res.status(500).json({ message: 'Error updating from MyFitnessPal', type: 'danger' });
-  })
+  }),
 );
 
 // user accesses the link that is sent
@@ -609,7 +609,7 @@ router.get('/email-verification/:url', (req, res, next) => {
       if (confirmErr) throw new Error(confirmErr);
       return foundUser;
     })
-    .catch(err => {
+    .catch((err) => {
       logger.error('Error confirming temporary user: %j', err);
       req.flash('danger', 'Error confirming email.');
       res.redirect('/');

@@ -9,13 +9,13 @@ module.exports = {
       script: 'npm',
       args: 'run prod',
       env: {
-        NODE_ENV: 'development'
+        NODE_ENV: 'development',
       },
       env_production: {
-        NODE_ENV: 'production'
+        NODE_ENV: 'production',
       },
-      log_date_format: 'YYYY-MM-DD HH:mm Z'
-    }
+      log_date_format: 'YYYY-MM-DD HH:mm Z',
+    },
   ],
 
   // Deployment section
@@ -33,9 +33,9 @@ module.exports = {
         'ln -sf ~/secret/get_fit/* ./config/secret && yarn install && yarn clean && yarn build && pm2 startOrRestart getfit.config.js --env production && yarn rollbar',
       env: {
         PATH:
-          '/home/sam/.nvm/versions/node/v8.9.4/bin:/home/sam/.yarn/bin:/home/sam/.npm-global/bin:/home/sam/.miniconda3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/home/sam/.local/bin'
-      }
-    }
+          '/home/sam/.nvm/versions/node/v8.9.4/bin:/home/sam/.yarn/bin:/home/sam/.npm-global/bin:/home/sam/.miniconda3/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/home/sam/.local/bin',
+      },
+    },
     // dev: {
     //   user: 'node',
     //   host: '212.83.163.1',
@@ -47,5 +47,5 @@ module.exports = {
     //     NODE_ENV: 'dev'
     //   }
     // }
-  }
+  },
 };

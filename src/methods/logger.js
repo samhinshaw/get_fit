@@ -3,7 +3,9 @@ import 'winston-daily-rotate-file';
 
 const env = process.env.NODE_ENV || 'development';
 
-const { printf, combine, timestamp, splat } = format;
+const {
+  printf, combine, timestamp, splat,
+} = format;
 const myFormat = printf(info => `${info.timestamp} - ${info.level}: ${info.message}`);
 const dateFmt = () => new Date().toLocaleTimeString();
 
@@ -19,7 +21,7 @@ const logger = createLogger({
       timestamp: dateFmt(),
       level: 'error',
       datePattern: 'YYYY-MM-DD',
-      prepend: true
+      prepend: true,
     }),
     // - Write to all logs with level `info` and below to `combined.log`
     new transports.DailyRotateFile({
@@ -27,20 +29,18 @@ const logger = createLogger({
       timestamp: dateFmt(),
       datePattern: 'YYYY-MM-DD',
       prepend: true,
-      level: env === 'development' ? 'verbose' : 'info'
-    })
-  ]
+      level: env === 'development' ? 'verbose' : 'info',
+    }),
+  ],
 });
 
 // If we're not in production then log to the `console` with the format:
 if (env !== 'production') {
-  logger.add(
-    new transports.Console({
-      format: combine(splat(), timestamp(), myFormat),
-      timestamp: dateFmt(),
-      colorize: true
-    })
-  );
+  logger.add(new transports.Console({
+    format: combine(splat(), timestamp(), myFormat),
+    timestamp: dateFmt(),
+    colorize: true,
+  }));
 }
 
 export default logger;
