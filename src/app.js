@@ -81,10 +81,7 @@ if (productionEnv) {
 // Declare a function to connect to mongo so that we can retry the connection
 // should it error-out.
 const connectToMongo = function connectToMongo() {
-  return mongoose.connect(
-    mongoURI,
-    mongoOptions
-  );
+  return mongoose.connect(mongoURI, mongoOptions);
 };
 connectToMongo();
 const db = mongoose.connection;
@@ -137,7 +134,7 @@ app.use(
     resave: true,
     saveUninitialized: true,
     // cookie: { secure: true },
-    store: new MongoStore({ mongooseConnection: db })
+    store: new MongoStore({ mongooseConnection: db }),
   })
 );
 
@@ -170,9 +167,9 @@ app.use(
       return {
         param: formParam,
         msg,
-        value
+        value,
       };
-    }
+    },
   })
 );
 
@@ -180,6 +177,9 @@ app.use(
 app.use(
   asyncMiddleware(async (req, res, next) => {
     if (req.user) {
+      // Though we wouldn't normally allow this, allow alteration of the req
+      // object here.
+      // eslint-disable-next-line no-param-reassign
       req.user.password = null;
     }
     // This '||' will assign to NULL if req.user does not exist
@@ -200,7 +200,7 @@ app.use(
           partner: '',
           fitnessGoal: '',
           password: null,
-          currentPoints: 0
+          currentPoints: 0,
         };
       } else if (!(await User.findOne({ username: req.user.partner }))) {
         // Otherwise if no user located in database, insert dummy user for now
@@ -213,11 +213,11 @@ app.use(
           partner: '',
           fitnessGoal: '',
           password: null,
-          currentPoints: 0
+          currentPoints: 0,
         };
       } else {
         res.locals.partner = await User.findOne({
-          username: req.user.partner
+          username: req.user.partner,
         });
       }
     }
@@ -266,7 +266,7 @@ app.use((req, res, next) => {
       // We started Monday, Sept 18th
       key: 'sinceStart',
       startDate: startOfTracking,
-      endDate: today.clone().endOf('day')
+      endDate: today.clone().endOf('day'),
     };
     res.locals.customRange = customRange; // do we want to pass an object instead?
   }
@@ -298,7 +298,7 @@ app.use(
 
       const pointTally = {
         user: parseFloat(userCustom.points),
-        partner: parseFloat(partnerCustom.points)
+        partner: parseFloat(partnerCustom.points),
       };
 
       // make the point tallies array available to the view engine
@@ -332,15 +332,15 @@ app.get('/', (req, res) => {
     res.render('landing_page', {
       routeInfo: {
         heroType: 'landing_page',
-        route: `/`
-      }
+        route: `/`,
+      },
     });
   } else {
     res.render('landing_page', {
       routeInfo: {
         heroType: 'landing_page',
-        route: `/`
-      }
+        route: `/`,
+      },
     });
   }
 });
@@ -357,8 +357,8 @@ app.get('*', (req, res) => {
   res.render('404', {
     routeInfo: {
       heroType: 'landing_page',
-      route: `${req.url}`
-    }
+      route: `${req.url}`,
+    },
   });
 });
 
