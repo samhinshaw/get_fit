@@ -35,10 +35,10 @@ COPY ./ /app
 #################
 
 # Transpile backend code
-RUN yarn babel
+RUN yarn transpile
 
 # Bundle assets
-RUN yarn webpack
+RUN yarn bundle
 
 #################
 ##    START    ##
