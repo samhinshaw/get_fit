@@ -49,8 +49,7 @@ module.exports = {
         test: /\.css$/,
         use: ExtractTextPlugin.extract({
           fallback: 'style-loader',
-          use: { loader: 'css-loader', options: { minimize: true } },
-          publicPath: path.join('public', 'dist')
+          use: { loader: 'css-loader', options: { minimize: true } }
         }),
         include: path.join(__dirname, 'public', 'src', 'css')
       },
@@ -58,8 +57,7 @@ module.exports = {
         test: /\.(scss|sass)$/,
         use: ExtractTextPlugin.extract({
           fallback: 'style-loader',
-          use: [{ loader: 'css-loader', options: { minimize: true } }, 'sass-loader'],
-          publicPath: path.join('public', 'dist')
+          use: [{ loader: 'css-loader', options: { minimize: true } }, 'sass-loader']
         })
         // include: path.join(__dirname, 'public', 'src', 'sass')
       },
@@ -72,8 +70,7 @@ module.exports = {
         use: {
           loader: 'file-loader',
           options: {
-            name: '[name].[ext]',
-            publicPath: ''
+            name: '[name].[ext]'
           }
         }
       }

@@ -4,6 +4,8 @@ services:
   mongo:
     # Build the Dockerfile in the root of the mongo/ folder
     build: mongo
+    image: get_fit_mongo:latest
+    container_name: get_fit_mongo
     # Expose the default mongoDB port. In contrast to the
     # docker-compose.test.yml, here we use the more traditional "ports"
     # configuration. This means that this port is exposed to our local machine,
@@ -14,9 +16,12 @@ services:
     # And add the environment variables within our secret .env file
     env_file:
       - .env
+      - unsecure.env
   # Start backend Express.js server
   node:
     build: .
+    image: get_fit:latest
+    container_name: get_fit_node
     # Set the NODE_ENV to the dev environment
     environment:
       - NODE_ENV=development
@@ -26,13 +31,14 @@ services:
     # And add the environment variables within our secret .env file
     env_file:
       - .env
+      - unsecure.env
     # Mount the codebase to the container for live-reloading
     volumes:
       - ./:/app/
-      # Mount nothing to the node_modules folder so that it can be overwritten
-      # within the container. (Trailing slash important.)
-      # This SO post contains a few different techniques for tackling this problem, as well
-      # as the solution I've used here.
+      # Mount nothing to the node_modules folder so that the results of the
+      # image build do not get overwritten. (Trailing slash important.) This SO
+      # post contains a few different techniques for tackling this problem, as
+      # well as the solution I've used here:
       # https://stackoverflow.com/questions/29181032/add-a-volume-to-docker-but-exclude-a-sub-folder
       - /app/node_modules/
   # Start Webpack. This just operates on the `public/src` to generate
@@ -41,7 +47,11 @@ services:
   # Since we've bind mounted our codebase into both containers, the changes will
   # be reflected live for our backend container.
   ui:
-    build: .
+    image: get_fit:latest
+    container_name: get_fit_ui
+    env_file:
+      - .env
+      - unsecure.env
     # Set the NODE_ENV to the dev environment
     environment:
       - NODE_ENV=development
@@ -49,9 +59,9 @@ services:
     # Mount the codebase to the container for live-reloading
     volumes:
       - ./:/app/
-      # Mount nothing to the node_modules folder so that it can be overwritten
-      # within the container. (Trailing slash important.)
-      # This SO post contains a few different techniques for tackling this problem, as well
-      # as the solution I've used here.
+      # Mount nothing to the node_modules folder so that the results of the
+      # image build do not get overwritten. (Trailing slash important.) This SO
+      # post contains a few different techniques for tackling this problem, as
+      # well as the solution I've used here:
       # https://stackoverflow.com/questions/29181032/add-a-volume-to-docker-but-exclude-a-sub-folder
       - /app/node_modules/

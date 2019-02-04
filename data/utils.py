@@ -3,8 +3,8 @@ import re
 
 
 def query_exercise_group(username, exercise_name, database) -> 'Dict[str, str]':
-  """Get a nicely formatted exercise group 
-  
+  """Get a nicely formatted exercise group
+
   :param username: Username of the Get Fit username
   :type username: str
   :param exercise_name: Name of the exercise you're looking for
@@ -76,7 +76,7 @@ def query_exercise_group(username, exercise_name, database) -> 'Dict[str, str]':
 
 def generate_substrings(string, min_length=3, escape=False) -> 'List[str]':
   """Generate substrings of a given string.
-  
+
   :param string: The string you wish to generate substrings of.
   :type string: str
   :param min_length: The minimum length of strings you wish to generate. Default: 3.

@@ -1,41 +1,34 @@
 // bring in express for routing
 import express from 'express';
 
-// import { parse, format, isValid, addMinutes } from 'date-fns';
-
 import path from 'path'; // core module included with Node.js
 import bodyParser from 'body-parser';
 import mongoose from 'mongoose';
-import session from 'express-session';
 import Moment from 'moment-timezone';
 import { extendMoment } from 'moment-range';
 import expressValidator from 'express-validator';
 import expressSanitizer from 'express-sanitizer';
 import cookieParser from 'cookie-parser';
-// const flash = require('connect-flash');
 import expMessages from 'express-messages';
 import passport from 'passport';
-// import _ from 'lodash';
 import helmet from 'helmet';
-import GoogleSpreadsheet from 'google-spreadsheet';
 import Promise from 'bluebird';
-// import winston from 'winston';
+// Import middleware packages
+import session from 'express-session';
+import connectSession from 'connect-mongo';
+import connectFlash from 'connect-flash';
 
 // Include custom middleware
 import { queryCustomPeriodsFromMongo, getPendingRequests } from './middlewares/mongoMiddleware';
-import ensureAuthenticated from './methods/auth';
 
 // Bring in route files
-// const data = require('./routes/data');
 import account from './routes/account';
 import landing from './routes/landing';
 import user from './routes/user';
 import partner from './routes/partner';
+import api from './routes/api';
 
 // Include document Schemas
-// import Request from './models/request';
-// import Period from './models/period';
-// import Entry from './models/entry';
 import User from './models/user';
 
 // Bring in winston logger
@@ -45,77 +38,75 @@ import logger from './methods/logger';
 import authMiddleware from './methods/passport';
 
 const productionEnv = process.env.NODE_ENV === 'production';
+const developmentEnv = process.env.NODE_ENV === 'development';
 
-// Bring in remaining config files
+// Bring in app config file
 const appConfig = require('../config/app_config.json');
-
-// Set up google credentials with secret parameters. Docker doesn't parse
-// start/end quotes within .env files, so make sure those are not present
-const googleCreds = {
-  type: 'service_account',
-  project_id: process.env.GOOGLE_PROJECT_ID,
-  private_key_id: process.env.GOOGLE_PRIVATE_KEY_ID,
-  // docker doesn't parse newlines in .env files, so we need to replace manually
-  private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, '\n'),
-  client_email: process.env.GOOGLE_CLIENT_EMAIL,
-  client_id: process.env.GOOGLE_CLIENT_ID,
-  auth_uri: 'https://accounts.google.com/o/oauth2/auth',
-  token_uri: 'https://accounts.google.com/o/oauth2/token',
-  auth_provider_x509_cert_url: 'https://www.googleapis.com/oauth2/v1/certs',
-  client_x509_cert_url: process.env.GOOGLE_CLIENT_X509_CERT_URL
-};
-
-mongoose.Promise = Promise;
-
-const MongoStore = require('connect-mongo')(session);
-
-const moment = extendMoment(Moment);
 
 // Define Async middleware wrapper to avoid try-catch
 const asyncMiddleware = fn => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch(next);
 };
 
+const moment = extendMoment(Moment);
+
+// ************************** //
+// * Configure Mongo Driver * //
+// ************************** //
+
+// Set mongoose to debug mode in dev environment
+mongoose.set('debug', !!developmentEnv);
+// Tell mongoose to use Node.js' Promise implementation
+mongoose.Promise = Promise;
+const MongoStore = connectSession(session);
 // Set up our mongoDB connection URI and options
 let mongoURI;
-const mongoOptions = { useNewUrlParser: true };
+const mongoOptions = { useNewUrlParser: true, useFindAndModify: false, useCreateIndex: true };
 if (productionEnv) {
   // if we're in production, connect to our production database
-  mongoURI = `mongodb+srv://nodejs:${process.env.MONGO_NODEJS_PASS}@${
-    process.env.MONGO_PROD_CONNECTION
-  }/${process.env.MONGO_PROD_DBNAME}?retryWrites=true`;
+  mongoURI = `mongodb+srv://${process.env.MONGO_PROD_NODE_USER}:${
+    process.env.MONGO_PROD_NODEJS_PASS
+  }@${process.env.MONGO_PROD_CONNECTION}/${process.env.MONGO_PROD_DBNAME}?retryWrites=true`;
   // If we're in production, we also need to specify the dbName to connect to
   mongoOptions.dbName = process.env.MONGO_PROD_DBNAME;
 } else {
   // Otherwise, connect to our local instance.
-  mongoURI = `mongodb://${process.env.MONGO_GETFIT_NODE_USER}:${
-    process.env.MONGO_GETFIT_NODE_PASS
-  }@${process.env.MONGO_LOCAL_SERVICENAME}:${process.env.MONGO_LOCAL_PORT}/${
-    process.env.MONGO_INITDB_DATABASE
-  }?authMechanism=${process.env.MONGO_LOCAL_AUTHMECH}`;
+  mongoURI = `mongodb://${process.env.MONGO_DEV_NODE_USER}:${process.env.MONGO_DEV_NODE_PASS}@${
+    process.env.MONGO_LOCAL_SERVICENAME
+  }:${process.env.MONGO_LOCAL_PORT}/${process.env.MONGO_INITDB_DATABASE}?authMechanism=${
+    process.env.MONGO_LOCAL_AUTHMECH
+  }`;
 }
 
-mongoose.connect(
-  mongoURI,
-  mongoOptions
-);
-
+// Declare a function to connect to mongo so that we can retry the connection
+// should it error-out.
+const connectToMongo = function connectToMongo() {
+  return mongoose.connect(
+    mongoURI,
+    mongoOptions
+  );
+};
+connectToMongo();
 const db = mongoose.connection;
 
 // Check connection
 db.once('open', () => {
   logger.info('Connected to MongoDB');
 });
+
 // Check for DB errors
 db.on('error', err => {
-  logger.error(err);
+  logger.error('Database error: %j', err);
+  console.trace();
+  db.close();
+  setTimeout(connectToMongo, 5000);
 });
 
 // initialize app
 const app = express();
 
 // Let Express know it's behind a nginx proxy
-app.set('trust proxy', '127.0.0.1');
+app.set('trust proxy', 'loopback');
 
 // Set environment
 app.use((req, res, next) => {
@@ -138,7 +129,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(expressSanitizer()); // this line follows bodyParser() instantiations
 
 // Route for static assests such as CSS and JS
-app.use(express.static(path.join(__dirname, '../public')));
+app.use('/', express.static('public'));
 
 app.use(
   session({
@@ -146,13 +137,12 @@ app.use(
     resave: true,
     saveUninitialized: true,
     // cookie: { secure: true },
-    // store: new MongoStore({ mongooseConnection: connection })
-    store: new MongoStore({ mongooseConnection: mongoose.connection })
+    store: new MongoStore({ mongooseConnection: db })
   })
 );
 
 // Messages Middleware (pretty client messaging)
-app.use(require('connect-flash')());
+app.use(connectFlash());
 
 app.use((req, res, next) => {
   res.locals.messages = expMessages(req, res);
@@ -355,107 +345,12 @@ app.get('/', (req, res) => {
   }
 });
 
-// Send user data to client side (via cookie) when user is logged in
-app.get('/api/user_data', ensureAuthenticated, (req, res) => {
-  if (req.user === undefined) {
-    // The user is not logged in
-    res.json({});
-  } else {
-    // Sened everything EXCEPT PASSWORD
-    // Blacklist method. Only needs to change if blacklist changes
-    // First define function to omit object keys
-    // const removeProps = (...propsToFilter) => obj => {
-    //   const newObj = Object.assign({}, obj);
-    //   propsToFilter.forEach(key => delete newObj[key]);
-    //   return newObj;
-    // };
-    // However, overinclusive!! Includes properties/keys such as '_maxListeners'
-    // const userJSON = removeProps('_id', 'password', '__v')(req.user);
-    // res.json(userJSON);
-    // Whitelist method--must be updated if user model changes
-    res.json({
-      username: res.locals.user.username,
-      firstname: res.locals.user.firstname,
-      lastname: res.locals.user.lastname,
-      email: res.locals.user.email,
-      partner: res.locals.user.partner,
-      mfp: res.locals.user.mfp,
-      currentPoints: res.locals.user.currentPoints,
-      fitnessGoal: res.locals.user.fitnessGoal
-    });
-  }
-});
-
-// Send user data to client side (via cookie) when user is logged in
-app.get('/api/user_weight', ensureAuthenticated, (req, res) => {
-  if (req.user.username !== 'sam') {
-    // The user is not logged in
-    res.json({});
-  } else {
-    const weightDoc = new GoogleSpreadsheet('1q15E449k_0KP_elfptM7oyVx_qXsss9_K4ESExlM2MI'); // 2016 spreadsheet
-    // const weightDoc = new GoogleSpreadsheet('13XR4qkzeMDVRPkiB3vUGV7n25sLqBpyLlE6yBC22aSM'); // All weight data
-
-    weightDoc.useServiceAccountAuth(googleCreds, authErr => {
-      if (authErr) {
-        logger.info('auth error: ');
-        logger.error(authErr);
-      }
-      // Get all of the rows from the spreadsheet.
-      weightDoc.getRows(1, (getErr, rows) => {
-        if (getErr) {
-          logger.info('row fetch error: ');
-          logger.error(getErr);
-        }
-        // initialize empty array for us to gather pruned rows
-        const prunedRows = [];
-        // For each row in the array of rows, return just the weight & date
-        rows.forEach(row => {
-          const prunedRow = {
-            date: row.date,
-            weight: row.weight
-          };
-          prunedRows.push(prunedRow);
-        });
-
-        res.json({
-          rows: prunedRows
-        });
-      });
-    });
-  }
-});
-
-// Why doesn't this async version work?
-
-// Update: I figured it out! I was using async/await wrong here...
-// we can still update it to work properly
-
-// app.get('/', async (req, res) => {
-//   if (!res.locals.loggedIn) {
-//     res.render('account_login');
-//   } else {
-//     const userEntries = await mongoMiddleware.getSortedEntries(
-//       res.locals.user.username,
-//       startDate,
-//       endDate
-//     );
-//     const partnerEntries = await mongoMiddleware.getSortedEntries(
-//       res.locals.partner.username,
-//       startDate,
-//       endDate
-//     );
-//     res.render('overview', {
-//       userEntries: await userEntries,
-//       partnerEntries: await partnerEntries
-//     });
-//   }
-// });
-
 // app.use('/data', data);
 app.use('/', landing);
 app.use('/account', account);
 app.use('/user', user);
 app.use('/partner', partner);
+app.use('/api', api);
 
 app.get('*', (req, res) => {
   logger.warn(`404ing at ${req.url}`);
@@ -498,6 +393,14 @@ app.use((err, req, res, next) => {
 // Start Server
 const server = app.listen(appConfig.serverPort, () => {
   logger.info(`Server started on port ${appConfig.serverPort}`);
+});
+
+// If our node process exits or is killed, close the db connection
+process.on('SIGINT', () => {
+  db.close();
+});
+process.on('SIGTERM', () => {
+  db.close();
 });
 
 export default server;

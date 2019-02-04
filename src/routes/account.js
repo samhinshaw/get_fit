@@ -54,6 +54,7 @@ router.get('/', ensureAuthenticated, (req, res) => {
     }
   });
 });
+
 router.post('/', ensureAuthenticated, (req, res) => {
   const userObject = {};
 
@@ -297,7 +298,7 @@ router.post('/requests/respond', ensureAuthenticated, (req, res) => {
   // Pull up request entry in DB
   // Note: Model.findByIdAndUpdate() is specifically for when we need the found
   // document returned as well.
-  Request.update(
+  Request.updateOne(
     { _id: req.sanitize('id').trim() },
     {
       $set: {
