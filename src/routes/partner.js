@@ -79,8 +79,8 @@ router.get(
         netCals: 0,
         isEmpty: true,
         complete: false,
-        user: res.locals.partner.username
         points: 0,
+        user: res.locals.partner.username,
       };
     });
 
