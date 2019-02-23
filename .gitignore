@@ -18,3 +18,4 @@ data/__pycache__
 .env
 mongo/init.js
 python.log
+pass.env

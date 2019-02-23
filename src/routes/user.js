@@ -1,11 +1,11 @@
 // This will contain all '/user/' routes
-import PythonShell from 'python-shell';
 import express from 'express';
 import _ from 'lodash';
 import Moment from 'moment-timezone';
 import { extendMoment } from 'moment-range';
 
 import ensureAuthenticated from '../methods/auth';
+import getMfpData from '../methods/mfp';
 
 import Entry from '../models/entry';
 import logger from '../methods/logger';
@@ -51,9 +51,9 @@ router.get(
       {
         date: {
           $gte: res.locals.twoWeeksAgo.toDate(),
-          $lte: res.locals.today.toDate()
+          $lte: res.locals.today.toDate(),
         },
-        user: res.locals.user.username
+        user: res.locals.user.username,
       },
       (err, response) => {
         if (err) {
@@ -124,7 +124,7 @@ router.get(
       weeks.push({
         key: `week ${index}`,
         startDate,
-        endDate
+        endDate,
       });
       // Make ESLint happy that we're returning a value. Our actual return is
       // done via an array push, so as to not have an array with lots of
@@ -142,9 +142,9 @@ router.get(
         {
           date: {
             $gte: week.startDate,
-            $lte: week.endDate
+            $lte: week.endDate,
           },
-          user: res.locals.user.username
+          user: res.locals.user.username,
         },
         (err, response) => {
           if (err) {
@@ -209,7 +209,7 @@ router.get(
         points,
         successfulDays,
         workouts,
-        workoutMinutes
+        workoutMinutes,
       };
     });
 
@@ -233,8 +233,8 @@ router.get(
       weekSummaries: await promisedWeekSummaries,
       routeInfo: {
         heroType: 'user',
-        route: '/user'
-      }
+        route: '/user',
+      },
     });
   })
 );
@@ -244,21 +244,23 @@ router.get('/weight', ensureAuthenticated, (req, res) => {
   res.render('user/weight', {
     routeInfo: {
       heroType: 'user',
-      route: '/user/weight'
-    }
+      route: '/user/weight',
+    },
   });
 });
 
-router.post('/:date', ensureAuthenticated, (req, res) => {
+router.post('/:date', ensureAuthenticated, async (req, res) => {
   // parse date that was POSTed as string
   // Wait, we're passing the string directly to python, so is this even necessary?
   // const postedDate = moment.utc(req.params.date, 'YYYY-MM-DD');
   let startDate;
   let endDate;
 
+  // A single date was POST-ed
   if (/^\d{4}-\d{2}-\d{2}$/.test(req.params.date)) {
     startDate = req.params.date;
     endDate = req.params.date;
+    // a date range was POST-ed
   } else if (/^\d{4}-\d{2}-\d{2} \d{4}-\d{2}-\d{2}$/.test(req.params.date)) {
     const date = req.params.date.split(' ');
     [startDate, endDate] = date;
@@ -267,37 +269,49 @@ router.post('/:date', ensureAuthenticated, (req, res) => {
     // endDate = date[1];
   }
 
-  // Python script options
-  const pythonOptions = {
-    // mode: 'json',
-    pythonOptions: ['-u'], // this will let us see Python's print statements
-    scriptPath: './data',
-    args: [startDate, endDate, res.locals.user.username, res.locals.user.mfp]
-  };
+  const mfpUser = res.locals.user.mfp;
+  const mfpUserUpper = res.locals.user.mfp.toUpperCase();
 
-  // Run python script
-  PythonShell.run('getMFP.py', pythonOptions, (err, messages) => {
-    // Only throw error if exit code was nonzero.
-    // For some reason I am getting errors with nonzero exit statuses
-    if (err && err.exitCode !== 0) {
-      logger.error('Error updating from MyFitnessPal:');
-      if (err.traceback) {
-        logger.error(err.traceback);
-        delete err.traceback;
-      }
-      logger.error(err);
-      res.status(500).json({ message: 'Error updating from MyFitnessPal', type: 'danger' });
-      // res.status(500).json(err);
-    } else {
-      if (messages) logger.info('messages: %j', messages);
-      logger.info('Success updating user data from MFP.');
-      res.status(200).json({
-        message: 'Success updating user data from MyFitnessPal',
-        type: 'success'
-      });
-      // res.status(200).json(result);
-    }
-  });
+  const result = await getMfpData(
+    mfpUser,
+    process.env[`MFP_PASS_${mfpUserUpper}`],
+    startDate,
+    endDate
+  );
+
+  console.log(result);
+
+  // // Python script options
+  // const pythonOptions = {
+  //   // mode: 'json',
+  //   pythonOptions: ['-u'], // this will let us see Python's print statements
+  //   scriptPath: './data',
+  //   args: [startDate, endDate, res.locals.user.username, res.locals.user.mfp],
+  // };
+
+  // // Run python script
+  // PythonShell.run('getMFP.py', pythonOptions, (err, messages) => {
+  //   // Only throw error if exit code was nonzero.
+  //   // For some reason I am getting errors with nonzero exit statuses
+  //   if (err && err.exitCode !== 0) {
+  //     logger.error('Error updating from MyFitnessPal:');
+  //     if (err.traceback) {
+  //       logger.error(err.traceback);
+  //       delete err.traceback;
+  //     }
+  //     logger.error(err);
+  //     res.status(500).json({ message: 'Error updating from MyFitnessPal', type: 'danger' });
+  //     // res.status(500).json(err);
+  //   } else {
+  //     if (messages) logger.info('messages: %j', messages);
+  //     logger.info('Success updating user data from MFP.');
+  //     res.status(200).json({
+  //       message: 'Success updating user data from MyFitnessPal',
+  //       type: 'success',
+  //     });
+  //     // res.status(200).json(result);
+  //   }
+  // });
 });
 
 export default router;
