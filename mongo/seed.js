@@ -1,0 +1,113 @@
+/* eslint-env mongo */
+
+db.users.insertOne({
+  firstname: 'John',
+  lastname: 'Tester',
+  username: 'john',
+  email: 'johntestuser@protonmail.com',
+  mfp: 'johntestuser',
+  partner: 'janetestuser',
+  fitnessGoal: 'washboard abs',
+  password: '$2a$16$7tf1GT1mbe9DiDn1i6Wc/.iFwKMQlfT7rDLhIWU6iV/suhtviDWS.',
+  currentPoints: { $numberDouble: '5.1' },
+  exerciseGroups: [
+    {
+      group: 'veryLightExercise',
+      pointsPerHour: { $numberDouble: '0.5' },
+      exercises: ['walking', 'stretching'],
+    },
+    {
+      group: 'lightExercise',
+      pointsPerHour: { $numberDouble: '1' },
+      exercises: ['yoga', 'hiking', 'skiing'],
+    },
+    {
+      group: 'cardio',
+      pointsPerHour: { $numberDouble: '2' },
+      exercises: ['jogging', 'running', 'dancing', 'paddleboarding', 'parkour'],
+    },
+    {
+      group: 'crossTrain',
+      pointsPerHour: { $numberDouble: '4' },
+      exercises: [
+        'low intensity strength training',
+        'high intensity strength training',
+        'bodyweight training',
+        'kelly tape',
+      ],
+    },
+  ],
+  exerciseMappings: [
+    { mfpName: 'jog', mappedName: 'jogging' },
+    { mfpName: 'yoga', mappedName: 'yoga' },
+    { mfpName: 'run', mappedName: 'running' },
+    { mfpName: 'low intensity strength training', mappedName: 'low intensity strength training' },
+    { mfpName: 'high intensity strength training', mappedName: 'high intensity strength training' },
+    { mfpName: 'bodyweight training', mappedName: 'bodyweight training' },
+    { mfpName: 'dancing', mappedName: 'dancing' },
+    { mfpName: 'stretch', mappedName: 'stretching' },
+    { mfpName: 'paddleboarding', mappedName: 'paddleboarding' },
+    { mfpName: 'kelly', mappedName: 'kelly tape' },
+    { mfpName: 'fitstar', mappedName: 'bodyweight training' },
+    { mfpName: 'walk', mappedName: 'walking' },
+    { mfpName: 'hiking', mappedName: 'hiking' },
+    { mfpName: 'mfp ios calorie adjustment', mappedName: 'steps' },
+    { mfpName: 'resort skiing (low effort)', mappedName: 'skiing' },
+  ],
+});
+
+db.users.insertOne({
+  firstname: 'Jane',
+  lastname: 'Tester',
+  username: 'jane',
+  email: 'janetestuser@protonmail.com',
+  mfp: 'janetestuser',
+  partner: 'johntestuser',
+  fitnessGoal: 'buns of steel',
+  password: '$2a$16$nLmMyfVI9XFQc53Ijr91zuwI/SsTMbv1C4plX4LKrxdpHZ857xpIS',
+  currentPoints: { $numberDouble: '5.1' },
+  exerciseGroups: [
+    {
+      group: 'veryLightExercise',
+      pointsPerHour: { $numberDouble: '0.5' },
+      exercises: ['walking', 'stretching'],
+    },
+    {
+      group: 'lightExercise',
+      pointsPerHour: { $numberDouble: '1' },
+      exercises: ['yoga', 'hiking', 'skiing'],
+    },
+    {
+      group: 'cardio',
+      pointsPerHour: { $numberDouble: '2' },
+      exercises: ['jogging', 'running', 'dancing', 'paddleboarding', 'parkour'],
+    },
+    {
+      group: 'crossTrain',
+      pointsPerHour: { $numberDouble: '4' },
+      exercises: [
+        'low intensity strength training',
+        'high intensity strength training',
+        'bodyweight training',
+        'kelly tape',
+      ],
+    },
+  ],
+  exerciseMappings: [
+    { mfpName: 'jog', mappedName: 'jogging' },
+    { mfpName: 'yoga', mappedName: 'yoga' },
+    { mfpName: 'run', mappedName: 'running' },
+    { mfpName: 'low intensity strength training', mappedName: 'low intensity strength training' },
+    { mfpName: 'high intensity strength training', mappedName: 'high intensity strength training' },
+    { mfpName: 'bodyweight training', mappedName: 'bodyweight training' },
+    { mfpName: 'dancing', mappedName: 'dancing' },
+    { mfpName: 'stretch', mappedName: 'stretching' },
+    { mfpName: 'paddleboarding', mappedName: 'paddleboarding' },
+    { mfpName: 'kelly', mappedName: 'kelly tape' },
+    { mfpName: 'fitstar', mappedName: 'bodyweight training' },
+    { mfpName: 'walk', mappedName: 'walking' },
+    { mfpName: 'hiking', mappedName: 'hiking' },
+    { mfpName: 'mfp ios calorie adjustment', mappedName: 'steps' },
+    { mfpName: 'resort skiing (low effort)', mappedName: 'skiing' },
+  ],
+});
