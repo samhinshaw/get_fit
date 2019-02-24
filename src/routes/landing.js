@@ -307,7 +307,8 @@ router.post(
       res.redirect('#');
       return next(errors);
       // temporarily hard-wiring adding access code
-    } else if (accessCode !== process.env.NODEJS_REGISTRATION_SECRET) {
+    }
+    if (accessCode !== process.env.NODEJS_REGISTRATION_SECRET) {
       logger.error('Access code provided: ');
       logger.error(accessCode);
       req.flash('danger', 'Incorrect Access Code');
@@ -415,11 +416,13 @@ router.post(
           );
           res.redirect('#');
           return next();
-        } else if (existingPermUser) {
+        }
+        if (existingPermUser) {
           req.flash('danger', 'Username Taken');
           res.redirect('#');
           return next();
-        } else if (!newTempUser) {
+        }
+        if (!newTempUser) {
           // otherwise if newTempUser is null
           logger.info('Temp user already exists');
           req.flash(
@@ -441,7 +444,8 @@ router.post(
             );
             res.redirect('#');
             return next();
-          } else if (sendInfo) {
+          }
+          if (sendInfo) {
             logger.info('Email send info: %j', sendInfo);
           }
           // If user has registered with partner, flow is:

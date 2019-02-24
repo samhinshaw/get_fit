@@ -18,8 +18,8 @@ jasmine.clearReporters();
 jasmine.addReporter(
   new SpecReporter({
     spec: {
-      displayPending: true
-    }
+      displayPending: true,
+    },
   })
 );
 

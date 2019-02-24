@@ -24,5 +24,13 @@ module.exports = {
       // response params
       { props: true, ignorePropertyModificationsFor: ['err', 'req', 'res'] },
     ],
+    'prettier/prettier': [
+      'error',
+      {
+        singleQuote: true,
+        trailingComma: 'es5',
+        printWidth: 100,
+      },
+    ],
   },
-};
+}

@@ -7,7 +7,7 @@ import {
   deleteExerciseButton,
   addExerciseButton,
   // newExerciseBox,
-  boxControls
+  boxControls,
 } from './elements';
 import { makeEditable, fadeOutElement } from './methods';
 
@@ -87,7 +87,7 @@ const exerciseDragHandling = {
     $('.box').removeClass('hovered-over');
     // Remove dropzone
     $('#delete-exercise-zone').fadeOut('fast');
-  }
+  },
 };
 
 const boxDropHandling = {
@@ -113,7 +113,7 @@ const boxDropHandling = {
       .append(element);
     $(this).removeClass('hovered-over');
     $('#delete-exercise-zone').fadeOut('fast');
-  }
+  },
 };
 
 // const exerciseGroupID = 0;
@@ -139,7 +139,7 @@ const deleteExerciseDropHandling = {
     $(`#${elementID}`).remove();
     $(this).removeClass('hovered-over');
     $('#delete-exercise-zone').fadeOut('fast');
-  }
+  },
 };
 
 // const newExerciseGroupDropHandling = {
@@ -182,7 +182,7 @@ $('#delete-exercise-zone').dragster(deleteExerciseDropHandling);
 
 const GetFit = {
   makeEditable,
-  fadeOutElement
+  fadeOutElement,
 };
 
 window.GetFit = GetFit;

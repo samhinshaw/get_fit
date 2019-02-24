@@ -13,11 +13,11 @@ module.exports = {
     client: ['babel-polyfill', path.join(__dirname, 'public', 'src', 'js', 'client.js')],
     // If we don't want to use babel-polyfill
     // client: path.join(__dirname, 'public', 'src', 'js', 'client.js'),
-    data: path.join(__dirname, 'public', 'src', 'js', 'data.js')
+    data: path.join(__dirname, 'public', 'src', 'js', 'data.js'),
   },
   output: {
     path: path.join(__dirname, 'public', 'dist'),
-    filename: '[name]-bundle.js'
+    filename: '[name]-bundle.js',
   },
   module: {
     rules: [
@@ -32,48 +32,48 @@ module.exports = {
                 'env',
                 {
                   targets: {
-                    browsers: 'last 2 versions'
+                    browsers: 'last 2 versions',
                   },
                   useBuiltIns: true,
                   loose: true,
-                  modules: false
-                }
-              ]
+                  modules: false,
+                },
+              ],
             ],
-            plugins: ['babel-plugin-inline-import']
-          }
+            plugins: ['babel-plugin-inline-import'],
+          },
         },
-        include: path.join(__dirname, 'public', 'src', 'js')
+        include: path.join(__dirname, 'public', 'src', 'js'),
       },
       {
         test: /\.css$/,
         use: ExtractTextPlugin.extract({
           fallback: 'style-loader',
-          use: { loader: 'css-loader', options: { minimize: true } }
+          use: { loader: 'css-loader', options: { minimize: true } },
         }),
-        include: path.join(__dirname, 'public', 'src', 'css')
+        include: path.join(__dirname, 'public', 'src', 'css'),
       },
       {
         test: /\.(scss|sass)$/,
         use: ExtractTextPlugin.extract({
           fallback: 'style-loader',
-          use: [{ loader: 'css-loader', options: { minimize: true } }, 'sass-loader']
-        })
+          use: [{ loader: 'css-loader', options: { minimize: true } }, 'sass-loader'],
+        }),
         // include: path.join(__dirname, 'public', 'src', 'sass')
       },
       {
         test: /\.json$/,
-        use: 'json-loader'
+        use: 'json-loader',
       },
       {
         test: /\.(jpe?g|png|gif|svg|eot|woff|ttf|svg|woff2)$/,
         use: {
           loader: 'file-loader',
           options: {
-            name: '[name].[ext]'
-          }
-        }
-      }
+            name: '[name].[ext]',
+          },
+        },
+      },
       // { test: /\.svg$/, use: 'svg-url-loader' }
       // Use the imports-loader to configure `this`
       // {
@@ -85,7 +85,7 @@ module.exports = {
       //   test: /[/\\]node_modules[/\\]jquery[/\\]src[/\\]jquery\.js$/,
       //   use: 'imports-loader?define=>false'
       // }
-    ]
+    ],
   },
   plugins: [
     // Don't bring in locales with moment
@@ -102,15 +102,15 @@ module.exports = {
     new ExtractTextPlugin({
       filename: '[name]-styles.css',
       disable: false,
-      allChunks: true
+      allChunks: true,
     }),
     // set globals for jquery (Use the ProvidePlugin to inject implicit globals)
     new webpack.ProvidePlugin({
       $: 'jquery',
-      jQuery: 'jquery'
+      jQuery: 'jquery',
     }),
     // Mangle & minify
-    new webpack.optimize.UglifyJsPlugin()
+    new webpack.optimize.UglifyJsPlugin(),
     // Set node ENV to production!
     // new webpack.DefinePlugin({
     //   'process.env.NODE_ENV': '"production"'
@@ -126,14 +126,14 @@ module.exports = {
       // Don't use node-fetch!
       // https://github.com/kadirahq/lokka/issues/32
       'node-fetch': 'whatwg-fetch',
-      d3: 'd3/index'
-    }
+      d3: 'd3/index',
+    },
   },
   stats: {
     colors: true,
     reasons: true,
-    chunks: true
-  }
+    chunks: true,
+  },
 };
 
 // Notes on bringing in JQuery properly are from this StackOverflow thread:

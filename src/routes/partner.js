@@ -51,9 +51,9 @@ router.get(
       {
         date: {
           $gte: res.locals.twoWeeksAgo.toDate(),
-          $lte: res.locals.today.toDate()
+          $lte: res.locals.today.toDate(),
         },
-        user: res.locals.partner.username
+        user: res.locals.partner.username,
       },
       (err, response) => {
         if (err) {
@@ -124,7 +124,7 @@ router.get(
       weeks.push({
         key: `week ${index}`,
         startDate,
-        endDate
+        endDate,
       });
       // Make ESLint happy that we're returning a value. Our actual return is
       // done via an array push, so as to not have an array with lots of
@@ -142,9 +142,9 @@ router.get(
         {
           date: {
             $gte: week.startDate,
-            $lte: week.endDate
+            $lte: week.endDate,
           },
-          user: res.locals.partner.username
+          user: res.locals.partner.username,
         },
         (err, response) => {
           if (err) {
@@ -209,7 +209,7 @@ router.get(
         points,
         successfulDays,
         workouts,
-        workoutMinutes
+        workoutMinutes,
       };
     });
 
@@ -233,8 +233,8 @@ router.get(
       weekSummaries: await promisedWeekSummaries,
       routeInfo: {
         heroType: 'partner',
-        route: '/partner'
-      }
+        route: '/partner',
+      },
     });
   })
 );
@@ -244,8 +244,8 @@ router.get('/weight', ensureAuthenticated, (req, res) => {
   res.render('partner/weight', {
     routeInfo: {
       heroType: 'partner',
-      route: '/partner/weight'
-    }
+      route: '/partner/weight',
+    },
   });
 });
 
@@ -272,7 +272,7 @@ router.post('/:date', ensureAuthenticated, (req, res) => {
     // mode: 'text',
     pythonOptions: ['-u'],
     scriptPath: './data',
-    args: [startDate, endDate, res.locals.partner.username, res.locals.partner.mfp]
+    args: [startDate, endDate, res.locals.partner.username, res.locals.partner.mfp],
   };
 
   // Run python script
@@ -293,7 +293,7 @@ router.post('/:date', ensureAuthenticated, (req, res) => {
       logger.info('Success updating user data from MFP.');
       res.status(200).json({
         message: 'Success updating user data from MyFitnessPal',
-        type: 'success'
+        type: 'success',
       });
       // res.status(200).json(result);
     }

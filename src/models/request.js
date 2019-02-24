@@ -12,31 +12,31 @@ const requestSchema = new Schema(
   {
     reward: {
       type: String,
-      required: true
+      required: true,
     },
     displayName: {
       type: String,
-      required: true
+      required: true,
     },
     pointCost: {
       type: Number,
-      required: true
+      required: true,
     },
     requester: {
       type: String,
-      required: true
+      required: true,
     },
     timeRequested: {
       type: Date,
-      required: true
+      required: true,
     },
     requestMessage: {
       type: String,
-      required: false
+      required: false,
     },
     responseMessage: {
       type: String,
-      required: false
+      required: false,
     },
     // dateRequestedFor: {
     //   type: Date,
@@ -44,12 +44,12 @@ const requestSchema = new Schema(
     // },
     status: {
       type: String,
-      required: true
+      required: true,
     },
     timeResponded: {
       type: Date,
-      required: false
-    }
+      required: false,
+    },
     // dateScheduled: {
     //   type: Date,
     //   required: false
