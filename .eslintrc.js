@@ -18,7 +18,6 @@ module.exports = {
   },
   rules: {
     'no-underscore-dangle': ['error', { allow: ['_id'] }],
-    'no-console': 0,
     'no-param-reassign': [
       'error',
       // allow property modifications on error objects, and express request and
