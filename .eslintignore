@@ -1,3 +1,4 @@
 public/dist/
 node_modules/
 dist/
+public/src/js/jquery.dragster.js
