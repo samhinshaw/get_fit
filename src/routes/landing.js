@@ -132,11 +132,15 @@ router.post('/login', (req, res, next) => {
       res.cookie(
         'username',
         req.user.username,
-
-        { maxAge: 2592000000, signed: false }
+        // 7 days = 1000ms * 60s * 60m * 24h * 7d
+        {
+          maxAge: 1000 * 60 * 60 * 24 * 7,
+          signed: false,
+          sameSite: 'strict',
+          // only set to secure in production
+          secure: process.env.NODE_ENV === 'production',
+        }
       );
-      // secure: true for HTTPS only
-      // res.cookie('userid', req.user.id, { maxAge: 2592000000, secure: true, signed: false });
       res.redirect('/overview');
       return next();
     });

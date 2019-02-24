@@ -131,14 +131,15 @@ app.use('/', express.static('public'));
 app.use(
   session({
     secret: process.env.NODEJS_SESSION_SECRET,
-    resave: true,
+    resave: false,
     saveUninitialized: true,
     cookie: {
-      secure: true,
+      // Only set secure = true in production
+      secure: process.env.NODE_ENV === 'production',
       httpOnly: true,
       sameSite: 'strict',
       // 7 days = 1000ms * 60s * 60m * 24h * 7d
-      maxAge: 1000 * 60 * 60 * 60 * 24 * 7,
+      maxAge: 1000 * 60 * 60 * 24 * 7,
     },
     store: new MongoStore({ mongooseConnection: db }),
   })
@@ -245,7 +246,7 @@ app.use(
 );
 
 // Set cookies so we can access user object on client side
-app.use(cookieParser());
+app.use(cookieParser('hghsyd82h2hdy'));
 
 // Make sure that our moment initialization is run as middleware! Otherwise
 // functions will only be run when the app starts!!! Use middleware to modify
