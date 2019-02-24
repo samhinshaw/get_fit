@@ -21,6 +21,8 @@
     "test:server": "babel-node tests/config/run.js",
     "clean:ui": "rm -rf ./dist",
     "babel": "babel ./src -d ./dist",
+    "lint": "eslint --ignore-path .eslintignore --config .eslintrc.js \"**/*.js\"",
+    "format": "yarn lint --fix",
     "webpack": "webpack -p",
     "run:prod": "node dist/app.js",
     "deploy": "pm2 deploy getfit.config.js production",
