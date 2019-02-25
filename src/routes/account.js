@@ -184,6 +184,14 @@ router.post(
   })
 );
 
+router.post(
+  '/update-account',
+  ensureAuthenticated,
+  asyncMiddleware(async (req, res) => {
+    // Do stuff here to get account data, like goal calories!
+  })
+);
+
 // router.get('/send', ensureAuthenticated, (req, res) => {
 //   Reward.find({ for: res.locals.partner.username }, (err, rewards) => {
 //     if (err) {
