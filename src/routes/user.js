@@ -272,14 +272,56 @@ router.post('/:date', ensureAuthenticated, async (req, res) => {
   const mfpUser = res.locals.user.mfp;
   const mfpUserUpper = res.locals.user.mfp.toUpperCase();
 
-  const result = await getMfpData(
+  const mfpDiaryEntries = await getMfpData(
     mfpUser,
     process.env[`MFP_PASS_${mfpUserUpper}`],
     startDate,
     endDate
   );
 
-  console.log(result);
+  console.log(mfpDiaryEntries);
+
+  const errors = new Set();
+
+  mfpDiaryEntries.forEach(entry => {
+    if (!entry.date) {
+      errors.add('Unspecified Error.');
+      return;
+    }
+    if (!entry.food.totals.calories) {
+      errors.add('Error retrieving data from MyFitnessPal.');
+      return;
+    }
+    if (!res.locals.user.goalCals) {
+      errors.add('You do not have a calorie goal set. Please visit the account page to set one.');
+      return;
+    }
+    const formattedEntry = {
+      date: entry.date,
+      totalCals: entry.food.totals.calories,
+      goalCals: res.locals.user.goalCals,
+      netCals: res.locals.user.goalCals - entry.calories,
+      isEmpty: false,
+      complete: true,
+      points: 10,
+      user: res.locals.user.username,
+    };
+    console.log(JSON.stringify(formattedEntry, null, 2));
+  });
+
+  if (errors.size > 0) {
+    // concatenate them for pretty printing
+    const concatErrors = [...errors].join('<br>');
+    res.status(500).json({
+      message: concatErrors,
+      type: 'danger',
+    });
+  } else {
+    res.status(200).json({
+      message: 'Success updating user data from MyFitnessPal',
+      type: 'success',
+    });
+  }
 
   // // Python script options
   // const pythonOptions = {
