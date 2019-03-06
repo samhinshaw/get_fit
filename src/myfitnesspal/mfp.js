@@ -5,6 +5,7 @@ import {
   exerciseMappings,
   exerciseGroups,
   exerciseGroupPoints,
+  commonPartialNames,
 } from './exercises.const';
 import { getPrevDayFormatted, getDatesBetweenFormatted } from '../methods/dates-functions';
 
@@ -84,6 +85,15 @@ export async function authMFP(username, password = '') {
   }
   return session.login(password);
 }
+
+export function partialMatch(name) {
+  const matchIndex = commonPartialNames.find(partialName => name.includes(partialName));
+  if (matchIndex === -1) {
+    return name;
+  }
+  return commonPartialNames[matchIndex];
+}
+
 export function calculatePoints(entry) {
   let exercisePoints;
   if (!_.get(entry, 'exercise.cardiovascular.exercises')) {
