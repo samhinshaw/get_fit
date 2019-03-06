@@ -267,9 +267,6 @@ router.post('/:date', ensureAuthenticated, async (req, res) => {
 
   const mfpGoals = await getGoals(session, startDate, endDate);
 
-  console.log(mfpDiaryEntries);
-  console.log(mfpGoals);
-
   const errors = new Set();
 
   mfpDiaryEntries.forEach(entry => {
@@ -277,19 +274,25 @@ router.post('/:date', ensureAuthenticated, async (req, res) => {
       errors.add('Unspecified Error.');
       return;
     }
-    if (!entry.food.totals.calories) {
-      errors.add('Error retrieving data from MyFitnessPal.');
+    if (!_.get(entry, 'food.totals.calories')) {
+      // Could add a warning here--some dates did not have data
+      // If no entry, just skip this date
       return;
     }
-    if (!res.locals.user.goalCals) {
-      errors.add('You do not have a calorie goal set. Please visit the account page to set one.');
+    // get the goal for the range of this date
+    let goalCals;
+    try {
+      goalCals = mfpGoals.goals.get(mfpGoals.ranges.get(entry.date)).default_goal.energy.value;
+    } catch (err) {
+      errors.add('Error retreiving goals from MyFitnessPal.');
       return;
     }
+
     const formattedEntry = {
       date: entry.date,
       totalCals: entry.food.totals.calories,
-      goalCals: res.locals.user.goalCals,
-      netCals: res.locals.user.goalCals - entry.calories,
+      goalCals,
+      netCals: goalCals - entry.calories,
       isEmpty: false,
       complete: true,
       points: 10,
