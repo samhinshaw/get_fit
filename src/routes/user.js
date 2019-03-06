@@ -5,10 +5,11 @@ import Moment from 'moment-timezone';
 import { extendMoment } from 'moment-range';
 
 import ensureAuthenticated from '../methods/auth';
-import getMfpData from '../myfitnesspal/mfp';
+import { getGoals, getDiaryData, authMFP } from '../myfitnesspal/mfp';
 
 import Entry from '../models/entry';
 import logger from '../methods/logger';
+import parseDateRange from '../methods/parse-date-range';
 
 const appConfig = require('../../config/app_config.json');
 
@@ -250,36 +251,24 @@ router.get('/weight', ensureAuthenticated, (req, res) => {
 });
 
 router.post('/:date', ensureAuthenticated, async (req, res) => {
-  // parse date that was POSTed as string
-  // Wait, we're passing the string directly to python, so is this even necessary?
-  // const postedDate = moment.utc(req.params.date, 'YYYY-MM-DD');
-  let startDate;
-  let endDate;
-
-  // A single date was POST-ed
-  if (/^\d{4}-\d{2}-\d{2}$/.test(req.params.date)) {
-    startDate = req.params.date;
-    endDate = req.params.date;
-    // a date range was POST-ed
-  } else if (/^\d{4}-\d{2}-\d{2} \d{4}-\d{2}-\d{2}$/.test(req.params.date)) {
-    const date = req.params.date.split(' ');
-    [startDate, endDate] = date;
-    // This is array destructuring! It is equivalent to the below:
-    // startDate = date[0];
-    // endDate = date[1];
-  }
+  const [startDate, endDate] = parseDateRange(req.params.date);
 
   const mfpUser = res.locals.user.mfp;
   const mfpUserUpper = res.locals.user.mfp.toUpperCase();
 
-  const mfpDiaryEntries = await getMfpData(
-    mfpUser,
-    process.env[`MFP_PASS_${mfpUserUpper}`],
+  const session = await authMFP(mfpUser, process.env[`MFP_PASS_${mfpUserUpper}`]);
+
+  const mfpDiaryEntries = await getDiaryData(
+    session,
+    { exercise: true, food: true },
     startDate,
     endDate
   );
 
+  const mfpGoals = await getGoals(session, startDate, endDate);
+
   console.log(mfpDiaryEntries);
+  console.log(mfpGoals);
 
   const errors = new Set();
 
