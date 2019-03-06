@@ -5,7 +5,7 @@ import Moment from 'moment-timezone';
 import { extendMoment } from 'moment-range';
 
 import ensureAuthenticated from '../methods/auth';
-import { getGoals, getDiaryData, authMFP } from '../myfitnesspal/mfp';
+import { getGoals, getDiaryData, authMFP, calculatePoints } from '../myfitnesspal/mfp';
 
 import Entry from '../models/entry';
 import logger from '../methods/logger';
@@ -288,6 +288,8 @@ router.post('/:date', ensureAuthenticated, async (req, res) => {
       return;
     }
 
+    const points = calculatePoints(entry);
+
     const formattedEntry = {
       date: entry.date,
       totalCals: entry.food.totals.calories,
@@ -295,7 +297,7 @@ router.post('/:date', ensureAuthenticated, async (req, res) => {
       netCals: goalCals - entry.calories,
       isEmpty: false,
       complete: true,
-      points: 10,
+      points,
       user: res.locals.user.username,
     };
     console.log(JSON.stringify(formattedEntry, null, 2));

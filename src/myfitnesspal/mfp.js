@@ -1,5 +1,11 @@
 import { Session } from 'mfp';
+import _ from 'lodash';
 
+import {
+  exerciseMappings,
+  exerciseGroups,
+  exerciseGroupPoints,
+} from './exercises.const';
 import { getPrevDayFormatted, getDatesBetweenFormatted } from '../methods/dates-functions';
 
 export async function getGoals(session, startDate, endDate) {
@@ -77,4 +83,29 @@ export async function authMFP(username, password = '') {
     return session;
   }
   return session.login(password);
+}
+export function calculatePoints(entry) {
+  let exercisePoints;
+  if (!_.get(entry, 'exercise.cardiovascular.exercises')) {
+    exercisePoints = 0;
+  } else {
+    entry.exercise.cardiovascular.exercises.forEach(exercise => {
+      console.log(exercise);
+      try {
+        const mappedName = partialMatch(exercise.name.toLowerCase());
+        console.log(mappedName);
+        const exerciseName = exerciseMappings.get(mappedName) || '';
+        const exerciseMinutes = exercise.minutes || 0;
+        const exerciseGroup = exerciseGroups.get(exerciseName) || '';
+        const pointsPerHour = exerciseGroupPoints.get(exerciseGroup) || 0;
+
+        const totalPoints = pointsPerHour * (exerciseMinutes / 60);
+
+        exercisePoints += totalPoints;
+      } catch (err) {
+        console.error(err);
+      }
+    });
+  }
+  return 0 + exercisePoints;
 }
