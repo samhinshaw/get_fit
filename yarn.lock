@@ -5927,11 +5927,10 @@ methods@^1.1.1, methods@~1.1.2:
 
 "mfp@https://github.com/samhinshaw/mfp#major-refactor":
   version "0.7.0"
-  resolved "https://github.com/samhinshaw/mfp#7e71e09dfa21a60eaa76ff74cf91b35b6f56cf6c"
+  resolved "https://github.com/samhinshaw/mfp#47800e2e07f4e439e1b47c213f2359403170e330"
   dependencies:
     chai "^3.0.0"
     cheerio "^0.22.0"
-    request "^2.58.0"
     superagent "^4.1.0"
 
 micromatch@^2.1.5, micromatch@^2.3.11:
@@ -8047,7 +8046,7 @@ repeating@^2.0.0:
   dependencies:
     is-finite "^1.0.0"
 
-request@^2.58.0, request@^2.69.0, request@^2.72.0, request@^2.74.0, request@^2.87.0, request@^2.88.0:
+request@^2.69.0, request@^2.72.0, request@^2.74.0, request@^2.87.0, request@^2.88.0:
   version "2.88.0"
   resolved "https://registry.yarnpkg.com/request/-/request-2.88.0.tgz#9c2fca4f7d35b592efe57c7f0a55e81052124fef"
   integrity sha512-NAqBSrijGLZdM0WZNsInLJpkJokL72XYjUpnB0iwsRgxh7dB6COrHnTBNwN0E+lHDAJzu7kLAkDeY08z2/A0hg==
