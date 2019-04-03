@@ -67,6 +67,10 @@ const userSchema = new Schema({
     type: String,
     required: false,
   },
+  startDate: {
+    type: String,
+    required: false,
+  },
   exerciseMappings: {
     type: [exerciseMappingSchema],
     required: false,
