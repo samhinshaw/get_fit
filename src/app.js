@@ -248,6 +248,12 @@ app.use(
 // Set cookies so we can access user object on client side
 app.use(cookieParser('hghsyd82h2hdy'));
 
+// Now get points from cookie and set it to res.locals so pug can access it
+// If missing, or timestamp is older than 24h, update from database
+app.use((req, res, next) => {
+  console.log({ cookies: req.cookies });
+  next();
+});
 // Make sure that our moment initialization is run as middleware! Otherwise
 // functions will only be run when the app starts!!! Use middleware to modify
 // locals object (makes available to view engine!)
