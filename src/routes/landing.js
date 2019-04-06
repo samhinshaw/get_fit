@@ -148,9 +148,10 @@ router.post('/login', (req, res, next) => {
   })(req, res, next);
 });
 
-// Loogout option
+// Logout option
 router.get('/logout', (req, res) => {
   res.clearCookie('username');
+  res.clearCookie('pointTally');
   req.logout();
   req.flash('info', 'Logged out');
   res.redirect('/');
