@@ -227,7 +227,7 @@ router.get(
     res.render('partner/index', {
       // Object to send data along with response
       moment,
-      startDate: moment.tz(appConfig.startDate, 'MM-DD-YYYY', 'US/Pacific'),
+      startDate: moment.tz(req.user.startDate, 'MM-DD-YYYY', 'US/Pacific'),
       entries: sortedEntries,
       // Here we're awaiting that mega-promise!
       weekSummaries: await promisedWeekSummaries,
