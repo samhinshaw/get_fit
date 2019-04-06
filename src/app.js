@@ -263,6 +263,8 @@ app.use((req, res, next) => {
       .tz(req.user.startDate, 'MM-DD-YYYY', 'US/Pacific')
       .startOf('day');
 
+    res.locals.startDate = req.user.startDate;
+
     const customRange = {
       key: 'sinceStart',
       startDate: startOfTracking,
