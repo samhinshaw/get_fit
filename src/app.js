@@ -254,14 +254,17 @@ app.use((req, res, next) => {
     const today = now.clone().startOf('day');
     res.locals.today = today;
 
+    const tonight = today.clone().endOf('day');
+    res.locals.tonight = tonight;
+
     const twoWeeksAgo = today.clone().subtract(14, 'days');
     res.locals.twoWeeksAgo = twoWeeksAgo;
 
     const startOfTracking = moment
       .tz(appConfig.startDate, 'MM-DD-YYYY', 'US/Pacific')
       .startOf('day');
+
     const customRange = {
-      // We started Monday, Sept 18th
       key: 'sinceStart',
       startDate: startOfTracking,
       endDate: today.clone().endOf('day'),
@@ -280,7 +283,7 @@ app.use(
     if (req.user) {
       // if we have the pointTally cookie, use it!
       if (req.cookies && req.cookies.pointTally) {
-        //! Check to see if it's outdated or been invalidated somehow
+        // The invalidation of this cookie will be handled elsewhere
         res.locals.pointTally = req.cookies.pointTally;
         // Otherwise update them
       } else {
@@ -303,18 +306,14 @@ app.use(
         // make the point tallies array available to the view engine
         res.locals.pointTally = pointTally;
         // And set a cookie to save on the front end
-        res.cookie(
-          'pointTally',
-          res.locals.pointTally,
-          // 7 days = 1000ms * 60s * 60m * 24h * 7d
-          {
-            maxAge: 1000 * 60 * 60 * 24 * 7,
-            signed: false,
-            sameSite: 'strict',
-            // only set to secure in production
-            secure: process.env.NODE_ENV === 'production',
-          }
-        );
+        res.cookie('pointTally', res.locals.pointTally, {
+          // expire tonight (when nightly update runs)
+          expires: res.locals.tonight.toDate(),
+          signed: false,
+          sameSite: 'strict',
+          // only set to secure in production
+          secure: process.env.NODE_ENV === 'production',
+        });
       }
     }
     next();
