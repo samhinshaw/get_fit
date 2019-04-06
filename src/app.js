@@ -307,7 +307,7 @@ app.use(
         // make the point tallies array available to the view engine
         res.locals.pointTally = pointTally;
         // And set a cookie to save on the front end
-        res.cookie('pointTally', res.locals.pointTally, {
+        res.cookie('pointTally', pointTally, {
           // expire tonight (when nightly update runs)
           expires: res.locals.tonight.toDate(),
           signed: false,
