@@ -1,6 +1,8 @@
 import { Session } from 'mfp';
 import _ from 'lodash';
 
+import logger from '../methods/logger';
+
 import {
   exerciseMappings,
   exerciseGroups,
@@ -100,10 +102,8 @@ export function calculatePoints(entry) {
     exercisePoints = 0;
   } else {
     entry.exercise.cardiovascular.exercises.forEach(exercise => {
-      console.log(exercise);
       try {
         const mappedName = partialMatch(exercise.name.toLowerCase());
-        console.log(mappedName);
         const exerciseName = exerciseMappings.get(mappedName) || '';
         const exerciseMinutes = exercise.minutes || 0;
         const exerciseGroup = exerciseGroups.get(exerciseName) || '';
@@ -113,7 +113,7 @@ export function calculatePoints(entry) {
 
         exercisePoints += totalPoints;
       } catch (err) {
-        console.error(err);
+        logger.error(err);
       }
     });
   }
