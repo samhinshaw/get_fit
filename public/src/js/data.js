@@ -52,7 +52,7 @@ const weightRange = {
   start: 150,
   end: 175,
   seqMajor: 5,
-  seqMinor: 1
+  seqMinor: 1,
 };
 
 $.getJSON('/api/user_weight/', json => {
@@ -73,7 +73,7 @@ $.getJSON('/api/user_weight/', json => {
     // parse(`${d.date}-0700`, 'MMMM DD, YYYY [at] hh:mmAZZ')
     const rowDate = parse(
       new Date(d.date.split(' at ')[0]).toLocaleString('en-US', {
-        timeZone: 'America/Vancouver'
+        timeZone: 'America/Vancouver',
       })
     );
     // if we're using a custom domain...
@@ -82,14 +82,14 @@ $.getJSON('/api/user_weight/', json => {
       if (isWithinRange(rowDate, startDate, endDate)) {
         data.push({
           date: rowDate,
-          weight: +d.weight
+          weight: +d.weight,
         });
       }
       // if we're not using a custom domain, just push all the dates
     } else {
       data.push({
         date: rowDate,
-        weight: +d.weight
+        weight: +d.weight,
       });
     }
   });
@@ -105,7 +105,7 @@ $.getJSON('/api/user_weight/', json => {
     .map(d => ({
       // finally, instead of returning {"key": "", "value": "" }
       date: parse(d.key), // return a parsed data (it was coerced to chr)
-      weight: d.value // and the weight as "weight"
+      weight: d.value, // and the weight as "weight"
     }));
 
   const margin = { top: 40, right: 80, bottom: 80, left: 50 };
@@ -303,7 +303,7 @@ $.getJSON('/api/user_weight/', json => {
 
   const yAxisLabelPosition = {
     x: width + margin.right,
-    y: height / 2
+    y: height / 2,
   };
   svg
     .append('text')

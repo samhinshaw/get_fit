@@ -19,7 +19,7 @@ const logger = createLogger({
       timestamp: dateFmt(),
       level: 'error',
       datePattern: 'YYYY-MM-DD',
-      prepend: true
+      prepend: true,
     }),
     // - Write to all logs with level `info` and below to `combined.log`
     new transports.DailyRotateFile({
@@ -27,9 +27,9 @@ const logger = createLogger({
       timestamp: dateFmt(),
       datePattern: 'YYYY-MM-DD',
       prepend: true,
-      level: env === 'development' ? 'verbose' : 'info'
-    })
-  ]
+      level: env === 'development' ? 'verbose' : 'info',
+    }),
+  ],
 });
 
 // If we're not in production then log to the `console` with the format:
@@ -38,7 +38,7 @@ if (env !== 'production') {
     new transports.Console({
       format: combine(splat(), timestamp(), myFormat),
       timestamp: dateFmt(),
-      colorize: true
+      colorize: true,
     })
   );
 }

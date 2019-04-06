@@ -81,10 +81,7 @@ if (productionEnv) {
 // Declare a function to connect to mongo so that we can retry the connection
 // should it error-out.
 const connectToMongo = function connectToMongo() {
-  return mongoose.connect(
-    mongoURI,
-    mongoOptions
-  );
+  return mongoose.connect(mongoURI, mongoOptions);
 };
 connectToMongo();
 const db = mongoose.connection;
@@ -134,10 +131,17 @@ app.use('/', express.static('public'));
 app.use(
   session({
     secret: process.env.NODEJS_SESSION_SECRET,
-    resave: true,
+    resave: false,
     saveUninitialized: true,
-    // cookie: { secure: true },
-    store: new MongoStore({ mongooseConnection: db })
+    cookie: {
+      // Only set secure = true in production
+      secure: process.env.NODE_ENV === 'production',
+      httpOnly: true,
+      sameSite: 'strict',
+      // 7 days = 1000ms * 60s * 60m * 24h * 7d
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+    },
+    store: new MongoStore({ mongooseConnection: db }),
   })
 );
 
@@ -170,9 +174,9 @@ app.use(
       return {
         param: formParam,
         msg,
-        value
+        value,
       };
-    }
+    },
   })
 );
 
@@ -200,7 +204,7 @@ app.use(
           partner: '',
           fitnessGoal: '',
           password: null,
-          currentPoints: 0
+          currentPoints: 0,
         };
       } else if (!(await User.findOne({ username: req.user.partner }))) {
         // Otherwise if no user located in database, insert dummy user for now
@@ -213,11 +217,11 @@ app.use(
           partner: '',
           fitnessGoal: '',
           password: null,
-          currentPoints: 0
+          currentPoints: 0,
         };
       } else {
         res.locals.partner = await User.findOne({
-          username: req.user.partner
+          username: req.user.partner,
         });
       }
     }
@@ -242,7 +246,7 @@ app.use(
 );
 
 // Set cookies so we can access user object on client side
-app.use(cookieParser());
+app.use(cookieParser('hghsyd82h2hdy'));
 
 // Make sure that our moment initialization is run as middleware! Otherwise
 // functions will only be run when the app starts!!! Use middleware to modify
@@ -266,7 +270,7 @@ app.use((req, res, next) => {
       // We started Monday, Sept 18th
       key: 'sinceStart',
       startDate: startOfTracking,
-      endDate: today.clone().endOf('day')
+      endDate: today.clone().endOf('day'),
     };
     res.locals.customRange = customRange; // do we want to pass an object instead?
   }
@@ -298,7 +302,7 @@ app.use(
 
       const pointTally = {
         user: parseFloat(userCustom.points),
-        partner: parseFloat(partnerCustom.points)
+        partner: parseFloat(partnerCustom.points),
       };
 
       // make the point tallies array available to the view engine
@@ -332,15 +336,15 @@ app.get('/', (req, res) => {
     res.render('landing_page', {
       routeInfo: {
         heroType: 'landing_page',
-        route: `/`
-      }
+        route: `/`,
+      },
     });
   } else {
     res.render('landing_page', {
       routeInfo: {
         heroType: 'landing_page',
-        route: `/`
-      }
+        route: `/`,
+      },
     });
   }
 });
@@ -357,8 +361,8 @@ app.get('*', (req, res) => {
   res.render('404', {
     routeInfo: {
       heroType: 'landing_page',
-      route: `${req.url}`
-    }
+      route: `${req.url}`,
+    },
   });
 });
 

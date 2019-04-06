@@ -32,6 +32,7 @@ services:
     env_file:
       - .env
       - unsecure.env
+      - pass.env
     # Mount the codebase to the container for live-reloading
     volumes:
       - ./:/app/

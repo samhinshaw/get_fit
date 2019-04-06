@@ -15,6 +15,8 @@ import logger from '../methods/logger';
 import ensureAuthenticated from '../methods/auth';
 import User from '../models/user';
 
+const COST_FACTOR = 16;
+
 // Define Async middleware wrapper to avoid try-catch
 const asyncMiddleware = fn => (req, res, next) => {
   Promise.resolve(fn(req, res, next)).catch(next);
@@ -26,15 +28,15 @@ const asyncMiddleware = fn => (req, res, next) => {
 
 const emailVer = Promise.promisifyAll(nodeEmailVer(mongoose));
 
-const saltAndHash = function saltAndHash(pwd, tempUserData, insertTempUser, callback) {
-  bcrypt.genSalt(10, (saltErr, salt) => {
+function saltAndHash(pwd, tempUserData, insertTempUser, callback) {
+  bcrypt.genSalt(COST_FACTOR, (saltErr, salt) => {
     if (saltErr) {
       logger.error('Error salting password: %j', saltErr);
       return;
     }
     bcrypt.hash(pwd, salt, (err, hash) => insertTempUser(hash, tempUserData, callback));
   });
-};
+}
 
 emailVer.configure(
   {
@@ -48,24 +50,24 @@ emailVer.configure(
       secure: true, // ssl
       auth: {
         user: 'welcome@getse.xyz',
-        pass: process.env.NODEJS_ZOHO_PASS
-      }
+        pass: process.env.NODEJS_ZOHO_PASS,
+      },
     },
     verifyMailOptions: {
       from: 'Sam <welcome@getse.xyz>',
       subject: 'Please confirm account',
       html:
         '<p>Please verify your account by clicking <a href="${URL}">this link</a>. If you are unable to do so, copy and paste the following link into your browser:</p><p>${URL}</p>', // eslint-disable-line no-template-curly-in-string
-      text: 'Please confirm your account by clicking the following link: ${URL}' // eslint-disable-line no-template-curly-in-string
+      text: 'Please confirm your account by clicking the following link: ${URL}', // eslint-disable-line no-template-curly-in-string
     },
     shouldSendConfirmation: false,
     confirmMailOptions: {
       from: 'Sam <welcome@getse.xyz>',
       subject: 'Successfully verified!',
       html: '<p>Your account has been successfully verified.</p>',
-      text: 'Your account has been successfully verified.'
+      text: 'Your account has been successfully verified.',
     },
-    hashingFunction: saltAndHash
+    hashingFunction: saltAndHash,
   },
   (err, options) => {
     if (err) {
@@ -94,8 +96,8 @@ router.get('/register', (req, res) => {
     res.render('register', {
       routeInfo: {
         heroType: 'dark',
-        route: `/register`
-      }
+        route: `/register`,
+      },
     });
   }
 });
@@ -109,8 +111,8 @@ router.get('/login', (req, res) => {
     res.render('login', {
       routeInfo: {
         heroType: 'dark',
-        route: `/login`
-      }
+        route: `/login`,
+      },
     });
   }
 });
@@ -130,11 +132,15 @@ router.post('/login', (req, res, next) => {
       res.cookie(
         'username',
         req.user.username,
-
-        { maxAge: 2592000000, signed: false }
+        // 7 days = 1000ms * 60s * 60m * 24h * 7d
+        {
+          maxAge: 1000 * 60 * 60 * 24 * 7,
+          signed: false,
+          sameSite: 'strict',
+          // only set to secure in production
+          secure: process.env.NODE_ENV === 'production',
+        }
       );
-      // secure: true for HTTPS only
-      // res.cookie('userid', req.user.id, { maxAge: 2592000000, secure: true, signed: false });
       res.redirect('/overview');
       return next();
     });
@@ -165,15 +171,15 @@ router.get('/overview', ensureAuthenticated, (req, res) => {
     'bicyclist',
     'walking',
     'weight_lifter',
-    'horse_racing'
+    'horse_racing',
   ];
   const exerciseEmoji = possibleEmojis[Math.floor(Math.random() * possibleEmojis.length)];
   res.render('overview', {
     routeInfo: {
       heroType: 'dark',
-      route: `/overview`
+      route: `/overview`,
     },
-    emoji: emoji.get(exerciseEmoji)
+    emoji: emoji.get(exerciseEmoji),
   });
 });
 
@@ -181,8 +187,8 @@ router.get('/help', (req, res) => {
   res.render('help', {
     routeInfo: {
       heroType: 'dark',
-      route: `/help`
-    }
+      route: `/help`,
+    },
   });
 });
 
@@ -190,8 +196,8 @@ router.get('/privacy', (req, res) => {
   res.render('privacy', {
     routeInfo: {
       heroType: 'dark',
-      route: `/privacy`
-    }
+      route: `/privacy`,
+    },
   });
 });
 
@@ -305,7 +311,8 @@ router.post(
       res.redirect('#');
       return next(errors);
       // temporarily hard-wiring adding access code
-    } else if (accessCode !== process.env.NODEJS_REGISTRATION_SECRET) {
+    }
+    if (accessCode !== process.env.NODEJS_REGISTRATION_SECRET) {
       logger.error('Access code provided: ');
       logger.error(accessCode);
       req.flash('danger', 'Incorrect Access Code');
@@ -323,7 +330,7 @@ router.post(
     // QUITE A BIT.
     const existingUserUsername = await User.findOne(
       {
-        username
+        username,
       },
       (queryErr, user) => {
         if (queryErr) {
@@ -341,7 +348,7 @@ router.post(
     }
     const existingUserEmail = await User.findOne(
       {
-        email
+        email,
       },
       (queryErr, user) => {
         if (queryErr) {
@@ -379,17 +386,17 @@ router.post(
           {
             group: 'Very Light Exercise',
             pointsPerHour: 0.5,
-            exercises: ['walking', 'stretching']
+            exercises: ['walking', 'stretching'],
           },
           {
             group: 'Light Exercise',
             pointsPerHour: 1,
-            exercises: ['yoga', 'hiking']
+            exercises: ['yoga', 'hiking'],
           },
           {
             group: 'Cardio',
             pointsPerHour: 2,
-            exercises: ['jogging', 'running', 'dancing', 'paddleboarding', 'parkour']
+            exercises: ['jogging', 'running', 'dancing', 'paddleboarding', 'parkour'],
           },
           {
             group: 'Cross Training',
@@ -398,10 +405,10 @@ router.post(
               'low intensity strength training',
               'high intensity strength training',
               'bodyweight training',
-              'kelly tape'
-            ]
-          }
-        ]
+              'kelly tape',
+            ],
+          },
+        ],
       });
 
       await emailVer.createTempUser(newUser, (createErr, existingPermUser, newTempUser) => {
@@ -413,11 +420,13 @@ router.post(
           );
           res.redirect('#');
           return next();
-        } else if (existingPermUser) {
+        }
+        if (existingPermUser) {
           req.flash('danger', 'Username Taken');
           res.redirect('#');
           return next();
-        } else if (!newTempUser) {
+        }
+        if (!newTempUser) {
           // otherwise if newTempUser is null
           logger.info('Temp user already exists');
           req.flash(
@@ -439,7 +448,8 @@ router.post(
             );
             res.redirect('#');
             return next();
-          } else if (sendInfo) {
+          }
+          if (sendInfo) {
             logger.info('Email send info: %j', sendInfo);
           }
           // If user has registered with partner, flow is:
@@ -501,7 +511,7 @@ router.post(
       if (value.length < 3) {
         res.status(200).json({
           message: 'Your username must be at least 3 characters.',
-          classType: 'danger'
+          classType: 'danger',
         });
       } else {
         // Otherwise, check for the user in the database!
@@ -513,7 +523,7 @@ router.post(
         } else {
           res.status(200).json({
             message: 'This username is available',
-            classType: 'success'
+            classType: 'success',
           });
         }
       }
@@ -529,7 +539,7 @@ router.post(
         // Or handle errors with flash
         res.status(200).json({
           message: 'This is not a valid email address',
-          classType: 'danger'
+          classType: 'danger',
         });
       } else {
         const userByEmail = await User.findOne({ email: value }, err => {
@@ -538,12 +548,12 @@ router.post(
         if (userByEmail) {
           res.status(200).json({
             message: 'This email address is already registered.',
-            classType: 'danger'
+            classType: 'danger',
           });
         } else {
           res.status(200).json({
             message: 'This email address is unregistered.',
-            classType: 'success'
+            classType: 'success',
           });
         }
       }
@@ -554,13 +564,13 @@ router.post(
       if (partner) {
         res.status(200).json({
           message: "This user is already registered. We'll send them a partner request!",
-          classType: 'success'
+          classType: 'success',
         });
       } else {
         res.status(200).json({
           message:
             "This user is not yet registered! Input their email address and we'll invite them to Get Fit!",
-          classType: 'info'
+          classType: 'info',
         });
       }
     } else if (name === 'partnerEmail') {
@@ -575,7 +585,7 @@ router.post(
         // Or handle errors with flash
         res.status(200).json({
           message: 'This is not a valid email address',
-          classType: 'danger'
+          classType: 'danger',
         });
       } else {
         const partnerByEmail = await User.findOne({ email: value }, err => {
@@ -585,12 +595,12 @@ router.post(
           res.status(200).json({
             message:
               "This email address is already registered&mdash;make sure you have your partner's username correct!",
-            classType: 'danger'
+            classType: 'danger',
           });
         } else {
           res.status(200).json({
             message: "This email address is unregistered, we'll invite them!",
-            classType: 'success'
+            classType: 'success',
           });
         }
       }

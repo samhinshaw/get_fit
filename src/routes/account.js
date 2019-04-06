@@ -37,9 +37,9 @@ const configureIFTTT = ({ user, partnerToken, messageType }) => {
     method: 'POST',
     headers: {
       // 'User-Agent': 'Super Agent/0.0.1',
-      'Content-Type': 'application/x-www-form-urlencoded'
+      'Content-Type': 'application/x-www-form-urlencoded',
     },
-    form: { value1: user }
+    form: { value1: user },
   };
   return configOptions;
 };
@@ -50,8 +50,8 @@ router.get('/', ensureAuthenticated, (req, res) => {
   res.render('account/index', {
     routeInfo: {
       heroType: 'twitter',
-      route: '/account'
-    }
+      route: '/account',
+    },
   });
 });
 
@@ -90,7 +90,7 @@ router.post('/', ensureAuthenticated, (req, res) => {
   User.findOneAndUpdate(
     { username: req.user.username },
     {
-      $set: userObject
+      $set: userObject,
     },
     err => {
       if (err) {
@@ -114,8 +114,8 @@ router.get('/spend', ensureAuthenticated, (req, res) => {
       rewards: sortedRewards,
       routeInfo: {
         heroType: 'twitter',
-        route: '/account/spend'
-      }
+        route: '/account/spend',
+      },
     });
   });
 });
@@ -127,7 +127,7 @@ router.post(
     const rewardKey = req.sanitize('reward').trim();
 
     const query = {
-      key: rewardKey
+      key: rewardKey,
     };
     // Pull up reward entry in DB
     const rewardEntry = await Reward.findOne(query, (err, reward) => {
@@ -150,7 +150,7 @@ router.post(
       requester: res.locals.user.username, // replace with session
       requestMessage: req.sanitize('message').trim(),
       timeRequested: moment.tz('US/Pacific').toDate(),
-      status: 'unapproved'
+      status: 'unapproved',
     });
 
     newRequest.save(saveErr => {
@@ -165,7 +165,7 @@ router.post(
               res.locals.user.firstname.charAt(0).toUpperCase() +
               res.locals.user.firstname.slice(1),
             partnerToken: process.env[`IFTTT_TOKEN_${res.locals.partner.username.toUpperCase()}`],
-            messageType: 'reward_request'
+            messageType: 'reward_request',
           }),
           (error, response) => {
             // (error, response, body)
@@ -181,6 +181,14 @@ router.post(
         );
       }
     });
+  })
+);
+
+router.post(
+  '/update-account',
+  ensureAuthenticated,
+  asyncMiddleware(async (req, res) => {
+    // Do stuff here to get account data, like goal calories!
   })
 );
 
@@ -278,8 +286,8 @@ router.get('/requests', ensureAuthenticated, (req, res) => {
     moment,
     routeInfo: {
       heroType: 'twitter',
-      route: '/account/requests'
-    }
+      route: '/account/requests',
+    },
   });
 });
 
@@ -288,8 +296,8 @@ router.get('/exercises', ensureAuthenticated, (req, res) => {
     _,
     routeInfo: {
       heroType: 'twitter',
-      route: '/account/exercises'
-    }
+      route: '/account/exercises',
+    },
   });
 });
 
@@ -304,8 +312,8 @@ router.post('/requests/respond', ensureAuthenticated, (req, res) => {
       $set: {
         status: req.sanitize('type').trim(),
         responseMessage: req.sanitize('message').trim(),
-        timeResponded: moment.tz('US/Pacific').toDate()
-      }
+        timeResponded: moment.tz('US/Pacific').toDate(),
+      },
     },
     err => {
       if (err) {
@@ -321,7 +329,7 @@ router.post('/requests/respond', ensureAuthenticated, (req, res) => {
               res.locals.user.firstname.charAt(0).toUpperCase() +
               res.locals.user.firstname.slice(1),
             partnerToken: process.env[`IFTTT_TOKEN_${res.locals.partner.username.toUpperCase()}`],
-            messageType: 'request_response'
+            messageType: 'request_response',
           }),
           (error, response) => {
             // (error, response, body)
@@ -349,7 +357,7 @@ router.get(
     const requests = await Request.find(
       {
         requester: res.locals.user.username,
-        status: ['approved', 'denied']
+        status: ['approved', 'denied'],
       },
       (err, response) => {
         if (err) {
@@ -389,8 +397,8 @@ router.get(
       moment,
       routeInfo: {
         heroType: 'twitter',
-        route: '/account/history'
-      }
+        route: '/account/history',
+      },
     });
   })
 );
@@ -404,8 +412,8 @@ router.get('/delete', ensureAuthenticated, (req, res) => {
     moment,
     routeInfo: {
       heroType: 'twitter',
-      route: '/account/delete'
-    }
+      route: '/account/delete',
+    },
   });
 });
 
@@ -475,7 +483,7 @@ router.post(
         deletedPeriods,
         deletedRequests,
         deletedRewards,
-        deletedUser
+        deletedUser,
       ]).then(() => {
         logger.info('User successfully deleted: %s', res.locals.user.username);
         req.flash('success', 'Account deletion successful!');

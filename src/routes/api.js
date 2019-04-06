@@ -21,7 +21,7 @@ const googleCreds = {
   auth_uri: 'https://accounts.google.com/o/oauth2/auth',
   token_uri: 'https://accounts.google.com/o/oauth2/token',
   auth_provider_x509_cert_url: 'https://www.googleapis.com/oauth2/v1/certs',
-  client_x509_cert_url: process.env.GOOGLE_CLIENT_X509_CERT_URL
+  client_x509_cert_url: process.env.GOOGLE_CLIENT_X509_CERT_URL,
 };
 
 // Send user data to client side (via cookie) when user is logged in
@@ -50,13 +50,13 @@ router.get('/user_weight', ensureAuthenticated, (req, res) => {
         rows.forEach(row => {
           const prunedRow = {
             date: row.date,
-            weight: row.weight
+            weight: row.weight,
           };
           prunedRows.push(prunedRow);
         });
 
         res.json({
-          rows: prunedRows
+          rows: prunedRows,
         });
       });
     });
@@ -89,7 +89,7 @@ router.get('/user_data', ensureAuthenticated, (req, res) => {
       partner: res.locals.user.partner,
       mfp: res.locals.user.mfp,
       currentPoints: res.locals.user.currentPoints,
-      fitnessGoal: res.locals.user.fitnessGoal
+      fitnessGoal: res.locals.user.fitnessGoal,
     });
   }
 });

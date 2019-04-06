@@ -1,14 +1,15 @@
 // This will contain all '/user/' routes
-import PythonShell from 'python-shell';
 import express from 'express';
 import _ from 'lodash';
 import Moment from 'moment-timezone';
 import { extendMoment } from 'moment-range';
 
 import ensureAuthenticated from '../methods/auth';
+import { getGoals, getDiaryData, authMFP, calculatePoints } from '../myfitnesspal/mfp';
 
 import Entry from '../models/entry';
 import logger from '../methods/logger';
+import parseDateRange from '../methods/parse-date-range';
 
 const appConfig = require('../../config/app_config.json');
 
@@ -51,9 +52,9 @@ router.get(
       {
         date: {
           $gte: res.locals.twoWeeksAgo.toDate(),
-          $lte: res.locals.today.toDate()
+          $lte: res.locals.today.toDate(),
         },
-        user: res.locals.user.username
+        user: res.locals.user.username,
       },
       (err, response) => {
         if (err) {
@@ -124,7 +125,7 @@ router.get(
       weeks.push({
         key: `week ${index}`,
         startDate,
-        endDate
+        endDate,
       });
       // Make ESLint happy that we're returning a value. Our actual return is
       // done via an array push, so as to not have an array with lots of
@@ -142,9 +143,9 @@ router.get(
         {
           date: {
             $gte: week.startDate,
-            $lte: week.endDate
+            $lte: week.endDate,
           },
-          user: res.locals.user.username
+          user: res.locals.user.username,
         },
         (err, response) => {
           if (err) {
@@ -209,7 +210,7 @@ router.get(
         points,
         successfulDays,
         workouts,
-        workoutMinutes
+        workoutMinutes,
       };
     });
 
@@ -233,8 +234,8 @@ router.get(
       weekSummaries: await promisedWeekSummaries,
       routeInfo: {
         heroType: 'user',
-        route: '/user'
-      }
+        route: '/user',
+      },
     });
   })
 );
@@ -244,60 +245,109 @@ router.get('/weight', ensureAuthenticated, (req, res) => {
   res.render('user/weight', {
     routeInfo: {
       heroType: 'user',
-      route: '/user/weight'
-    }
+      route: '/user/weight',
+    },
   });
 });
 
-router.post('/:date', ensureAuthenticated, (req, res) => {
-  // parse date that was POSTed as string
-  // Wait, we're passing the string directly to python, so is this even necessary?
-  // const postedDate = moment.utc(req.params.date, 'YYYY-MM-DD');
-  let startDate;
-  let endDate;
+router.post('/:date', ensureAuthenticated, async (req, res) => {
+  const [startDate, endDate] = parseDateRange(req.params.date);
 
-  if (/^\d{4}-\d{2}-\d{2}$/.test(req.params.date)) {
-    startDate = req.params.date;
-    endDate = req.params.date;
-  } else if (/^\d{4}-\d{2}-\d{2} \d{4}-\d{2}-\d{2}$/.test(req.params.date)) {
-    const date = req.params.date.split(' ');
-    [startDate, endDate] = date;
-    // This is array destructuring! It is equivalent to the below:
-    // startDate = date[0];
-    // endDate = date[1];
+  const mfpUser = res.locals.user.mfp;
+  const mfpUserUpper = res.locals.user.mfp.toUpperCase();
+
+  const session = await authMFP(mfpUser, process.env[`MFP_PASS_${mfpUserUpper}`]);
+
+  const mfpDiaryEntries = await getDiaryData(
+    session,
+    { exercise: true, food: true },
+    startDate,
+    endDate
+  );
+
+  const mfpGoals = await getGoals(session, startDate, endDate);
+
+  const errors = new Set();
+
+  mfpDiaryEntries.forEach(entry => {
+    if (!entry.date) {
+      errors.add('Unspecified Error.');
+      return;
+    }
+    if (!_.get(entry, 'food.totals.calories')) {
+      // Could add a warning here--some dates did not have data
+      // If no entry, just skip this date
+      return;
+    }
+    // get the goal for the range of this date
+    let goalCals;
+    try {
+      goalCals = mfpGoals.goals.get(mfpGoals.ranges.get(entry.date)).default_goal.energy.value;
+    } catch (err) {
+      errors.add('Error retreiving goals from MyFitnessPal.');
+      return;
+    }
+
+    const points = calculatePoints(entry);
+
+    const formattedEntry = {
+      date: entry.date,
+      totalCals: entry.food.totals.calories,
+      goalCals,
+      netCals: goalCals - entry.calories,
+      isEmpty: false,
+      complete: true,
+      points,
+      user: res.locals.user.username,
+    };
+    console.log(JSON.stringify(formattedEntry, null, 2));
+  });
+
+  if (errors.size > 0) {
+    // concatenate them for pretty printing
+    const concatErrors = [...errors].join('<br>');
+    res.status(500).json({
+      message: concatErrors,
+      type: 'danger',
+    });
+  } else {
+    res.status(200).json({
+      message: 'Success updating user data from MyFitnessPal',
+      type: 'success',
+    });
   }
 
-  // Python script options
-  const pythonOptions = {
-    // mode: 'json',
-    pythonOptions: ['-u'], // this will let us see Python's print statements
-    scriptPath: './data',
-    args: [startDate, endDate, res.locals.user.username, res.locals.user.mfp]
-  };
+  // // Python script options
+  // const pythonOptions = {
+  //   // mode: 'json',
+  //   pythonOptions: ['-u'], // this will let us see Python's print statements
+  //   scriptPath: './data',
+  //   args: [startDate, endDate, res.locals.user.username, res.locals.user.mfp],
+  // };
 
-  // Run python script
-  PythonShell.run('getMFP.py', pythonOptions, (err, messages) => {
-    // Only throw error if exit code was nonzero.
-    // For some reason I am getting errors with nonzero exit statuses
-    if (err && err.exitCode !== 0) {
-      logger.error('Error updating from MyFitnessPal:');
-      if (err.traceback) {
-        logger.error(err.traceback);
-        delete err.traceback;
-      }
-      logger.error(err);
-      res.status(500).json({ message: 'Error updating from MyFitnessPal', type: 'danger' });
-      // res.status(500).json(err);
-    } else {
-      if (messages) logger.info('messages: %j', messages);
-      logger.info('Success updating user data from MFP.');
-      res.status(200).json({
-        message: 'Success updating user data from MyFitnessPal',
-        type: 'success'
-      });
-      // res.status(200).json(result);
-    }
-  });
+  // // Run python script
+  // PythonShell.run('getMFP.py', pythonOptions, (err, messages) => {
+  //   // Only throw error if exit code was nonzero.
+  //   // For some reason I am getting errors with nonzero exit statuses
+  //   if (err && err.exitCode !== 0) {
+  //     logger.error('Error updating from MyFitnessPal:');
+  //     if (err.traceback) {
+  //       logger.error(err.traceback);
+  //       delete err.traceback;
+  //     }
+  //     logger.error(err);
+  //     res.status(500).json({ message: 'Error updating from MyFitnessPal', type: 'danger' });
+  //     // res.status(500).json(err);
+  //   } else {
+  //     if (messages) logger.info('messages: %j', messages);
+  //     logger.info('Success updating user data from MFP.');
+  //     res.status(200).json({
+  //       message: 'Success updating user data from MyFitnessPal',
+  //       type: 'success',
+  //     });
+  //     // res.status(200).json(result);
+  //   }
+  // });
 });
 
 export default router;
