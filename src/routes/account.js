@@ -7,6 +7,7 @@ import Moment from 'moment-timezone';
 import { extendMoment } from 'moment-range';
 
 import ensureAuthenticated from '../methods/auth';
+import { getPoints, setPointsCookie } from '../methods/update-point-tally';
 
 import logger from '../methods/logger';
 import Request from '../models/request';
@@ -90,20 +91,27 @@ router.post(
     mfp = mfp !== '' ? mfp : null;
     if (mfp) userObject.mfp = mfp;
 
-    User.findOneAndUpdate(
+    const updatedUser = await User.findOneAndUpdate(
       { username: req.user.username },
       {
         $set: userObject,
-      },
-      err => {
-        if (err) {
-          req.flash('danger', 'Oops, there was an error updating your settings!');
-          res.redirect('#');
-        }
-        req.flash('success', 'Settings successfully updated!');
+      }
+    ).catch(err => {
+      if (err) {
+        req.flash('danger', 'Oops, there was an error updating your settings!');
         res.redirect('#');
       }
-    );
+    });
+
+    const pointTally = {
+      user: updatedUser.currentPoints,
+      partner: await getPoints(req.user.partner),
+    };
+
+    setPointsCookie(res, pointTally).then(() => {
+      req.flash('success', 'Settings successfully updated!');
+      res.redirect('#');
+    });
   })
 );
 
@@ -185,14 +193,6 @@ router.post(
         );
       }
     });
-  })
-);
-
-router.post(
-  '/update-account',
-  ensureAuthenticated,
-  asyncMiddleware(async (req, res) => {
-    // Do stuff here to get account data, like goal calories!
   })
 );
 
