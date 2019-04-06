@@ -160,6 +160,9 @@ authMiddleware(passport);
 app.use(passport.initialize());
 app.use(passport.session());
 
+// Set cookies so we can access user object on client side
+app.use(cookieParser('hghsyd82h2hdy'));
+
 // Form Validation Middleware
 app.use(
   expressValidator({
@@ -185,29 +188,18 @@ app.use(
   asyncMiddleware(async (req, res, next) => {
     if (req.user) {
       req.user.password = null;
-    }
-    // This '||' will assign to NULL if req.user does not exist
-    res.locals.user = req.user || null;
 
-    // also store 'logged-in' status
-    res.locals.loggedIn = !!req.user;
+      res.locals.loggedIn = !!req.user;
+      res.locals.user = req.user || null;
 
-    // Temporarily mock blank partner (if none)
-    if (req.user) {
-      if (req.user.partner == null || req.user.partner === '') {
-        res.locals.partner = {
-          firstname: '',
-          lastname: '',
-          username: '',
-          email: '',
-          mfp: '',
-          partner: '',
-          fitnessGoal: '',
-          password: null,
-          currentPoints: 0,
-        };
-      } else if (!(await User.findOne({ username: req.user.partner }))) {
-        // Otherwise if no user located in database, insert dummy user for now
+      res.locals.userName =
+        res.locals.user.firstname.charAt(0).toUpperCase() +
+        res.locals.user.firstname.slice(1).toLowerCase();
+      res.locals.userLastName =
+        res.locals.user.lastname.charAt(0).toUpperCase() +
+        res.locals.user.lastname.slice(1).toLowerCase();
+
+      if (!req.user.partner) {
         res.locals.partner = {
           firstname: '',
           lastname: '',
@@ -220,33 +212,35 @@ app.use(
           currentPoints: 0,
         };
       } else {
-        res.locals.partner = await User.findOne({
-          username: req.user.partner,
-        });
+        const partnerObject = await User.findOne({ username: req.user.partner });
+        if (!partnerObject) {
+          // If no user located in database, insert dummy user for now
+          res.locals.partner = {
+            firstname: '',
+            lastname: '',
+            username: '',
+            email: '',
+            mfp: '',
+            partner: '',
+            fitnessGoal: '',
+            password: null,
+            currentPoints: 0,
+          };
+        } else {
+          res.locals.partner = partnerObject;
+        }
+        res.locals.partnerName =
+          res.locals.partner.firstname.charAt(0).toUpperCase() +
+          res.locals.partner.firstname.slice(1).toLowerCase();
+
+        res.locals.partnerLastName =
+          res.locals.partner.lastname.charAt(0).toUpperCase() +
+          res.locals.partner.lastname.slice(1).toLowerCase();
       }
     }
-
-    // Set capitalized names
-    if (req.user) {
-      res.locals.userName =
-        res.locals.user.firstname.charAt(0).toUpperCase() + res.locals.user.firstname.slice(1);
-      res.locals.partnerName =
-        res.locals.partner.firstname.charAt(0).toUpperCase() +
-        res.locals.partner.firstname.slice(1).toLowerCase();
-
-      res.locals.userLastName =
-        res.locals.user.lastname.charAt(0).toUpperCase() + res.locals.user.lastname.slice(1);
-      res.locals.partnerLastName =
-        res.locals.partner.lastname.charAt(0).toUpperCase() +
-        res.locals.partner.lastname.slice(1).toLowerCase();
-    }
-
     next();
   })
 );
-
-// Set cookies so we can access user object on client side
-app.use(cookieParser('hghsyd82h2hdy'));
 
 // Make sure that our moment initialization is run as middleware! Otherwise
 // functions will only be run when the app starts!!! Use middleware to modify
