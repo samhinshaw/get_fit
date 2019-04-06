@@ -331,38 +331,6 @@ router.post(
         type: 'success',
       });
     }
-
-    // // Python script options
-    // const pythonOptions = {
-    //   // mode: 'json',
-    //   pythonOptions: ['-u'], // this will let us see Python's print statements
-    //   scriptPath: './data',
-    //   args: [startDate, endDate, res.locals.user.username, res.locals.user.mfp],
-    // };
-
-    // // Run python script
-    // PythonShell.run('getMFP.py', pythonOptions, (err, messages) => {
-    //   // Only throw error if exit code was nonzero.
-    //   // For some reason I am getting errors with nonzero exit statuses
-    //   if (err && err.exitCode !== 0) {
-    //     logger.error('Error updating from MyFitnessPal:');
-    //     if (err.traceback) {
-    //       logger.error(err.traceback);
-    //       delete err.traceback;
-    //     }
-    //     logger.error(err);
-    //     res.status(500).json({ message: 'Error updating from MyFitnessPal', type: 'danger' });
-    //     // res.status(500).json(err);
-    //   } else {
-    //     if (messages) logger.info('messages: %j', messages);
-    //     logger.info('Success updating user data from MFP.');
-    //     res.status(200).json({
-    //       message: 'Success updating user data from MyFitnessPal',
-    //       type: 'success',
-    //     });
-    //     // res.status(200).json(result);
-    //   }
-    // });
   })
 );
 
