@@ -13,6 +13,7 @@ import expMessages from 'express-messages';
 import passport from 'passport';
 import helmet from 'helmet';
 import Promise from 'bluebird';
+
 // Import middleware packages
 import session from 'express-session';
 import connectSession from 'connect-mongo';
@@ -36,6 +37,7 @@ import logger from './methods/logger';
 
 // Passport Config Middleware
 import authMiddleware from './methods/passport';
+import { updatePointTally } from './methods/update-point-tally';
 
 const productionEnv = process.env.NODE_ENV === 'production';
 const developmentEnv = process.env.NODE_ENV === 'development';
@@ -281,43 +283,16 @@ app.use((req, res, next) => {
 app.use(
   asyncMiddleware(async (req, res, next) => {
     // only run if logged in
-    if (req.user) {
-      // if we have the pointTally cookie, use it!
-      if (req.cookies && req.cookies.pointTally) {
-        // The invalidation of this cookie will be handled elsewhere
-        res.locals.pointTally = req.cookies.pointTally;
-        // Otherwise update them
-      } else {
-        // Get and concat all point tallies
-
-        const userEntry = await User.findOne(
-          { username: req.user.username },
-          { currentPoints: true }
-        );
-        const partnerEntry = await User.findOne(
-          { username: req.user.partner },
-          { currentPoints: true }
-        );
-
-        const pointTally = {
-          user: parseFloat(userEntry.currentPoints),
-          partner: parseFloat(partnerEntry.currentPoints),
-        };
-
-        // make the point tallies array available to the view engine
-        res.locals.pointTally = pointTally;
-        // And set a cookie to save on the front end
-        res.cookie('pointTally', pointTally, {
-          // expire tonight (when nightly update runs)
-          expires: res.locals.tonight.toDate(),
-          signed: false,
-          sameSite: 'strict',
-          // only set to secure in production
-          secure: process.env.NODE_ENV === 'production',
-        });
-      }
+    if (!req.user) {
+      next();
+      // If we have the pointTally cookie, use it! The invalidation of these cookies will be handled elsewhere
+    } else if (req.cookies && req.cookies.pointTally) {
+      res.locals.pointTally = req.cookies.pointTally;
+      next();
+      // Otherwise update the points!
+    } else {
+      updatePointTally(res, req.user.username, req.user.partner).then(() => next());
     }
-    next();
   })
 );
 
