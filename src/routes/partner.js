@@ -8,6 +8,7 @@ import { extendMoment } from 'moment-range';
 import ensureAuthenticated from '../methods/auth';
 import Entry from '../models/entry';
 import logger from '../methods/logger';
+import { updatePointTally } from '../methods/update-point-tally';
 
 const moment = extendMoment(Moment);
 
@@ -267,26 +268,30 @@ router.post('/:date', ensureAuthenticated, (req, res) => {
 
   // Run python script
   PythonShell.run('getMFP.py', pythonOptions, (err, messages) => {
+    let statusCode;
+    let responseBody;
     // Only throw error if exit code was nonzero.
-    // For some reason I am getting errors with nonzero exit statuses
+    // For some reason I am getting errors with zero exit statuses
     if (err && err.exitCode !== 0) {
-      logger.error('Error updating from MyFitnessPal:');
       if (err.traceback) {
         logger.error(err.traceback);
         delete err.traceback;
       }
       logger.error(err);
-      res.status(500).json({ message: 'Error updating from MyFitnessPal', type: 'danger' });
-      // res.status(500).json(err);
+      statusCode = 500;
+      responseBody = { message: 'Error updating from MyFitnessPal', type: 'danger' };
     } else {
       if (messages) logger.info('messages: %j', messages);
-      logger.info('Success updating user data from MFP.');
-      res.status(200).json({
+      statusCode = 200;
+      responseBody = {
         message: 'Success updating user data from MyFitnessPal',
         type: 'success',
-      });
-      // res.status(200).json(result);
+      };
     }
+    // update point tally before returning
+    updatePointTally(res, req.user.username, req.user.partner).then(() => {
+      res.status(statusCode).json(responseBody);
+    });
   });
 });
 

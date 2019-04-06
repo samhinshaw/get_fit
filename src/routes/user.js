@@ -8,9 +8,9 @@ import ensureAuthenticated from '../methods/auth';
 import { getGoals, getDiaryData, authMFP, calculatePoints } from '../myfitnesspal/mfp';
 
 import Entry from '../models/entry';
-import User from '../models/user';
 import logger from '../methods/logger';
 import parseDateRange from '../methods/parse-date-range';
+import { updatePointTally } from '../methods/update-point-tally';
 
 const moment = extendMoment(Moment);
 
@@ -298,39 +298,22 @@ router.post(
 
     // TODO: port data wrangling logic from Python to Node.js
 
-    // update the point tally cookie
-    const userEntry = await User.findOne({ username: req.user.username }, { currentPoints: true });
-    const partnerEntry = await User.findOne(
-      { username: req.user.partner },
-      { currentPoints: true }
-    );
-    const pointTally = {
-      user: parseFloat(userEntry.currentPoints),
-      partner: parseFloat(partnerEntry.currentPoints),
-    };
-    res.locals.pointTally = pointTally;
-    res.cookie('pointTally', pointTally, {
-      // expire tonight (when nightly update runs)
-      expires: res.locals.tonight.toDate(),
-      signed: false,
-      sameSite: 'strict',
-      // only set to secure in production
-      secure: process.env.NODE_ENV === 'production',
+    // update the point tally cookie before continuing
+    updatePointTally(res, req.user.username, req.user.partner).then(() => {
+      if (errors.size > 0) {
+        // concatenate them for pretty printing
+        const concatErrors = [...errors].join('<br>');
+        res.status(500).json({
+          message: concatErrors,
+          type: 'danger',
+        });
+      } else {
+        res.status(200).json({
+          message: 'Success updating user data from MyFitnessPal',
+          type: 'success',
+        });
+      }
     });
-
-    if (errors.size > 0) {
-      // concatenate them for pretty printing
-      const concatErrors = [...errors].join('<br>');
-      res.status(500).json({
-        message: concatErrors,
-        type: 'danger',
-      });
-    } else {
-      res.status(200).json({
-        message: 'Success updating user data from MyFitnessPal',
-        type: 'success',
-      });
-    }
   })
 );
 
