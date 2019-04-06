@@ -13,13 +13,14 @@ import expMessages from 'express-messages';
 import passport from 'passport';
 import helmet from 'helmet';
 import Promise from 'bluebird';
+
 // Import middleware packages
 import session from 'express-session';
 import connectSession from 'connect-mongo';
 import connectFlash from 'connect-flash';
 
 // Include custom middleware
-import { queryCustomPeriodsFromMongo, getPendingRequests } from './middlewares/mongoMiddleware';
+import { getPendingRequests } from './middlewares/mongoMiddleware';
 
 // Bring in route files
 import account from './routes/account';
@@ -36,12 +37,12 @@ import logger from './methods/logger';
 
 // Passport Config Middleware
 import authMiddleware from './methods/passport';
+import { updatePointTally } from './methods/update-point-tally';
 
 const productionEnv = process.env.NODE_ENV === 'production';
 const developmentEnv = process.env.NODE_ENV === 'development';
 
-// Bring in app config file
-const appConfig = require('../config/app_config.json');
+const PORT = 8005;
 
 // Define Async middleware wrapper to avoid try-catch
 const asyncMiddleware = fn => (req, res, next) => {
@@ -160,6 +161,9 @@ authMiddleware(passport);
 app.use(passport.initialize());
 app.use(passport.session());
 
+// Set cookies so we can access user object on client side
+app.use(cookieParser('hghsyd82h2hdy'));
+
 // Form Validation Middleware
 app.use(
   expressValidator({
@@ -185,29 +189,18 @@ app.use(
   asyncMiddleware(async (req, res, next) => {
     if (req.user) {
       req.user.password = null;
-    }
-    // This '||' will assign to NULL if req.user does not exist
-    res.locals.user = req.user || null;
 
-    // also store 'logged-in' status
-    res.locals.loggedIn = !!req.user;
+      res.locals.loggedIn = !!req.user;
+      res.locals.user = req.user || null;
 
-    // Temporarily mock blank partner (if none)
-    if (req.user) {
-      if (req.user.partner == null || req.user.partner === '') {
-        res.locals.partner = {
-          firstname: '',
-          lastname: '',
-          username: '',
-          email: '',
-          mfp: '',
-          partner: '',
-          fitnessGoal: '',
-          password: null,
-          currentPoints: 0,
-        };
-      } else if (!(await User.findOne({ username: req.user.partner }))) {
-        // Otherwise if no user located in database, insert dummy user for now
+      res.locals.userName =
+        res.locals.user.firstname.charAt(0).toUpperCase() +
+        res.locals.user.firstname.slice(1).toLowerCase();
+      res.locals.userLastName =
+        res.locals.user.lastname.charAt(0).toUpperCase() +
+        res.locals.user.lastname.slice(1).toLowerCase();
+
+      if (!req.user.partner) {
         res.locals.partner = {
           firstname: '',
           lastname: '',
@@ -220,33 +213,35 @@ app.use(
           currentPoints: 0,
         };
       } else {
-        res.locals.partner = await User.findOne({
-          username: req.user.partner,
-        });
+        const partnerObject = await User.findOne({ username: req.user.partner });
+        if (!partnerObject) {
+          // If no user located in database, insert dummy user for now
+          res.locals.partner = {
+            firstname: '',
+            lastname: '',
+            username: '',
+            email: '',
+            mfp: '',
+            partner: '',
+            fitnessGoal: '',
+            password: null,
+            currentPoints: 0,
+          };
+        } else {
+          res.locals.partner = partnerObject;
+        }
+        res.locals.partnerName =
+          res.locals.partner.firstname.charAt(0).toUpperCase() +
+          res.locals.partner.firstname.slice(1).toLowerCase();
+
+        res.locals.partnerLastName =
+          res.locals.partner.lastname.charAt(0).toUpperCase() +
+          res.locals.partner.lastname.slice(1).toLowerCase();
       }
     }
-
-    // Set capitalized names
-    if (req.user) {
-      res.locals.userName =
-        res.locals.user.firstname.charAt(0).toUpperCase() + res.locals.user.firstname.slice(1);
-      res.locals.partnerName =
-        res.locals.partner.firstname.charAt(0).toUpperCase() +
-        res.locals.partner.firstname.slice(1).toLowerCase();
-
-      res.locals.userLastName =
-        res.locals.user.lastname.charAt(0).toUpperCase() + res.locals.user.lastname.slice(1);
-      res.locals.partnerLastName =
-        res.locals.partner.lastname.charAt(0).toUpperCase() +
-        res.locals.partner.lastname.slice(1).toLowerCase();
-    }
-
     next();
   })
 );
-
-// Set cookies so we can access user object on client side
-app.use(cookieParser('hghsyd82h2hdy'));
 
 // Make sure that our moment initialization is run as middleware! Otherwise
 // functions will only be run when the app starts!!! Use middleware to modify
@@ -260,14 +255,19 @@ app.use((req, res, next) => {
     const today = now.clone().startOf('day');
     res.locals.today = today;
 
+    const tonight = today.clone().endOf('day');
+    res.locals.tonight = tonight;
+
     const twoWeeksAgo = today.clone().subtract(14, 'days');
     res.locals.twoWeeksAgo = twoWeeksAgo;
 
     const startOfTracking = moment
-      .tz(appConfig.startDate, 'MM-DD-YYYY', 'US/Pacific')
+      .tz(req.user.startDate, 'MM-DD-YYYY', 'US/Pacific')
       .startOf('day');
+
+    res.locals.startDate = req.user.startDate;
+
     const customRange = {
-      // We started Monday, Sept 18th
       key: 'sinceStart',
       startDate: startOfTracking,
       endDate: today.clone().endOf('day'),
@@ -282,33 +282,17 @@ app.use((req, res, next) => {
 // ------------------------------------------------------------------------------//
 app.use(
   asyncMiddleware(async (req, res, next) => {
-    // Workaround for now will simply not run this middleware if not logged in
-    // In the future, can probably think of a better way to architect this
-    if (req.user) {
-      // Don't need try, catch anymore since asyncMiddleware (see top of app.js) is
-      // handling async errors
-
-      // Get and concat all point tallies
-      // const userWeeks = await mongoMiddleware.queryWeeksFromMongo(res.locals.user.username);
-      const userCustom = await queryCustomPeriodsFromMongo(
-        res.locals.user.username,
-        res.locals.customRange
-      );
-      // const partnerWeeks = await mongoMiddleware.queryWeeksFromMongo(res.locals.partner.username);
-      const partnerCustom = await queryCustomPeriodsFromMongo(
-        res.locals.partner.username,
-        res.locals.customRange
-      );
-
-      const pointTally = {
-        user: parseFloat(userCustom.points),
-        partner: parseFloat(partnerCustom.points),
-      };
-
-      // make the point tallies array available to the view engine
-      res.locals.pointTally = pointTally;
+    // only run if logged in
+    if (!req.user) {
+      next();
+      // If we have the pointTally cookie, use it! The invalidation of these cookies will be handled elsewhere
+    } else if (req.cookies && req.cookies.pointTally) {
+      res.locals.pointTally = req.cookies.pointTally;
+      next();
+      // Otherwise update the points!
+    } else {
+      updatePointTally(res, req.user.username, req.user.partner).then(() => next());
     }
-    next();
   })
 );
 
@@ -395,16 +379,48 @@ app.use((err, req, res, next) => {
 });
 
 // Start Server
-const server = app.listen(appConfig.serverPort, () => {
-  logger.info(`Server started on port ${appConfig.serverPort}`);
+const server = app.listen(PORT, () => {
+  logger.info(`Server started on port ${PORT}`);
 });
+
+// Graceful shutdown courtesy of:
+// https://stackoverflow.com/questions/43003870/how-do-i-shut-down-my-express-server-gracefully-when-its-process-is-killed
+
+let connections = [];
+
+server.on('connection', connection => {
+  connections.push(connection);
+  connection.on('close', () => {
+    connections = connections.filter(curr => curr !== connection);
+  });
+});
+
+function shutDown() {
+  logger.info('Received kill signal, shutting down gracefully');
+  db.close();
+  server.close(() => {
+    logger.info('Closed out remaining connections');
+    process.exit(0);
+  });
+
+  setTimeout(() => {
+    logger.warn('Could not close connections in time, forcefully shutting down');
+    process.exit(1);
+  }, 10000);
+
+  connections.forEach(curr => curr.end());
+  setTimeout(() => connections.forEach(curr => curr.destroy()), 5000);
+}
 
 // If our node process exits or is killed, close the db connection
 process.on('SIGINT', () => {
-  db.close();
+  shutDown();
 });
 process.on('SIGTERM', () => {
-  db.close();
+  shutDown();
+});
+process.on('SIGHUP', () => {
+  shutDown();
 });
 
 export default server;

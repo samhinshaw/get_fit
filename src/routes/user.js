@@ -10,8 +10,7 @@ import { getGoals, getDiaryData, authMFP, calculatePoints } from '../myfitnesspa
 import Entry from '../models/entry';
 import logger from '../methods/logger';
 import parseDateRange from '../methods/parse-date-range';
-
-const appConfig = require('../../config/app_config.json');
+import { updatePointTally } from '../methods/update-point-tally';
 
 const moment = extendMoment(Moment);
 
@@ -42,10 +41,9 @@ router.get(
     //   queryDates.push(day.toDate());
     //   day = day.clone().add(1, 'd');
     // }
-    const endOfToday = res.locals.today.clone().endOf('day');
 
     // make array of dates we are going to display
-    const displayRange = moment.range(res.locals.twoWeeksAgo, endOfToday);
+    const displayRange = moment.range(res.locals.twoWeeksAgo, res.locals.tonight);
     const displayRangeArray = Array.from(displayRange.by('day'));
 
     const entries = await Entry.find(
@@ -214,21 +212,13 @@ router.get(
       };
     });
 
-    // OMG, figured this out!!! Huge thanks to:
-    // https://stackoverflow.com/questions/40140149/use-async-await-with-array-map/40140359
-    // Now, because we're waiting on MULTIPLE PROMISES to come through, we need
-    // to use Promise.all to reduce them to one single await-able promise.
-    // Otherwise, we'll end up with an array of promises (thanks to the
-    // weeks.map() function above), which we can't properly await. However, we
-    // can simply await this new combined mega-promise! This is what Wes Bos was
-    // talking about in his episode of Syntax on async/await.
     const promisedWeekSummaries = Promise.all(weekSummaries);
 
     // render page
     res.render('user/index', {
       // Object to send data along with response
       moment,
-      startDate: moment.tz(appConfig.startDate, 'MM-DD-YYYY', 'US/Pacific'),
+      startDate: moment.tz(req.user.startDate, 'MM-DD-YYYY', 'US/Pacific'),
       entries: sortedEntries,
       // Here we're awaiting that mega-promise!
       weekSummaries: await promisedWeekSummaries,
@@ -250,104 +240,81 @@ router.get('/weight', ensureAuthenticated, (req, res) => {
   });
 });
 
-router.post('/:date', ensureAuthenticated, async (req, res) => {
-  const [startDate, endDate] = parseDateRange(req.params.date);
+router.post(
+  '/:date',
+  ensureAuthenticated,
+  asyncMiddleware(async (req, res) => {
+    const [startDate, endDate] = parseDateRange(req.params.date);
 
-  const mfpUser = res.locals.user.mfp;
-  const mfpUserUpper = res.locals.user.mfp.toUpperCase();
+    const mfpUser = res.locals.user.mfp;
+    const mfpUserUpper = res.locals.user.mfp.toUpperCase();
 
-  const session = await authMFP(mfpUser, process.env[`MFP_PASS_${mfpUserUpper}`]);
+    const session = await authMFP(mfpUser, process.env[`MFP_PASS_${mfpUserUpper}`]);
 
-  const mfpDiaryEntries = await getDiaryData(
-    session,
-    { exercise: true, food: true },
-    startDate,
-    endDate
-  );
+    const mfpDiaryEntries = await getDiaryData(
+      session,
+      { exercise: true, food: true },
+      startDate,
+      endDate
+    );
 
-  const mfpGoals = await getGoals(session, startDate, endDate);
+    const mfpGoals = await getGoals(session, startDate, endDate);
 
-  const errors = new Set();
+    const errors = new Set();
 
-  mfpDiaryEntries.forEach(entry => {
-    if (!entry.date) {
-      errors.add('Unspecified Error.');
-      return;
-    }
-    if (!_.get(entry, 'food.totals.calories')) {
-      // Could add a warning here--some dates did not have data
-      // If no entry, just skip this date
-      return;
-    }
-    // get the goal for the range of this date
-    let goalCals;
-    try {
-      goalCals = mfpGoals.goals.get(mfpGoals.ranges.get(entry.date)).default_goal.energy.value;
-    } catch (err) {
-      errors.add('Error retreiving goals from MyFitnessPal.');
-      return;
-    }
+    mfpDiaryEntries.forEach(entry => {
+      if (!entry.date) {
+        errors.add('Unspecified Error.');
+        return;
+      }
+      if (!_.get(entry, 'food.totals.calories')) {
+        // Could add a warning here--some dates did not have data
+        // If no entry, just skip this date
+        return;
+      }
+      // get the goal for the range of this date
+      let goalCals;
+      try {
+        goalCals = mfpGoals.goals.get(mfpGoals.ranges.get(entry.date)).default_goal.energy.value;
+      } catch (err) {
+        errors.add('Error retreiving goals from MyFitnessPal.');
+        return;
+      }
 
-    const points = calculatePoints(entry);
+      const points = calculatePoints(entry);
 
-    const formattedEntry = {
-      date: entry.date,
-      totalCals: entry.food.totals.calories,
-      goalCals,
-      netCals: goalCals - entry.calories,
-      isEmpty: false,
-      complete: true,
-      points,
-      user: res.locals.user.username,
-    };
-    console.log(JSON.stringify(formattedEntry, null, 2));
-  });
-
-  if (errors.size > 0) {
-    // concatenate them for pretty printing
-    const concatErrors = [...errors].join('<br>');
-    res.status(500).json({
-      message: concatErrors,
-      type: 'danger',
+      const formattedEntry = {
+        date: entry.date,
+        totalCals: entry.food.totals.calories,
+        goalCals,
+        netCals: goalCals - entry.calories,
+        isEmpty: false,
+        complete: true,
+        points,
+        user: res.locals.user.username,
+      };
+      console.log(JSON.stringify(formattedEntry, null, 2));
     });
-  } else {
-    res.status(200).json({
-      message: 'Success updating user data from MyFitnessPal',
-      type: 'success',
+
+    // TODO: port data wrangling logic from Python to Node.js
+
+    // update the point tally cookie before continuing
+    updatePointTally(res, req.user.username, req.user.partner).then(() => {
+      if (errors.size > 0) {
+        // concatenate them for pretty printing
+        const concatErrors = [...errors].join('<br>');
+        res.status(500).json({
+          message: concatErrors,
+          type: 'danger',
+        });
+      } else {
+        res.status(200).json({
+          message: 'Success updating user data from MyFitnessPal',
+          type: 'success',
+        });
+      }
     });
-  }
-
-  // // Python script options
-  // const pythonOptions = {
-  //   // mode: 'json',
-  //   pythonOptions: ['-u'], // this will let us see Python's print statements
-  //   scriptPath: './data',
-  //   args: [startDate, endDate, res.locals.user.username, res.locals.user.mfp],
-  // };
-
-  // // Run python script
-  // PythonShell.run('getMFP.py', pythonOptions, (err, messages) => {
-  //   // Only throw error if exit code was nonzero.
-  //   // For some reason I am getting errors with nonzero exit statuses
-  //   if (err && err.exitCode !== 0) {
-  //     logger.error('Error updating from MyFitnessPal:');
-  //     if (err.traceback) {
-  //       logger.error(err.traceback);
-  //       delete err.traceback;
-  //     }
-  //     logger.error(err);
-  //     res.status(500).json({ message: 'Error updating from MyFitnessPal', type: 'danger' });
-  //     // res.status(500).json(err);
-  //   } else {
-  //     if (messages) logger.info('messages: %j', messages);
-  //     logger.info('Success updating user data from MFP.');
-  //     res.status(200).json({
-  //       message: 'Success updating user data from MyFitnessPal',
-  //       type: 'success',
-  //     });
-  //     // res.status(200).json(result);
-  //   }
-  // });
-});
+  })
+);
 
 export default router;

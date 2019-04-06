@@ -8,8 +8,7 @@ import { extendMoment } from 'moment-range';
 import ensureAuthenticated from '../methods/auth';
 import Entry from '../models/entry';
 import logger from '../methods/logger';
-
-const appConfig = require('../../config/app_config.json');
+import { updatePointTally } from '../methods/update-point-tally';
 
 const moment = extendMoment(Moment);
 
@@ -213,21 +212,13 @@ router.get(
       };
     });
 
-    // OMG, figured this out!!! Huge thanks to:
-    // https://stackoverflow.com/questions/40140149/use-async-await-with-array-map/40140359
-    // Now, because we're waiting on MULTIPLE PROMISES to come through, we need
-    // to use Promise.all to reduce them to one single await-able promise.
-    // Otherwise, we'll end up with an array of promises (thanks to the
-    // weeks.map() function above), which we can't properly await. However, we
-    // can simply await this new combined mega-promise! This is what Wes Bos was
-    // talking about in his episode of Syntax on async/await.
     const promisedWeekSummaries = Promise.all(weekSummaries);
 
     // render page
     res.render('partner/index', {
       // Object to send data along with response
       moment,
-      startDate: moment.tz(appConfig.startDate, 'MM-DD-YYYY', 'US/Pacific'),
+      startDate: moment.tz(req.user.startDate, 'MM-DD-YYYY', 'US/Pacific'),
       entries: sortedEntries,
       // Here we're awaiting that mega-promise!
       weekSummaries: await promisedWeekSummaries,
@@ -277,26 +268,30 @@ router.post('/:date', ensureAuthenticated, (req, res) => {
 
   // Run python script
   PythonShell.run('getMFP.py', pythonOptions, (err, messages) => {
+    let statusCode;
+    let responseBody;
     // Only throw error if exit code was nonzero.
-    // For some reason I am getting errors with nonzero exit statuses
+    // For some reason I am getting errors with zero exit statuses
     if (err && err.exitCode !== 0) {
-      logger.error('Error updating from MyFitnessPal:');
       if (err.traceback) {
         logger.error(err.traceback);
         delete err.traceback;
       }
       logger.error(err);
-      res.status(500).json({ message: 'Error updating from MyFitnessPal', type: 'danger' });
-      // res.status(500).json(err);
+      statusCode = 500;
+      responseBody = { message: 'Error updating from MyFitnessPal', type: 'danger' };
     } else {
       if (messages) logger.info('messages: %j', messages);
-      logger.info('Success updating user data from MFP.');
-      res.status(200).json({
+      statusCode = 200;
+      responseBody = {
         message: 'Success updating user data from MyFitnessPal',
         type: 'success',
-      });
-      // res.status(200).json(result);
+      };
     }
+    // update point tally before returning
+    updatePointTally(res, req.user.username, req.user.partner).then(() => {
+      res.status(statusCode).json(responseBody);
+    });
   });
 });
 
