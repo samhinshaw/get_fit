@@ -9,4 +9,4 @@ COPY admin.sh /docker-entrypoint-initdb.d/
 
 # Additionally, copy in any other config files we have
 # This creates our first users
-COPY seed.js /docker-entrypoint-initdb.d/
+COPY seed*.js /docker-entrypoint-initdb.d/
