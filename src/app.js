@@ -248,12 +248,6 @@ app.use(
 // Set cookies so we can access user object on client side
 app.use(cookieParser('hghsyd82h2hdy'));
 
-// Now get points from cookie and set it to res.locals so pug can access it
-// If missing, or timestamp is older than 24h, update from database
-app.use((req, res, next) => {
-  console.log({ cookies: req.cookies });
-  next();
-});
 // Make sure that our moment initialization is run as middleware! Otherwise
 // functions will only be run when the app starts!!! Use middleware to modify
 // locals object (makes available to view engine!)
@@ -288,31 +282,47 @@ app.use((req, res, next) => {
 // ------------------------------------------------------------------------------//
 app.use(
   asyncMiddleware(async (req, res, next) => {
-    // Workaround for now will simply not run this middleware if not logged in
-    // In the future, can probably think of a better way to architect this
+    // only run if logged in
     if (req.user) {
-      // Don't need try, catch anymore since asyncMiddleware (see top of app.js) is
-      // handling async errors
+      // if we have the pointTally cookie, use it!
+      if (req.cookies && req.cookies.pointTally) {
+        //! Check to see if it's outdated or been invalidated somehow
+        res.locals.pointTally = req.cookies.pointTally;
+        // Otherwise update them
+      } else {
+        // Get and concat all point tallies
+        // const userWeeks = await mongoMiddleware.queryWeeksFromMongo(res.locals.user.username);
+        const userCustom = await queryCustomPeriodsFromMongo(
+          res.locals.user.username,
+          res.locals.customRange
+        );
+        // const partnerWeeks = await mongoMiddleware.queryWeeksFromMongo(res.locals.partner.username);
+        const partnerCustom = await queryCustomPeriodsFromMongo(
+          res.locals.partner.username,
+          res.locals.customRange
+        );
 
-      // Get and concat all point tallies
-      // const userWeeks = await mongoMiddleware.queryWeeksFromMongo(res.locals.user.username);
-      const userCustom = await queryCustomPeriodsFromMongo(
-        res.locals.user.username,
-        res.locals.customRange
-      );
-      // const partnerWeeks = await mongoMiddleware.queryWeeksFromMongo(res.locals.partner.username);
-      const partnerCustom = await queryCustomPeriodsFromMongo(
-        res.locals.partner.username,
-        res.locals.customRange
-      );
+        const pointTally = {
+          user: parseFloat(userCustom.points),
+          partner: parseFloat(partnerCustom.points),
+        };
 
-      const pointTally = {
-        user: parseFloat(userCustom.points),
-        partner: parseFloat(partnerCustom.points),
-      };
-
-      // make the point tallies array available to the view engine
-      res.locals.pointTally = pointTally;
+        // make the point tallies array available to the view engine
+        res.locals.pointTally = pointTally;
+        // And set a cookie to save on the front end
+        res.cookie(
+          'pointTally',
+          res.locals.pointTally,
+          // 7 days = 1000ms * 60s * 60m * 24h * 7d
+          {
+            maxAge: 1000 * 60 * 60 * 24 * 7,
+            signed: false,
+            sameSite: 'strict',
+            // only set to secure in production
+            secure: process.env.NODE_ENV === 'production',
+          }
+        );
+      }
     }
     next();
   })
