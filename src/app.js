@@ -19,7 +19,7 @@ import connectSession from 'connect-mongo';
 import connectFlash from 'connect-flash';
 
 // Include custom middleware
-import { queryCustomPeriodsFromMongo, getPendingRequests } from './middlewares/mongoMiddleware';
+import { getPendingRequests } from './middlewares/mongoMiddleware';
 
 // Bring in route files
 import account from './routes/account';
@@ -285,20 +285,19 @@ app.use(
         // Otherwise update them
       } else {
         // Get and concat all point tallies
-        // const userWeeks = await mongoMiddleware.queryWeeksFromMongo(res.locals.user.username);
-        const userCustom = await queryCustomPeriodsFromMongo(
-          res.locals.user.username,
-          res.locals.customRange
+
+        const userEntry = await User.findOne(
+          { username: req.user.username },
+          { currentPoints: true }
         );
-        // const partnerWeeks = await mongoMiddleware.queryWeeksFromMongo(res.locals.partner.username);
-        const partnerCustom = await queryCustomPeriodsFromMongo(
-          res.locals.partner.username,
-          res.locals.customRange
+        const partnerEntry = await User.findOne(
+          { username: req.user.partner },
+          { currentPoints: true }
         );
 
         const pointTally = {
-          user: parseFloat(userCustom.points),
-          partner: parseFloat(partnerCustom.points),
+          user: parseFloat(userEntry.currentPoints),
+          partner: parseFloat(partnerEntry.currentPoints),
         };
 
         // make the point tallies array available to the view engine
