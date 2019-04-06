@@ -11,8 +11,6 @@ import Entry from '../models/entry';
 import logger from '../methods/logger';
 import parseDateRange from '../methods/parse-date-range';
 
-const appConfig = require('../../config/app_config.json');
-
 const moment = extendMoment(Moment);
 
 // Define Async middleware wrapper to avoid try-catch
@@ -214,14 +212,6 @@ router.get(
       };
     });
 
-    // OMG, figured this out!!! Huge thanks to:
-    // https://stackoverflow.com/questions/40140149/use-async-await-with-array-map/40140359
-    // Now, because we're waiting on MULTIPLE PROMISES to come through, we need
-    // to use Promise.all to reduce them to one single await-able promise.
-    // Otherwise, we'll end up with an array of promises (thanks to the
-    // weeks.map() function above), which we can't properly await. However, we
-    // can simply await this new combined mega-promise! This is what Wes Bos was
-    // talking about in his episode of Syntax on async/await.
     const promisedWeekSummaries = Promise.all(weekSummaries);
 
     // render page

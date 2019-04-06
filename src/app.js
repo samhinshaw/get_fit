@@ -40,8 +40,7 @@ import authMiddleware from './methods/passport';
 const productionEnv = process.env.NODE_ENV === 'production';
 const developmentEnv = process.env.NODE_ENV === 'development';
 
-// Bring in app config file
-const appConfig = require('../config/app_config.json');
+const PORT = 8005;
 
 // Define Async middleware wrapper to avoid try-catch
 const asyncMiddleware = fn => (req, res, next) => {
@@ -403,8 +402,8 @@ app.use((err, req, res, next) => {
 });
 
 // Start Server
-const server = app.listen(appConfig.serverPort, () => {
-  logger.info(`Server started on port ${appConfig.serverPort}`);
+const server = app.listen(PORT, () => {
+  logger.info(`Server started on port ${PORT}`);
 });
 
 // If our node process exits or is killed, close the db connection
