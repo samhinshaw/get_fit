@@ -406,12 +406,44 @@ const server = app.listen(PORT, () => {
   logger.info(`Server started on port ${PORT}`);
 });
 
+// Graceful shutdown courtesy of:
+// https://stackoverflow.com/questions/43003870/how-do-i-shut-down-my-express-server-gracefully-when-its-process-is-killed
+
+let connections = [];
+
+server.on('connection', connection => {
+  connections.push(connection);
+  connection.on('close', () => {
+    connections = connections.filter(curr => curr !== connection);
+  });
+});
+
+function shutDown() {
+  logger.info('Received kill signal, shutting down gracefully');
+  db.close();
+  server.close(() => {
+    logger.info('Closed out remaining connections');
+    process.exit(0);
+  });
+
+  setTimeout(() => {
+    logger.warn('Could not close connections in time, forcefully shutting down');
+    process.exit(1);
+  }, 10000);
+
+  connections.forEach(curr => curr.end());
+  setTimeout(() => connections.forEach(curr => curr.destroy()), 5000);
+}
+
 // If our node process exits or is killed, close the db connection
 process.on('SIGINT', () => {
-  db.close();
+  shutDown();
 });
 process.on('SIGTERM', () => {
-  db.close();
+  shutDown();
+});
+process.on('SIGHUP', () => {
+  shutDown();
 });
 
 export default server;
