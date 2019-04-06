@@ -55,53 +55,57 @@ router.get('/', ensureAuthenticated, (req, res) => {
   });
 });
 
-router.post('/', ensureAuthenticated, (req, res) => {
-  const userObject = {};
+router.post(
+  '/',
+  ensureAuthenticated,
+  asyncMiddleware(async (req, res) => {
+    const userObject = {};
 
-  // console.log('pre-validation name: ', firstname);
-  let firstname = req.sanitize('firstname').trim();
-  firstname = firstname !== '' ? firstname : null;
+    // console.log('pre-validation name: ', firstname);
+    let firstname = req.sanitize('firstname').trim();
+    firstname = firstname !== '' ? firstname : null;
 
-  if (firstname) userObject.firstname = firstname;
+    if (firstname) userObject.firstname = firstname;
 
-  let lastname = req.sanitize('lastname').trim();
-  lastname = lastname !== '' ? lastname : null;
+    let lastname = req.sanitize('lastname').trim();
+    lastname = lastname !== '' ? lastname : null;
 
-  if (lastname) userObject.lastname = lastname;
-  // const username = req.sanitize('username').trim();
-  // const email = req.sanitize('email').trim();
-  // req
-  // .checkBody('email', 'Email is not valid')
-  // .isEmail()
-  // .trim()
-  // .normalizeEmail();
-  let fitnessGoal = req.sanitize('fitness-goal').trim();
-  fitnessGoal = fitnessGoal !== '' ? fitnessGoal : null;
-  if (fitnessGoal) userObject.fitnessGoal = fitnessGoal;
+    if (lastname) userObject.lastname = lastname;
+    // const username = req.sanitize('username').trim();
+    // const email = req.sanitize('email').trim();
+    // req
+    // .checkBody('email', 'Email is not valid')
+    // .isEmail()
+    // .trim()
+    // .normalizeEmail();
+    let fitnessGoal = req.sanitize('fitness-goal').trim();
+    fitnessGoal = fitnessGoal !== '' ? fitnessGoal : null;
+    if (fitnessGoal) userObject.fitnessGoal = fitnessGoal;
 
-  let startDate = req.sanitize('start-date').trim();
-  startDate = startDate !== '' ? startDate : null;
-  if (startDate) userObject.startDate = startDate;
+    let startDate = req.sanitize('start-date').trim();
+    startDate = startDate !== '' ? startDate : null;
+    if (startDate) userObject.startDate = startDate;
 
-  let mfp = req.sanitize('mfp').trim();
-  mfp = mfp !== '' ? mfp : null;
-  if (mfp) userObject.mfp = mfp;
+    let mfp = req.sanitize('mfp').trim();
+    mfp = mfp !== '' ? mfp : null;
+    if (mfp) userObject.mfp = mfp;
 
-  User.findOneAndUpdate(
-    { username: req.user.username },
-    {
-      $set: userObject,
-    },
-    err => {
-      if (err) {
-        req.flash('danger', 'Oops, there was an error updating your settings!');
+    User.findOneAndUpdate(
+      { username: req.user.username },
+      {
+        $set: userObject,
+      },
+      err => {
+        if (err) {
+          req.flash('danger', 'Oops, there was an error updating your settings!');
+          res.redirect('#');
+        }
+        req.flash('success', 'Settings successfully updated!');
         res.redirect('#');
       }
-      req.flash('success', 'Settings successfully updated!');
-      res.redirect('#');
-    }
-  );
-});
+    );
+  })
+);
 
 router.get('/spend', ensureAuthenticated, (req, res) => {
   Reward.find({ for: res.locals.user.username }, (err, rewards) => {
