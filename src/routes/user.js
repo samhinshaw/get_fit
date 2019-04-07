@@ -240,7 +240,6 @@ router.post(
   '/:date',
   ensureAuthenticated,
   asyncMiddleware(async (req, res) => {
-    console.log('getting date info');
     try {
       const [startDate, endDate] = parseDateRange(req.params.date);
 
@@ -258,13 +257,10 @@ router.post(
 
       const mfpGoals = await getGoals(session, startDate, endDate);
 
-      console.log({ ranges: mfpGoals.ranges });
-
       const entriesMade = mfpDiaryEntries.map(async entry => {
         if (!entry.date) {
           throw new Error('Unspecified error retreiving data from MyFitnessPal.');
         }
-        console.log({ entryDate: entry.date });
         if (!_.get(entry, 'food.totals.calories')) {
           // Could add a warning here--some dates did not have data
           // If no entry, just skip this date

@@ -62,7 +62,6 @@ router.post(
   asyncMiddleware(async (req, res) => {
     const userObject = {};
 
-    // console.log('pre-validation name: ', firstname);
     let firstname = req.sanitize('firstname').trim();
     firstname = firstname !== '' ? firstname : null;
 
@@ -86,8 +85,6 @@ router.post(
     let startDate = req.sanitize('start-date').trim();
     startDate = startDate !== '' ? startDate : null;
     if (startDate) userObject.startDate = startDate;
-
-    console.log(startDate);
 
     let mfp = req.sanitize('mfp').trim();
     mfp = mfp !== '' ? mfp : null;
@@ -282,8 +279,6 @@ router.post('/requests/respond', ensureAuthenticated, (req, res) => {
               req.flash('danger', 'Error sending response. Please try again.');
               res.redirect('/account/requests');
             } else if (!error && response.statusCode === 200) {
-              // Print out the response body
-              // console.log(body);
               req.flash('success', 'Response sent!');
               res.redirect('/account/requests');
             }
