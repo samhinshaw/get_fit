@@ -277,14 +277,17 @@ router.post(
 
         const exerciseSummary = await calculateExercisePoints(entry);
 
+
         const totalCals = _.get(entry, 'food.totals.calories') ? entry.food.totals.calories : 0;
+
+        const dateAsDateObject = moment
+          .tz(entry.date, 'YYYY-MM-DD', 'US/Pacific')
+          .startOf('day')
+          .toDate();
 
         const formattedEntry = {
           // store
-          date: moment
-            .tz(entry.date, 'YYYY-MM-DD', 'US/Pacific')
-            .startOf('day')
-            .toDate(),
+          date: dateAsDateObject,
           totalCals,
           goalCals,
           netCals: goalCals - totalCals,
@@ -297,7 +300,7 @@ router.post(
         // Update each entry
         return Entry.findOneAndUpdate(
           {
-            date: entry.date,
+            date: dateAsDateObject,
             user: req.user.username,
           },
           {
