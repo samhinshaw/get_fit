@@ -2,7 +2,7 @@ import { Session } from 'mfp';
 import _ from 'lodash';
 
 import logger from '../methods/logger';
-import Exercise from '../models.exercise';
+import Exercise from '../models/exercise';
 
 import {
   exerciseMappings,
@@ -98,49 +98,52 @@ export function partialMatch(name) {
 }
 
 export function calculateExercisePoints(entry) {
-  return new Promise(resolve => {
+  return new Promise(async resolve => {
     if (!_.get(entry, 'exercise.cardiovascular.exercises')) {
       resolve({
         points: 0,
         exercises: [],
       });
+    } else {
+      let totalPoints = 0;
+      const exercises = entry.exercise.cardiovascular.exercises.map(async exercise => {
+        try {
+          const mappedName = partialMatch(exercise.name.toLowerCase());
+          const exerciseName = exerciseMappings.get(mappedName) || '';
+          const exerciseMinutes = exercise.minutes || 0;
+          const exerciseGroup = exerciseGroups.get(exerciseName) || '';
+          const pointsPerHour = exerciseGroupPoints.get(exerciseGroup) || 0;
+          const exercisePoints = pointsPerHour * (exerciseMinutes / 60);
+
+          const exerciseEntry = await Exercise.findOne({ exercise: exerciseName });
+
+          const exerciseIcon = exerciseEntry ? exerciseEntry.image : 'exercise.png';
+
+          totalPoints += exercisePoints;
+
+          return {
+            name: exerciseName,
+            minutes: exercise.minutes,
+            cals: exercise.calories,
+            points: exercisePoints,
+            icon: exerciseIcon,
+          };
+        } catch (err) {
+          // log error and return sensible defaults
+          logger.error(err);
+          totalPoints += 0;
+          return {
+            ...exercise,
+            icon: 'exercise.png',
+            points: 0,
+          };
+        }
+      });
+
+      resolve({
+        points: 0 + totalPoints,
+        exercises: await Promise.all(exercises),
+      });
     }
-
-    let totalPoints = 0;
-    const exercises = entry.exercise.cardiovascular.exercises.map(async exercise => {
-      try {
-        const mappedName = partialMatch(exercise.name.toLowerCase());
-        const exerciseName = exerciseMappings.get(mappedName) || '';
-        const exerciseMinutes = exercise.minutes || 0;
-        const exerciseGroup = exerciseGroups.get(exerciseName) || '';
-        const pointsPerHour = exerciseGroupPoints.get(exerciseGroup) || 0;
-        const exercisePoints = pointsPerHour * (exerciseMinutes / 60);
-
-        const exerciseEntry = await Exercise.findOne({ exercise: exerciseName });
-
-        const exerciseIcon = exerciseEntry ? exerciseEntry.image : 'exercise.png';
-
-        totalPoints += exercisePoints;
-
-        return {
-          ...exercise,
-          icon: exerciseIcon,
-          points: exercisePoints,
-        };
-      } catch (err) {
-        logger.error(err);
-        totalPoints += 0;
-        return {
-          ...exercise,
-          icon: 'exercise.png',
-          points: 0,
-        };
-      }
-    });
-
-    resolve({
-      points: 0 + totalPoints,
-      exercises,
-    });
   });
 }
