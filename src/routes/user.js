@@ -183,17 +183,14 @@ router.get(
       const workoutMinutes = entriesOfWeek.reduce((totalMins, entry) => {
         // For each day, you're going to have an array of exercises! So you've
         // got to reduce all your multiple exercises that day too.
-        const exerciseMinsThatDay = entry.exercise.cardiovascular.exercises.reduce(
-          (totalMinsThatDay, exercise) => {
-            // If not walking, add the total minutes from that exercise
-            if (exercise.name !== 'walking') {
-              return totalMinsThatDay + exercise.minutes;
-            }
-            // Otherwise, return the accumulator without adding
-            return totalMinsThatDay;
-          },
-          0
-        );
+        const exerciseMinsThatDay = entry.exercise.reduce((totalMinsThatDay, exercise) => {
+          // If not walking, add the total minutes from that exercise
+          if (exercise.name !== 'walking') {
+            return totalMinsThatDay + exercise.minutes;
+          }
+          // Otherwise, return the accumulator without adding
+          return totalMinsThatDay;
+        }, 0);
         // Return the accumulator plus the number of minutes worked out that day
         return totalMins + exerciseMinsThatDay;
       }, 0);
