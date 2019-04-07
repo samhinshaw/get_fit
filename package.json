@@ -15,7 +15,7 @@
     "down:prod": "docker-compose -f docker-compose.prod.yml down -v",
     "push": "docker push samhinshaw/get_fit:$DOCKER_TAG",
     "pull": "docker pull samhinshaw/get_fit:$DOCKER_TAG",
-    "dev:server": "nodemon -e js,pug src/app.js --exec babel-node",
+    "dev:server": "nodemon -L -e js,pug src/app.js --exec babel-node",
     "dev:ui": "webpack -d -w",
     "test:all": "yarn test:server",
     "test:server": "babel-node tests/config/run.js",

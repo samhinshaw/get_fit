@@ -5909,7 +5909,7 @@ methods@^1.1.1, methods@~1.1.2:
 
 "mfp@https://github.com/samhinshaw/mfp#major-refactor":
   version "0.7.0"
-  resolved "https://github.com/samhinshaw/mfp#6ed76ff61e87cac562f8408ceb569f3e259ff08b"
+  resolved "https://github.com/samhinshaw/mfp#4da65f0ae0c3d4f5e575ab846b49ca0f64f254cd"
   dependencies:
     chai "^3.0.0"
     cheerio "^0.22.0"
