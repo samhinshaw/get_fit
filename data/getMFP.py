@@ -328,7 +328,6 @@ try:
       'goalCals': goal_cals,
       'netCals': net_cals,
       'exercise': exercises,
-      'isEmpty': is_empty,
       'complete': mfp_date.complete,
       'points': total_days_points,
       'user': user,
