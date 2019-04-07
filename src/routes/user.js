@@ -280,7 +280,7 @@ router.post(
 
         const points = calculatePoints(entry);
 
-        console.log({ points });
+        const totalCals = _.get(entry, 'food.totals.calories') ? entry.food.totals.calories : 0;
 
         // pass along exercise to entry object
         const exercise = _.get(entry, 'exercise.cardiovascular.exercises')
@@ -293,9 +293,9 @@ router.post(
             .tz(entry.date, 'YYYY-MM-DD', 'US/Pacific')
             .startOf('day')
             .toDate(),
-          totalCals: entry.food.totals.calories,
+          totalCals,
           goalCals,
-          netCals: goalCals - entry.calories,
+          netCals: goalCals - totalCals,
           complete: true,
           points,
           exercise,
