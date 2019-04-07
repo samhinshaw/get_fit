@@ -114,6 +114,7 @@ export function calculatePoints(entry) {
         exercisePoints += totalPoints;
       } catch (err) {
         logger.error(err);
+        exercisePoints += 0;
       }
     });
   }
