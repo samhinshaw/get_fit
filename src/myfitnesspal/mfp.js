@@ -2,6 +2,7 @@ import { Session } from 'mfp';
 import _ from 'lodash';
 
 import logger from '../methods/logger';
+import Exercise from '../models.exercise';
 
 import {
   exerciseMappings,
@@ -96,26 +97,50 @@ export function partialMatch(name) {
   return commonPartialNames[matchIndex];
 }
 
-export function calculatePoints(entry) {
-  let exercisePoints = 0;
-  if (!_.get(entry, 'exercise.cardiovascular.exercises')) {
-    exercisePoints = 0;
-  } else {
-    entry.exercise.cardiovascular.exercises.forEach(exercise => {
+export function calculateExercisePoints(entry) {
+  return new Promise(resolve => {
+    if (!_.get(entry, 'exercise.cardiovascular.exercises')) {
+      resolve({
+        points: 0,
+        exercises: [],
+      });
+    }
+
+    let totalPoints = 0;
+    const exercises = entry.exercise.cardiovascular.exercises.map(async exercise => {
       try {
         const mappedName = partialMatch(exercise.name.toLowerCase());
         const exerciseName = exerciseMappings.get(mappedName) || '';
         const exerciseMinutes = exercise.minutes || 0;
         const exerciseGroup = exerciseGroups.get(exerciseName) || '';
         const pointsPerHour = exerciseGroupPoints.get(exerciseGroup) || 0;
-        const totalPoints = pointsPerHour * (exerciseMinutes / 60);
+        const exercisePoints = pointsPerHour * (exerciseMinutes / 60);
 
-        exercisePoints += totalPoints;
+        const exerciseEntry = await Exercise.findOne({ exercise: exerciseName });
+
+        const exerciseIcon = exerciseEntry ? exerciseEntry.image : 'exercise.png';
+
+        totalPoints += exercisePoints;
+
+        return {
+          ...exercise,
+          icon: exerciseIcon,
+          points: exercisePoints,
+        };
       } catch (err) {
         logger.error(err);
-        exercisePoints += 0;
+        totalPoints += 0;
+        return {
+          ...exercise,
+          icon: 'exercise.png',
+          points: 0,
+        };
       }
     });
-  }
-  return 0 + exercisePoints;
+
+    resolve({
+      points: 0 + totalPoints,
+      exercises,
+    });
+  });
 }

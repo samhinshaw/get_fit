@@ -5,9 +5,10 @@ import Moment from 'moment-timezone';
 import { extendMoment } from 'moment-range';
 
 import ensureAuthenticated from '../methods/auth';
-import { getGoals, getDiaryData, authMFP, calculatePoints } from '../myfitnesspal/mfp';
+import { getGoals, getDiaryData, authMFP, calculateExercisePoints } from '../myfitnesspal/mfp';
 
 import Entry from '../models/entry';
+import Exercise from '../models/exercise';
 import logger from '../methods/logger';
 import parseDateRange from '../methods/parse-date-range';
 import { updatePointTally } from '../methods/update-point-tally';
@@ -274,14 +275,9 @@ router.post(
           throw new Error('Error retreiving goals from MyFitnessPal.');
         }
 
-        const points = calculatePoints(entry);
+        const exerciseSummary = await calculateExercisePoints(entry);
 
         const totalCals = _.get(entry, 'food.totals.calories') ? entry.food.totals.calories : 0;
-
-        // pass along exercise to entry object
-        const exercise = _.get(entry, 'exercise.cardiovascular.exercises')
-          ? entry.exercise.cardiovascular.exercises
-          : [];
 
         const formattedEntry = {
           // store
@@ -293,8 +289,8 @@ router.post(
           goalCals,
           netCals: goalCals - totalCals,
           complete: true,
-          points,
-          exercise,
+          points: exerciseSummary.points,
+          exercise: exerciseSummary.exercises,
           user: req.user.username,
         };
 
