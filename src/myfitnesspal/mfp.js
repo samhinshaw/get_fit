@@ -108,7 +108,6 @@ export function calculatePoints(entry) {
         const exerciseMinutes = exercise.minutes || 0;
         const exerciseGroup = exerciseGroups.get(exerciseName) || '';
         const pointsPerHour = exerciseGroupPoints.get(exerciseGroup) || 0;
-
         const totalPoints = pointsPerHour * (exerciseMinutes / 60);
 
         exercisePoints += totalPoints;
