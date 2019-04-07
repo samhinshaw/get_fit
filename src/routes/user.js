@@ -107,7 +107,7 @@ router.get(
     // Make ranges for those dates for querying
     // =======================================
     const weeks = [];
-    sundays.map((sunday, index) => {
+    sundays.forEach((sunday, index) => {
       // For each sunday, get:
       // 1. The Sunday
       // 2. The end of that Sunday
@@ -125,10 +125,6 @@ router.get(
         startDate,
         endDate,
       });
-      // Make ESLint happy that we're returning a value. Our actual return is
-      // done via an array push, so as to not have an array with lots of
-      // `undefined` values
-      return true;
     });
 
     // HEAVY LIFTING
@@ -187,14 +183,17 @@ router.get(
       const workoutMinutes = entriesOfWeek.reduce((totalMins, entry) => {
         // For each day, you're going to have an array of exercises! So you've
         // got to reduce all your multiple exercises that day too.
-        const exerciseMinsThatDay = entry.exercise.reduce((totalMinsThatDay, exercise) => {
-          // If not walking, add the total minutes from that exercise
-          if (exercise.name !== 'walking') {
-            return totalMinsThatDay + exercise.minutes;
-          }
-          // Otherwise, return the accumulator without adding
-          return totalMinsThatDay;
-        }, 0);
+        const exerciseMinsThatDay = entry.exercise.cardiovascular.exercises.reduce(
+          (totalMinsThatDay, exercise) => {
+            // If not walking, add the total minutes from that exercise
+            if (exercise.name !== 'walking') {
+              return totalMinsThatDay + exercise.minutes;
+            }
+            // Otherwise, return the accumulator without adding
+            return totalMinsThatDay;
+          },
+          0
+        );
         // Return the accumulator plus the number of minutes worked out that day
         return totalMins + exerciseMinsThatDay;
       }, 0);
@@ -218,7 +217,7 @@ router.get(
     res.render('user/index', {
       // Object to send data along with response
       moment,
-      startDate: moment.tz(req.user.startDate, 'MM-DD-YYYY', 'US/Pacific'),
+      startDate: moment.tz(req.user.startDate, 'YYYY-MM-DD', 'US/Pacific'),
       entries: sortedEntries,
       // Here we're awaiting that mega-promise!
       weekSummaries: await promisedWeekSummaries,
@@ -244,6 +243,7 @@ router.post(
   '/:date',
   ensureAuthenticated,
   asyncMiddleware(async (req, res) => {
+    console.log('getting date info');
     try {
       const [startDate, endDate] = parseDateRange(req.params.date);
 
@@ -261,14 +261,17 @@ router.post(
 
       const mfpGoals = await getGoals(session, startDate, endDate);
 
-      mfpDiaryEntries.forEach(entry => {
+      console.log({ ranges: mfpGoals.ranges });
+
+      const entriesMade = mfpDiaryEntries.map(async entry => {
         if (!entry.date) {
           throw new Error('Unspecified error retreiving data from MyFitnessPal.');
         }
+        console.log({ entryDate: entry.date });
         if (!_.get(entry, 'food.totals.calories')) {
           // Could add a warning here--some dates did not have data
           // If no entry, just skip this date
-          return;
+          return Promise.resolve();
         }
         // get the goal for the range of this date
         let goalCals;
@@ -280,28 +283,52 @@ router.post(
 
         const points = calculatePoints(entry);
 
+        console.log({ points });
+
+        // pass along exercise to entry object
+        const exercise = _.get(entry, 'exercise.cardiovascular.exercises')
+          ? entry.exercise.cardiovascular.exercises
+          : [];
+
         const formattedEntry = {
-          date: entry.date,
+          // store
+          date: moment
+            .tz(entry.date, 'YYYY-MM-DD', 'US/Pacific')
+            .startOf('day')
+            .toDate(),
           totalCals: entry.food.totals.calories,
           goalCals,
           netCals: goalCals - entry.calories,
-          isEmpty: false,
           complete: true,
           points,
-          user: res.locals.user.username,
+          exercise,
+          user: req.user.username,
         };
-        console.log(JSON.stringify(formattedEntry, null, 2));
+
+        // Update each entry
+        return Entry.findOneAndUpdate(
+          {
+            date: entry.date,
+            user: req.user.username,
+          },
+          {
+            $set: formattedEntry,
+          },
+          // create a new object if none exists, and return the new object
+          { new: true, upsert: true }
+        );
       });
 
-      // TODO: port data wrangling logic from Python to Node.js
-
-      // update the point tally cookie before continuing
-      updatePointTally(res, req.user.username, req.user.partner).then(() => {
-        res.status(200).json({
-          message: 'Success updating user data from MyFitnessPal',
-          type: 'success',
+      // after all entries have been made,
+      Promise.all(entriesMade)
+        // update the point tally cookie before continuing
+        .then(() => updatePointTally(res, req.user.username, req.user.partner))
+        .then(() => {
+          res.status(200).json({
+            message: 'Success updating user data from MyFitnessPal',
+            type: 'success',
+          });
         });
-      });
     } catch (err) {
       console.error(err);
       res.status(500).json({
