@@ -87,6 +87,8 @@ router.post(
     startDate = startDate !== '' ? startDate : null;
     if (startDate) userObject.startDate = startDate;
 
+    console.log(startDate);
+
     let mfp = req.sanitize('mfp').trim();
     mfp = mfp !== '' ? mfp : null;
     if (mfp) userObject.mfp = mfp;
@@ -95,7 +97,9 @@ router.post(
       { username: req.user.username },
       {
         $set: userObject,
-      }
+      },
+      // make sure we return the *new* User object
+      { new: true }
     ).catch(err => {
       if (err) {
         req.flash('danger', 'Oops, there was an error updating your settings!');
@@ -174,7 +178,9 @@ router.post(
         $set: {
           currentPoints: newPointTally,
         },
-      }
+      },
+      // make sure we return the *new* User object
+      { new: true }
     ).catch(err => {
       if (err) {
         req.flash('danger', 'Oops, there was an error making your request!');
