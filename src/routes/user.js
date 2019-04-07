@@ -261,12 +261,9 @@ router.post(
 
       const mfpGoals = await getGoals(session, startDate, endDate);
 
-      const errors = new Set();
-
       mfpDiaryEntries.forEach(entry => {
         if (!entry.date) {
-          errors.add('Unspecified Error.');
-          return;
+          throw new Error('Unspecified error retreiving data from MyFitnessPal.');
         }
         if (!_.get(entry, 'food.totals.calories')) {
           // Could add a warning here--some dates did not have data
@@ -278,8 +275,7 @@ router.post(
         try {
           goalCals = mfpGoals.goals.get(mfpGoals.ranges.get(entry.date)).default_goal.energy.value;
         } catch (err) {
-          errors.add('Error retreiving goals from MyFitnessPal.');
-          return;
+          throw new Error('Error retreiving goals from MyFitnessPal.');
         }
 
         const points = calculatePoints(entry);
@@ -301,22 +297,18 @@ router.post(
 
       // update the point tally cookie before continuing
       updatePointTally(res, req.user.username, req.user.partner).then(() => {
-        if (errors.size > 0) {
-          // concatenate them for pretty printing
-          const concatErrors = [...errors].join('<br>');
-          res.status(500).json({
-            message: concatErrors,
-            type: 'danger',
-          });
-        } else {
-          res.status(200).json({
-            message: 'Success updating user data from MyFitnessPal',
-            type: 'success',
-          });
-        }
+        res.status(200).json({
+          message: 'Success updating user data from MyFitnessPal',
+          type: 'success',
+        });
       });
     } catch (err) {
       console.error(err);
+      res.status(500).json({
+        //! TODO: Write custom stanitized error messages
+        message: err.message,
+        type: 'danger',
+      });
     }
   })
 );
