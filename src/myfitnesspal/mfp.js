@@ -106,6 +106,11 @@ export function calculateExercisePoints(entry) {
       });
     } else {
       let totalPoints = 0;
+      // TODO: Pull exercise mappings from user before we start instead of using constants:
+      // - exerciseMappings
+      // - exerciseGroups
+      // - exerciseGroupPoints
+      // - commonPartialNames (in the future)
       const exercises = entry.exercise.cardiovascular.exercises.map(async exercise => {
         try {
           const mappedName = partialMatch(exercise.name.toLowerCase());
