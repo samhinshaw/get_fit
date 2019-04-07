@@ -262,7 +262,7 @@ app.use((req, res, next) => {
     res.locals.twoWeeksAgo = twoWeeksAgo;
 
     const startOfTracking = moment
-      .tz(req.user.startDate, 'MM-DD-YYYY', 'US/Pacific')
+      .tz(req.user.startDate, 'YYYY-MM-DD', 'US/Pacific')
       .startOf('day');
 
     res.locals.startDate = req.user.startDate;
