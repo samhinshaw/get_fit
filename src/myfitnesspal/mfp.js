@@ -97,7 +97,7 @@ export function partialMatch(name) {
 }
 
 export function calculatePoints(entry) {
-  let exercisePoints;
+  let exercisePoints = 0;
   if (!_.get(entry, 'exercise.cardiovascular.exercises')) {
     exercisePoints = 0;
   } else {
