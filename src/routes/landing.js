@@ -10,10 +10,19 @@ import Promise from 'bluebird';
 // import bruteForceSchema from 'express-brute-mongoose/dist/schema';
 import nodeEmailVer from 'email-verification';
 import emoji from 'node-emoji';
+import Moment from 'moment-timezone';
+import { extendMoment } from 'moment-range';
 
 import logger from '../methods/logger';
 import ensureAuthenticated from '../methods/auth';
 import User from '../models/user';
+import {
+  exerciseMappings,
+  exerciseGroups,
+  exerciseGroupPoints,
+} from '../myfitnesspal/exercises.const';
+
+const moment = extendMoment(Moment);
 
 const COST_FACTOR = 16;
 
@@ -347,17 +356,7 @@ router.post(
       res.redirect('#');
       return next();
     }
-    const existingUserEmail = await User.findOne(
-      {
-        email,
-      },
-      (queryErr, user) => {
-        if (queryErr) {
-          logger.error('Error finding existing user: %j', queryErr);
-        }
-        return user;
-      }
-    );
+    const existingUserEmail = await User.findOne({ email });
 
     if (existingUserEmail) {
       logger.warn(`${existingUserEmail.email} was attempted to be registered`);
@@ -381,35 +380,12 @@ router.post(
         partner,
         fitnessGoal,
         password,
+        startDate: moment.tz('US/Pacific').format('YYYY-MM-DD'),
         currentPoints: 0,
-        // Default exercise groups:
-        exerciseGroups: [
-          {
-            group: 'Very Light Exercise',
-            pointsPerHour: 0.5,
-            exercises: ['walking', 'stretching'],
-          },
-          {
-            group: 'Light Exercise',
-            pointsPerHour: 1,
-            exercises: ['yoga', 'hiking'],
-          },
-          {
-            group: 'Cardio',
-            pointsPerHour: 2,
-            exercises: ['jogging', 'running', 'dancing', 'paddleboarding', 'parkour'],
-          },
-          {
-            group: 'Cross Training',
-            pointsPerHour: 4,
-            exercises: [
-              'low intensity strength training',
-              'high intensity strength training',
-              'bodyweight training',
-              'kelly tape',
-            ],
-          },
-        ],
+        // Default exercise mappings, groups, and points
+        exerciseMappings,
+        exerciseGroups,
+        exerciseGroupPoints,
       });
 
       await emailVer.createTempUser(newUser, (createErr, existingPermUser, newTempUser) => {

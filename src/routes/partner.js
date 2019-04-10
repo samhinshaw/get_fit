@@ -99,7 +99,7 @@ router.get(
     // First get Sundays in the past two weeks
     const sundays = [];
     sortedEntries.map(entry => {
-      if (moment(entry.date).format('ddd') === 'Sun') {
+      if (moment.tz(entry.date, 'US/Pacific').format('ddd') === 'Sun') {
         sundays.push(entry.date);
       }
       return true;

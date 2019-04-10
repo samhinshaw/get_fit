@@ -4,12 +4,7 @@ import _ from 'lodash';
 import logger from '../methods/logger';
 import Exercise from '../models/exercise';
 
-import {
-  exerciseMappings,
-  exerciseGroups,
-  exerciseGroupPoints,
-  commonPartialNames,
-} from './exercises.const';
+import { commonPartialNames } from './exercises.const';
 import { getPrevDayFormatted, getDatesBetweenFormatted } from '../methods/dates-functions';
 
 export async function getGoals(session, startDate, endDate) {
@@ -97,7 +92,7 @@ export function partialMatch(name) {
   return commonPartialNames[matchIndex];
 }
 
-export function calculateExercisePoints(entry) {
+export function calculateExercisePoints(entry, user) {
   return new Promise(async resolve => {
     if (!_.get(entry, 'exercise.cardiovascular.exercises')) {
       resolve({
@@ -105,12 +100,12 @@ export function calculateExercisePoints(entry) {
         exercises: [],
       });
     } else {
-      let totalPoints = 0;
-      // TODO: Pull exercise mappings from user before we start instead of using constants:
-      // - exerciseMappings
-      // - exerciseGroups
-      // - exerciseGroupPoints
+      // Create map objects from user arrays
       // - commonPartialNames (in the future)
+      const exerciseMappings = new Map(user.exerciseMappings);
+      const exerciseGroups = new Map(user.exerciseGroups);
+      const exerciseGroupPoints = new Map(user.exerciseGroupPoints);
+      let totalPoints = 0;
       const exercises = entry.exercise.cardiovascular.exercises.map(async exercise => {
         try {
           const mappedName = partialMatch(exercise.name.toLowerCase());

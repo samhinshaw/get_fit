@@ -8,7 +8,6 @@ import ensureAuthenticated from '../methods/auth';
 import { getGoals, getDiaryData, authMFP, calculateExercisePoints } from '../myfitnesspal/mfp';
 
 import Entry from '../models/entry';
-import Exercise from '../models/exercise';
 import logger from '../methods/logger';
 import parseDateRange from '../methods/parse-date-range';
 import { updatePointTally } from '../methods/update-point-tally';
@@ -100,7 +99,7 @@ router.get(
     // First get Sundays in the past two weeks
     const sundays = [];
     sortedEntries.map(entry => {
-      if (moment(entry.date).format('ddd') === 'Sun') {
+      if (moment.tz(entry.date, 'US/Pacific').format('ddd') === 'Sun') {
         sundays.push(entry.date);
       }
       return true;
@@ -275,8 +274,7 @@ router.post(
           throw new Error('Error retreiving goals from MyFitnessPal.');
         }
 
-        const exerciseSummary = await calculateExercisePoints(entry);
-
+        const exerciseSummary = await calculateExercisePoints(entry, req.user);
 
         const totalCals = _.get(entry, 'food.totals.calories') ? entry.food.totals.calories : 0;
 
@@ -285,12 +283,16 @@ router.post(
           .startOf('day')
           .toDate();
 
+        // TODO: Calculate points from calorie goal
+        // TODO: Get completion status?
+
         const formattedEntry = {
           // store
           date: dateAsDateObject,
           totalCals,
           goalCals,
           netCals: goalCals - totalCals,
+          // TODO: avoid this hack
           complete: true,
           points: exerciseSummary.points,
           exercise: exerciseSummary.exercises,
