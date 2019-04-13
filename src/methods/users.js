@@ -10,105 +10,88 @@ import { getGoals, getDiaryData, authMFP, calculateExercisePoints } from '../myf
 
 const moment = extendMoment(Moment);
 
-export async function updateEntry(req, res) {
-  try {
-    const [startDate, endDate] = parseDateRange(req.params.date);
+async function updateEntriesForUser(user, dateRange) {
+  const mfpUser = user.mfp;
+  const mfpUserUpper = mfpUser.toUpperCase();
 
-    const mfpUser = res.locals.user.mfp;
-    const mfpUserUpper = res.locals.user.mfp.toUpperCase();
+  const [startDate, endDate] = parseDateRange(dateRange);
 
-    const session = await authMFP(mfpUser, process.env[`MFP_PASS_${mfpUserUpper}`]);
+  const session = await authMFP(mfpUser, process.env[`MFP_PASS_${mfpUserUpper}`]);
 
-    const mfpDiaryEntries = await getDiaryData(
-      session,
-      { exercise: true, food: true },
-      startDate,
-      endDate
-    );
+  const mfpDiaryEntries = await getDiaryData(
+    session,
+    { exercise: true, food: true },
+    startDate,
+    endDate
+  );
 
-    const mfpGoals = await getGoals(session, startDate, endDate);
+  const mfpGoals = await getGoals(session, startDate, endDate);
 
-    const entriesMade = mfpDiaryEntries.map(async entry => {
-      if (!entry.date) {
-        throw new Error('Unspecified error retreiving data from MyFitnessPal.');
-      }
-      if (!_.get(entry, 'food.totals.calories')) {
-        // Could add a warning here--some dates did not have data
-        // If no entry, just skip this date
-        return Promise.resolve();
-      }
-      // get the goal for the range of this date
-      let goalCals;
-      try {
-        goalCals = mfpGoals.goals.get(mfpGoals.ranges.get(entry.date)).default_goal.energy.value;
-      } catch (err) {
-        throw new Error('Error retreiving goals from MyFitnessPal.');
-      }
+  const entriesMade = mfpDiaryEntries.map(async entry => {
+    if (!entry.date) {
+      throw new Error('Unspecified error retreiving data from MyFitnessPal.');
+    }
+    if (!_.get(entry, 'food.totals.calories')) {
+      // Could add a warning here--some dates did not have data
+      // If no entry, just skip this date
+      return Promise.resolve();
+    }
+    // get the goal for the range of this date
+    let goalCals;
+    try {
+      goalCals = mfpGoals.goals.get(mfpGoals.ranges.get(entry.date)).default_goal.energy.value;
+    } catch (err) {
+      throw new Error('Error retreiving goals from MyFitnessPal.');
+    }
 
-      const exerciseSummary = await calculateExercisePoints(entry, req.user);
-      const isComplete = await session.fetchCompletionStatus(entry.date);
-      // If no calories,
-      const totalCals = _.get(entry, 'food.totals.calories') ? entry.food.totals.calories : 0;
-      const netCals = goalCals - totalCals;
+    const exerciseSummary = await calculateExercisePoints(entry, user);
+    const isComplete = await session.fetchCompletionStatus(entry.date);
+    // If no calories,
+    const totalCals = _.get(entry, 'food.totals.calories') ? entry.food.totals.calories : 0;
+    const netCals = goalCals - totalCals;
 
-      // We can't round to anything but a whole number, so to avoid string coercion, divide, round, then divide
-      // So 171 / 10 = 17.1 -> rounded = 17 -> 17/10 = 1.7
-      const calPoints = Math.round(netCals / 10) / 10;
-      // No points if entry hasn't been completed
-      const totalPoints = isComplete ? exerciseSummary.points + calPoints : 0;
+    // We can't round to anything but a whole number, so to avoid string coercion, divide, round, then divide
+    // So 171 / 10 = 17.1 -> rounded = 17 -> 17/10 = 1.7
+    const calPoints = Math.round(netCals / 10) / 10;
+    // No points if entry hasn't been completed
+    const totalPoints = isComplete ? exerciseSummary.points + calPoints : 0;
 
-      const dateAsDateObject = moment
-        .tz(entry.date, 'YYYY-MM-DD', 'US/Pacific')
-        .startOf('day')
-        .toDate();
+    const dateAsDateObject = moment
+      .tz(entry.date, 'YYYY-MM-DD', 'US/Pacific')
+      .startOf('day')
+      .toDate();
 
-      const formattedEntry = {
-        // store
+    const formattedEntry = {
+      // store
+      date: dateAsDateObject,
+      totalCals,
+      goalCals,
+      netCals,
+      complete: isComplete,
+      points: totalPoints,
+      exercise: exerciseSummary.exercises,
+      user: user.username,
+    };
+
+    // Update each entry
+    return Entry.findOneAndUpdate(
+      {
         date: dateAsDateObject,
-        totalCals,
-        goalCals,
-        netCals,
-        complete: isComplete,
-        points: totalPoints,
-        exercise: exerciseSummary.exercises,
-        user: req.user.username,
-      };
+        user: user.username,
+      },
+      {
+        $set: formattedEntry,
+      },
+      // create a new object if none exists, and return the new object
+      { new: true, upsert: true }
+    );
+  });
 
-      // Update each entry
-      return Entry.findOneAndUpdate(
-        {
-          date: dateAsDateObject,
-          user: req.user.username,
-        },
-        {
-          $set: formattedEntry,
-        },
-        // create a new object if none exists, and return the new object
-        { new: true, upsert: true }
-      );
-    });
-
-    // after all entries have been made,
-    Promise.all(entriesMade)
-      // update the point tally cookie before continuing
-      .then(() => updatePointTally(res, req.user.username, req.user.partner))
-      .then(() => {
-        res.status(200).json({
-          message: 'Success updating user data from MyFitnessPal',
-          type: 'success',
-        });
-      });
-  } catch (err) {
-    console.error(err);
-    res.status(500).json({
-      //! TODO: Write custom stanitized error messages
-      message: err.message,
-      type: 'danger',
-    });
-  }
+  return Promise.all(entriesMade);
 }
 
-export async function getEntryPage(req, res) {
+export async function getEntryPage(req, res, role) {
+  console.log(`my third argument is ${role}`);
   // Construct an array of dates to query. Let's get the past two weeks
   // First our start and end points:
 
@@ -125,6 +108,9 @@ export async function getEntryPage(req, res) {
   //   day = day.clone().add(1, 'd');
   // }
 
+  // for now we can assume that the role will be either 'user' or 'partner'
+  const user = role === 'user' ? res.locals.user : res.locals.partner;
+
   // make array of dates we are going to display
   const displayRange = moment.range(res.locals.twoWeeksAgo, res.locals.tonight);
   const displayRangeArray = Array.from(displayRange.by('day'));
@@ -135,7 +121,7 @@ export async function getEntryPage(req, res) {
         $gte: res.locals.twoWeeksAgo.toDate(),
         $lte: res.locals.today.toDate(),
       },
-      user: res.locals.user.username,
+      user: user.username,
     },
     (err, response) => {
       if (err) {
@@ -162,7 +148,7 @@ export async function getEntryPage(req, res) {
       isEmpty: true,
       complete: false,
       points: 0,
-      user: res.locals.user.username,
+      user: user.username,
     };
   });
 
@@ -222,7 +208,7 @@ export async function getEntryPage(req, res) {
           $gte: week.startDate,
           $lte: week.endDate,
         },
-        user: res.locals.user.username,
+        user: user.username,
       },
       (err, response) => {
         if (err) {
@@ -297,22 +283,44 @@ export async function getEntryPage(req, res) {
   res.render('user/index', {
     // Object to send data along with response
     moment,
-    startDate: moment.tz(req.user.startDate, 'YYYY-MM-DD', 'US/Pacific'),
+    startDate: moment.tz(user.startDate, 'YYYY-MM-DD', 'US/Pacific'),
     entries: sortedEntries,
     // Here we're awaiting that mega-promise!
     weekSummaries: await promisedWeekSummaries,
     routeInfo: {
-      heroType: 'user',
-      route: '/user',
+      heroType: `${role}`,
+      route: `/${role}`,
     },
   });
 }
 
-export function getWeightData(req, res) {
-  res.render('user/weight', {
+export async function updateEntry(req, res, role) {
+  try {
+    const user = role === 'user' ? res.locals.user : res.locals.partner;
+    updateEntriesForUser(user, req.params.date)
+      // update the point tally cookie before continuing
+      .then(() => updatePointTally(res, res.locals.user.username, res.locals.partner.username))
+      .then(() => {
+        res.status(200).json({
+          message: 'Success updating user data from MyFitnessPal',
+          type: 'success',
+        });
+      });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      //! TODO: Write custom stanitized error messages
+      message: err.message,
+      type: 'danger',
+    });
+  }
+}
+
+export function getWeightData(req, res, role) {
+  res.render(`${role}/weight`, {
     routeInfo: {
-      heroType: 'user',
-      route: '/user/weight',
+      heroType: `${role}`,
+      route: `/${role}/weight`,
     },
   });
 }

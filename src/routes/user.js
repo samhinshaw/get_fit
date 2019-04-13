@@ -13,11 +13,11 @@ const asyncMiddleware = fn => (req, res, next) => {
 const router = express.Router();
 
 // Route to User's Calorie & Exercise Data
-router.get('/', ensureAuthenticated, asyncMiddleware(getEntryPage()));
+router.get('/', ensureAuthenticated, asyncMiddleware(getEntryPage('user')));
 
 // Route to Weight Data
-router.get('/weight', ensureAuthenticated, getWeightData());
+router.get('/weight', ensureAuthenticated, getWeightData('user'));
 
-router.post('/:date', ensureAuthenticated, asyncMiddleware(updateEntry()));
+router.post('/:date', ensureAuthenticated, asyncMiddleware(updateEntry('user')));
 
 export default router;
