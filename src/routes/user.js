@@ -283,25 +283,23 @@ router.post(
         const exerciseSummary = await calculateExercisePoints(entry, req.user);
         const isComplete = await session.fetchCompletionStatus(entry.date);
         const totalCals = _.get(entry, 'food.totals.calories') ? entry.food.totals.calories : 0;
+        const netCals = goalCals - totalCals;
+        const calPoints = netCals / 100;
+        const totalPoints = exerciseSummary.points + calPoints;
 
         const dateAsDateObject = moment
           .tz(entry.date, 'YYYY-MM-DD', 'US/Pacific')
           .startOf('day')
           .toDate();
 
-        // TODO: Calculate points from calorie goal
-        // TODO: Get completion status?
-
         const formattedEntry = {
           // store
           date: dateAsDateObject,
           totalCals,
           goalCals,
-          netCals: goalCals - totalCals,
-          // TODO: avoid this hack
-          complete: true,
-          points: exerciseSummary.points,
+          netCals,
           complete: isComplete,
+          points: totalPoints,
           exercise: exerciseSummary.exercises,
           user: req.user.username,
         };
