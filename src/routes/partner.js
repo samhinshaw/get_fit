@@ -12,12 +12,16 @@ const asyncMiddleware = fn => (req, res, next) => {
 
 const router = express.Router();
 
+// Middleware to tell the route which user to populate information for
+function getDataForPartner(req) {
+  req.getDataFor = 'partner';
+}
+
 // Route to User's Calorie & Exercise Data
-router.get('/', ensureAuthenticated, asyncMiddleware(getEntryPage('partner')));
-
+router.get('/', ensureAuthenticated, getDataForPartner, asyncMiddleware(getEntryPage));
+// update entry for date(s)
+router.post('/:date', ensureAuthenticated, getDataForPartner, asyncMiddleware(updateEntry));
 // Route to Weight Data
-router.get('/weight', ensureAuthenticated, getWeightData('partner'));
-
-router.post('/:date', ensureAuthenticated, asyncMiddleware(updateEntry('partner')));
+router.get('/weight', ensureAuthenticated, getDataForPartner, getWeightData);
 
 export default router;

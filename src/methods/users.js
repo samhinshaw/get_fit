@@ -90,26 +90,12 @@ async function updateEntriesForUser(user, dateRange) {
   return Promise.all(entriesMade);
 }
 
-export async function getEntryPage(req, res, role) {
-  console.log(`my third argument is ${role}`);
-  // Construct an array of dates to query. Let's get the past two weeks
-  // First our start and end points:
-
-  // NOTE, we can also query an array of dates, as I did see a StackOverflow
-  // post mentioning that the $gte and $lte operators can be a bit wonky with
-  // dates. I have not experienced that yet, so I will avoid anything containing
-  // a for loop for now. However, I will leave the code commented out below in
-  // case we need to use it in the future.
-
-  // const queryDates = [];
-  // let day = twoWeeksAgo;
-  // while (day <= today) {
-  //   queryDates.push(day.toDate());
-  //   day = day.clone().add(1, 'd');
-  // }
-
+export async function getEntryPage(req, res) {
   // for now we can assume that the role will be either 'user' or 'partner'
-  const user = role === 'user' ? res.locals.user : res.locals.partner;
+  // req.getDataFor must be set by middleware
+  // unless we're requesting data for the partner, always fall back to the user
+  const role = req.getDataFor && req.getDataFor === 'partner' ? 'partner' : 'user';
+  const user = res.locals[role];
 
   // make array of dates we are going to display
   const displayRange = moment.range(res.locals.twoWeeksAgo, res.locals.tonight);
@@ -294,9 +280,14 @@ export async function getEntryPage(req, res, role) {
   });
 }
 
-export async function updateEntry(req, res, role) {
+export async function updateEntry(req, res) {
   try {
-    const user = role === 'user' ? res.locals.user : res.locals.partner;
+    // for now we can assume that the role will be either 'user' or 'partner'
+    // req.getDataFor must be set by middleware
+    // unless we're requesting data for the partner, always fall back to the user
+    const role = req.getDataFor && req.getDataFor === 'partner' ? 'partner' : 'user';
+    const user = res.locals[role];
+
     updateEntriesForUser(user, req.params.date)
       // update the point tally cookie before continuing
       .then(() => updatePointTally(res, res.locals.user.username, res.locals.partner.username))
@@ -316,11 +307,16 @@ export async function updateEntry(req, res, role) {
   }
 }
 
-export function getWeightData(req, res, role) {
-  res.render(`${role}/weight`, {
+export function getWeightData(req, res) {
+  // for now we can assume that the role will be either 'user' or 'partner'
+  // req.getDataFor must be set by middleware
+  // unless we're requesting data for the partner, always fall back to the user
+  const user = req.getDataFor && req.getDataFor === 'partner' ? 'partner' : 'user';
+
+  res.render(`${user}/weight`, {
     routeInfo: {
-      heroType: `${role}`,
-      route: `/${role}/weight`,
+      heroType: `${user}`,
+      route: `/${user}/weight`,
     },
   });
 }
