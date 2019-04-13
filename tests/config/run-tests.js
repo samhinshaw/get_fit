@@ -1,3 +1,5 @@
+/* eslint-disable no-console */
+
 import Jasmine from 'jasmine';
 import { SpecReporter } from 'jasmine-spec-reporter';
 import tcpPortUsed from 'tcp-port-used';
@@ -6,7 +8,7 @@ import tcpPortUsed from 'tcp-port-used';
 const jasmine = new Jasmine();
 
 // Find the backend address for the given environment
-const backendHost = process.env.NODE_ENV === 'development' ? 'localhost' : 'node';
+const host = process.env.NODE_ENV === 'test' ? 'node' : 'localhost';
 
 // Load configuration file
 jasmine.loadConfigFile('tests/config/jasmine.json');
@@ -29,7 +31,7 @@ tcpPortUsed
     // look for port 8005
     8005,
     // on our target host, either "localhost" or "node"
-    backendHost,
+    host,
     // wait 100ms between pings
     5 * 1000,
     // wait 20sec in total for the port to be used
@@ -38,5 +40,4 @@ tcpPortUsed
   // Then start tests
   .then(() => jasmine.execute())
   // Otherwise log errors
-  // eslint-disable-next-line no-console
   .catch(err => console.error('Error on check:', err.message));
