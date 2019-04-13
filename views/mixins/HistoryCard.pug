@@ -25,18 +25,18 @@ mixin HistoryCard(request, userName, partnerName)
               .message-body
                 if request.requestMessage
                   p #{request.requestMessage}
-                else 
+                else
                   p
                     em You did not provide a message.
             article.message.is-success
               .message-header
-                p #{partnerName}'s Response
+                p #{partner.firstname}'s Response
               .message-body
                 if request.responseMessage
                   p #{request.responseMessage}
-                else 
+                else
                   p
-                    em #{partnerName} did not provide a message.
+                    em #{partner.firstname} did not provide a message.
           when 'denied'
             article.message(class=`is-user`)
               .message-header
@@ -44,35 +44,35 @@ mixin HistoryCard(request, userName, partnerName)
               .message-body
                 if request.requestMessage
                   p #{request.requestMessage}
-                else 
+                else
                   p
                     em You did not provide a message.
             article.message.is-danger
               .message-header
-                p #{partnerName}'s Response
+                p #{partner.firstname}'s Response
               .message-body
                 if request.responseMessage
                   p #{request.responseMessage}
-                else 
+                else
                   p
-                    em #{partnerName} did not provide a message.
+                    em #{partner.firstname} did not provide a message.
           default
             article.message(class=`is-user`)
               .message-body
                 if request.requestMessage
                   p #{request.requestMessage}
-                else 
+                else
                   p Your Request
                     em You did not provide a message.
             article.message
               .message-header
-                p #{partnerName}'s Response
+                p #{partner.firstname}'s Response
               .message-body
                 if request.responseMessage
                   p #{request.responseMessage}
-                else 
+                else
                   p
-                    em #{partnerName} did not provide a message.
+                    em #{partner.firstname} did not provide a message.
     footer.card-footer
       p.card-footer-item
         em Sent:&nbsp;

@@ -164,6 +164,18 @@ app.use(passport.session());
 // Set cookies so we can access user object on client side
 app.use(cookieParser('hghsyd82h2hdy'));
 
+const emptyUser = {
+  firstname: '',
+  lastname: '',
+  username: '',
+  email: '',
+  mfp: '',
+  partner: '',
+  fitnessGoal: '',
+  password: null,
+  currentPoints: 0,
+};
+
 // Form Validation Middleware
 app.use(
   expressValidator({
@@ -193,51 +205,11 @@ app.use(
       res.locals.loggedIn = !!req.user;
       res.locals.user = req.user || null;
 
-      res.locals.userName =
-        res.locals.user.firstname.charAt(0).toUpperCase() +
-        res.locals.user.firstname.slice(1).toLowerCase();
-      res.locals.userLastName =
-        res.locals.user.lastname.charAt(0).toUpperCase() +
-        res.locals.user.lastname.slice(1).toLowerCase();
+      const partnerUsername = req.user.partner;
 
-      if (!req.user.partner) {
-        res.locals.partner = {
-          firstname: '',
-          lastname: '',
-          username: '',
-          email: '',
-          mfp: '',
-          partner: '',
-          fitnessGoal: '',
-          password: null,
-          currentPoints: 0,
-        };
-      } else {
-        const partnerObject = await User.findOne({ username: req.user.partner });
-        if (!partnerObject) {
-          // If no user located in database, insert dummy user for now
-          res.locals.partner = {
-            firstname: '',
-            lastname: '',
-            username: '',
-            email: '',
-            mfp: '',
-            partner: '',
-            fitnessGoal: '',
-            password: null,
-            currentPoints: 0,
-          };
-        } else {
-          res.locals.partner = partnerObject;
-        }
-        res.locals.partnerName =
-          res.locals.partner.firstname.charAt(0).toUpperCase() +
-          res.locals.partner.firstname.slice(1).toLowerCase();
-
-        res.locals.partnerLastName =
-          res.locals.partner.lastname.charAt(0).toUpperCase() +
-          res.locals.partner.lastname.slice(1).toLowerCase();
-      }
+      res.locals.partner =
+        (partnerUsername ? await User.findOne({ username: partnerUsername }) : emptyUser) ||
+        emptyUser;
     }
     next();
   })

@@ -34,7 +34,7 @@ block content
                 .dropdown-content
                   .dropdown-item
                     p
-                      em Sent at: 
+                      em Sent at:
                       br
                       time #{moment(request.timeRequested).format('ddd, MMM Do, h:ma')}
           .card-content
@@ -42,10 +42,10 @@ block content
               if request.requestMessage
                 article.message(class=`is-partner`)
                   .message-header
-                    p #{partnerName}'s Request
+                    p #{partner.firstname}'s Request
                   .message-body
                     p #{request.requestMessage}
-              else 
+              else
                 article.message.is-warning
                   .message-body
                     em No message provided.
@@ -62,8 +62,8 @@ block content
         button.delete(aria-label='close')
       section.modal-card-body
         .content
-          //- p 
-            | Are you sure you wish to 
+          //- p
+            | Are you sure you wish to
             span.response-type
             |  this request?
           .field
