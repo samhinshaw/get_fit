@@ -5,7 +5,13 @@ import Moment from 'moment-timezone';
 import { extendMoment } from 'moment-range';
 
 import ensureAuthenticated from '../methods/auth';
-import { getGoals, getDiaryData, authMFP, calculateExercisePoints } from '../myfitnesspal/mfp';
+import {
+  getGoals,
+  getDiaryData,
+  authMFP,
+  calculateExercisePoints,
+  fetchCompletionStatus,
+} from '../myfitnesspal/mfp';
 
 import Entry from '../models/entry';
 import logger from '../methods/logger';
@@ -275,7 +281,7 @@ router.post(
         }
 
         const exerciseSummary = await calculateExercisePoints(entry, req.user);
-
+        const isComplete = await session.fetchCompletionStatus(entry.date);
         const totalCals = _.get(entry, 'food.totals.calories') ? entry.food.totals.calories : 0;
 
         const dateAsDateObject = moment
@@ -295,6 +301,7 @@ router.post(
           // TODO: avoid this hack
           complete: true,
           points: exerciseSummary.points,
+          complete: isComplete,
           exercise: exerciseSummary.exercises,
           user: req.user.username,
         };
