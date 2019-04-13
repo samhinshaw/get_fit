@@ -5,13 +5,7 @@ import Moment from 'moment-timezone';
 import { extendMoment } from 'moment-range';
 
 import ensureAuthenticated from '../methods/auth';
-import {
-  getGoals,
-  getDiaryData,
-  authMFP,
-  calculateExercisePoints,
-  fetchCompletionStatus,
-} from '../myfitnesspal/mfp';
+import { getGoals, getDiaryData, authMFP, calculateExercisePoints } from '../myfitnesspal/mfp';
 
 import Entry from '../models/entry';
 import logger from '../methods/logger';
@@ -254,6 +248,8 @@ router.post(
 
       const session = await authMFP(mfpUser, process.env[`MFP_PASS_${mfpUserUpper}`]);
 
+      console.log('getting user data');
+
       const mfpDiaryEntries = await getDiaryData(
         session,
         { exercise: true, food: true },
@@ -285,7 +281,10 @@ router.post(
         // If no calories,
         const totalCals = _.get(entry, 'food.totals.calories') ? entry.food.totals.calories : 0;
         const netCals = goalCals - totalCals;
-        const calPoints = netCals / 100;
+
+        // We can't round to anything but a whole number, so to avoid string coercion, divide, round, then divide
+        // So 171 / 10 = 17.1 -> rounded = 17 -> 17/10 = 1.7
+        const calPoints = Math.round(netCals / 10) / 10;
         // No points if entry hasn't been completed
         const totalPoints = isComplete ? exerciseSummary.points + calPoints : 0;
 

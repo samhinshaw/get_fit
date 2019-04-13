@@ -113,10 +113,11 @@ export function calculateExercisePoints(entry, user) {
           const exerciseMinutes = exercise.minutes || 0;
           const exerciseGroup = exerciseGroups.get(exerciseName) || '';
           const pointsPerHour = exerciseGroupPoints.get(exerciseGroup) || 0;
-          const exercisePoints = pointsPerHour * (exerciseMinutes / 60);
+          const rawExercisePoints = pointsPerHour * (exerciseMinutes / 60);
+
+          const exercisePoints = Math.round(rawExercisePoints * 10) / 10;
 
           const exerciseEntry = await Exercise.findOne({ exercise: exerciseName });
-
           const exerciseIcon = exerciseEntry ? exerciseEntry.image : 'exercise.png';
 
           totalPoints += exercisePoints;
@@ -140,9 +141,13 @@ export function calculateExercisePoints(entry, user) {
         }
       });
 
-      resolve({
-        points: 0 + totalPoints,
-        exercises: await Promise.all(exercises),
+      Promise.all(exercises).then(allExercises => {
+        // Ensure we only resolve after all exercises have computed
+        // This will ensure totalPoints is accurate
+        resolve({
+          points: totalPoints,
+          exercises: allExercises,
+        });
       });
     }
   });
