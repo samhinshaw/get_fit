@@ -17,7 +17,7 @@ import logging
 # define log levels
 log_levels = {
   "production": "WARNING",
-  "testing": "INFO",
+  "test": "INFO",
   "development": "DEBUG",
 }
 
