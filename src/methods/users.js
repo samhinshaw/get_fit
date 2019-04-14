@@ -10,6 +10,9 @@ import { getGoals, getDiaryData, authMFP, calculateExercisePoints } from '../myf
 
 const moment = extendMoment(Moment);
 
+const PAST_DATE_INCOMPLETE_ENTRY_POINTS = -3;
+const CURRENT_DATE_INCOMPLETE_ENTRY_POINTS = 0;
+
 async function updateEntriesForUser(user, dateRange) {
   const mfpUser = user.mfp;
   const mfpUserUpper = mfpUser.toUpperCase();
@@ -32,7 +35,7 @@ async function updateEntriesForUser(user, dateRange) {
       throw new Error('Unspecified error retreiving data from MyFitnessPal.');
     }
     if (!_.get(entry, 'food.totals.calories')) {
-      // Could add a warning here--some dates did not have data
+      // Could add a warning here (some dates did not have data)
       // If no entry, just skip this date
       return Promise.resolve();
     }
@@ -53,8 +56,18 @@ async function updateEntriesForUser(user, dateRange) {
     // We can't round to anything but a whole number, so to avoid string coercion, divide, round, then divide
     // So 171 / 10 = 17.1 -> rounded = 17 -> 17/10 = 1.7
     const calPoints = Math.round(netCals / 10) / 10;
+
+    const now = moment.tz('US/Pacific');
+
+    const isDateInPast = now.isAfter(moment.tz(entry.date, 'YYYY-MM-DD', 'US/Pacific'));
+
+    // If we're updating retrospectively and the entry is incomplete, we assign minus 3. otherwise, assign 0
+    const pointsForIncompleteEntry = isDateInPast
+      ? PAST_DATE_INCOMPLETE_ENTRY_POINTS
+      : CURRENT_DATE_INCOMPLETE_ENTRY_POINTS;
+
     // No points if entry hasn't been completed
-    const totalPoints = isComplete ? exerciseSummary.points + calPoints : 0;
+    const totalPoints = isComplete ? exerciseSummary.points + calPoints : pointsForIncompleteEntry;
 
     const dateAsDateObject = moment
       .tz(entry.date, 'YYYY-MM-DD', 'US/Pacific')
