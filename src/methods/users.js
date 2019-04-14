@@ -26,7 +26,17 @@ async function updateEntriesForUser(user, dateRange) {
     { exercise: true, food: true },
     startDate,
     endDate
-  );
+  ).catch(err => {
+    // log error and return empty default
+    // don't bother logging if the error is just that the entry was empty, that's a perfectly valid state
+    if (!err.message.includes('No entries')) {
+      logger.error(err);
+    }
+    const entryRange = moment.tz('US/Pacific').range(startDate, endDate);
+    const days = Array.from(entryRange.by('day'));
+    const emptyEntries = days.map(day => ({ date: day.format('YYYY-MM-DD') }));
+    return emptyEntries;
+  });
 
   const mfpGoals = await getGoals(session, startDate, endDate);
 
