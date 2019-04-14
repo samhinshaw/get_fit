@@ -35,6 +35,8 @@ import User from './models/user';
 // Bring in winston logger
 import logger from './methods/logger';
 
+import asyncMiddleware from './middlewares/async-middleware';
+
 // Passport Config Middleware
 import authMiddleware from './methods/passport';
 import { updatePointTally } from './methods/update-point-tally';
@@ -43,11 +45,6 @@ const productionEnv = process.env.NODE_ENV === 'production';
 const developmentEnv = process.env.NODE_ENV === 'development';
 
 const PORT = 8005;
-
-// Define Async middleware wrapper to avoid try-catch
-const asyncMiddleware = fn => (req, res, next) => {
-  Promise.resolve(fn(req, res, next)).catch(next);
-};
 
 const moment = extendMoment(Moment);
 

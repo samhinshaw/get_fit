@@ -5,10 +5,7 @@ import ensureAuthenticated from '../methods/auth';
 
 import { updateEntry, getEntryPage, getWeightData } from '../methods/users';
 
-// Define Async middleware wrapper to avoid try-catch
-const asyncMiddleware = fn => (req, res, next) => {
-  Promise.resolve(fn(req, res, next)).catch(next);
-};
+import asyncMiddleware from '../middlewares/async-middleware';
 
 const router = express.Router();
 

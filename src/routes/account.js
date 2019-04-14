@@ -9,6 +9,8 @@ import { extendMoment } from 'moment-range';
 import ensureAuthenticated from '../methods/auth';
 import { getPoints, setPointsCookie } from '../methods/update-point-tally';
 
+import asyncMiddleware from '../middlewares/async-middleware';
+
 import logger from '../methods/logger';
 import Request from '../models/request';
 import Reward from '../models/reward';
@@ -16,17 +18,13 @@ import Period from '../models/period';
 // import Gift from '../models/gift';
 import User from '../models/user';
 import Entry from '../models/entry';
+
 // const flash = require('connect-flash');
 const moment = extendMoment(Moment);
 
 // Bring in config files
 
 const router = express.Router();
-
-// Define Async middleware wrapper to avoid try-catch
-const asyncMiddleware = fn => (req, res, next) => {
-  Promise.resolve(fn(req, res, next)).catch(next);
-};
 
 // Call this function with 3 options:
 // user: the currently logged in user sending the request

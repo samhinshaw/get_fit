@@ -16,6 +16,7 @@ import { extendMoment } from 'moment-range';
 import logger from '../methods/logger';
 import ensureAuthenticated from '../methods/auth';
 import User from '../models/user';
+import asyncMiddleware from '../middlewares/async-middleware';
 import {
   exerciseMappings,
   exerciseGroups,
@@ -25,11 +26,6 @@ import {
 const moment = extendMoment(Moment);
 
 const COST_FACTOR = 16;
-
-// Define Async middleware wrapper to avoid try-catch
-const asyncMiddleware = fn => (req, res, next) => {
-  Promise.resolve(fn(req, res, next)).catch(next);
-};
 
 /*= ============================================
 =          Email Verification Setup          =
