@@ -25,7 +25,7 @@ import {
 
 const moment = extendMoment(Moment);
 
-const COST_FACTOR = 16;
+const COST_FACTOR = 14;
 
 /*= ============================================
 =          Email Verification Setup          =
