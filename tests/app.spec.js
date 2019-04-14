@@ -53,6 +53,7 @@ describe('Get Fit', () => {
 
     describe('the login page', () => {
       let route;
+      const cookieJar = request.jar();
       beforeAll(() => {
         route = `${address}/login`;
       });
@@ -71,39 +72,21 @@ describe('Get Fit', () => {
           });
       });
 
-      beforeEach(() => {});
-
-      xit(
-        'should log in the user when given correct credentials and set a session cookie',
-        done => {
-          axios
-            .post(route, form, { headers: form.getHeaders() })
-            .then(resp => {
-              expect(resp.status).toBe(200);
-              expect(resp.headers['set-cookie']).toBeTruthy();
-              done();
-            })
-            .catch(err => {
-              console.error(err);
-              fail(`The request to ${route} failed.`);
-              done();
-            });
-        },
-        waitTimes.LOGIN
-      );
-
-      xit(
+      it(
         'should redirect a user to the overview page when given correct credentials',
         done => {
           request
             .post(route, {
               form: loginForm,
               followAllRedirects: true,
+              cookieJar,
             })
             .then(res => {
               const $ = cheerio.load(res);
-              const results = $('.hero-body').find('.title');
-              console.log(results.length);
+              const results = $('.hero-body .title').text();
+              console.log($('body').html());
+              expect(results).toContain('Get Fit');
+
               done();
             })
             .catch(err => {
@@ -141,6 +124,7 @@ describe('Get Fit', () => {
 
   describe('authenticated requests', () => {
     const cookieJar = request.jar();
+    // Pre-authenticate
     beforeAll(done => {
       const route = `${address}/login`;
 
@@ -151,7 +135,9 @@ describe('Get Fit', () => {
           followAllRedirects: true,
           jar: cookieJar,
         })
-        .then(() => {
+        .then(res => {
+          const $ = cheerio.load(res);
+          console.log($('body').html());
           done();
         })
         .catch(() => {
