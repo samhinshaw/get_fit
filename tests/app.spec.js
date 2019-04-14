@@ -92,7 +92,7 @@ describe('Get Fit', () => {
         waitTimes.LOGIN
       );
 
-      it(
+      xit(
         'should redirect a user to the overview page when given correct credentials',
         done => {
           request
