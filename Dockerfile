@@ -1,6 +1,5 @@
-# Start from a Python & Node Image
-# Reference from: https://hub.docker.com/r/nikolaik/python-nodejs/dockerfile
-FROM samhinshaw/python-node:2.1.0
+# Start from small Node 11 Image
+FROM node:11-alpine
 
 #################
 ##   BACKEND   ##
