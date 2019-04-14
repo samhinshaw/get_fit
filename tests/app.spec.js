@@ -1,9 +1,6 @@
 /* eslint-env jasmine */
 /* eslint-disable no-console */
-import axios from 'axios';
-
 import request from 'request-promise-native';
-
 import cheerio from 'cheerio';
 
 const TEST_USER_NAME = 'john';
@@ -36,39 +33,44 @@ describe('Get Fit', () => {
         route = `${address}/`;
       });
 
-      it('should be served with status 200', done => {
-        axios
-          .get(route, { maxRedirects: 0 })
-          .then(resp => {
-            expect(resp.status).toBe(200);
+      it('should be served properly', done => {
+        request
+          .get(route, {
+            resolveWithFullResponse: true,
+          })
+          .then(res => {
+            const $ = cheerio.load(res.body);
+            const appTitle = $('h1.title').text();
+            expect(res.statusCode).toBe(200, 'the status code should be 200');
+            expect(appTitle.trim()).toBe('Get Fit', 'the app title should be present');
             done();
           })
           .catch(err => {
-            console.error(err);
-            fail(`The request to ${route} failed.`);
-            done();
+            done.fail(err);
           });
       });
     });
 
     describe('the login page', () => {
       let route;
-      const cookieJar = request.jar();
       beforeAll(() => {
         route = `${address}/login`;
       });
 
-      it('should be served with status 200', done => {
-        axios
-          .get(route, { maxRedirects: 0 })
-          .then(resp => {
-            expect(resp.status).toBe(200);
+      it('should be served properly', done => {
+        request
+          .get(route, {
+            resolveWithFullResponse: true,
+          })
+          .then(res => {
+            const $ = cheerio.load(res.body);
+            const loginBox = $('body').find('.login-box');
+            expect(res.statusCode).toBe(200, 'the status code should be 200');
+            expect(loginBox.length > 0).toBe(true, 'the login box should be present on the page');
             done();
           })
           .catch(err => {
-            console.error(err);
-            fail(`The request to ${route} failed.`);
-            done();
+            done.fail(err);
           });
       });
 
@@ -79,14 +81,14 @@ describe('Get Fit', () => {
             .post(route, {
               form: loginForm,
               followAllRedirects: true,
-              cookieJar,
+              resolveWithFullResponse: true,
+              // Make sure to use a new, unauthenticated cookie jar
+              jar: request.jar(),
             })
             .then(res => {
-              const $ = cheerio.load(res);
-              const results = $('.hero-body .title').text();
-              console.log($('body').html());
-              expect(results).toContain('Get Fit');
-
+              const $ = cheerio.load(res.body);
+              const heroText = $('.hero-body .title').text();
+              expect(heroText).toContain('Get Fit');
               done();
             })
             .catch(err => {
@@ -105,14 +107,16 @@ describe('Get Fit', () => {
 
       it('should redirect us to the login page', done => {
         request
-          .get(route, { followAllRedirects: true })
+          .get(route, {
+            followAllRedirects: true,
+            resolveWithFullResponse: true,
+            // Make sure to use a new, unauthenticated cookie jar
+            jar: request.jar(),
+          })
           .then(res => {
-            const $ = cheerio.load(res);
-            const loginPageSection = $('body').find('.login-page').length > 0;
-            expect(loginPageSection).toBe(
-              true,
-              'at least one ".login-page" element should exist on the page'
-            );
+            const $ = cheerio.load(res.body);
+            const loginBox = $('body').find('.login-box');
+            expect(loginBox.length > 0).toBe(true, 'the login box should be present on the page');
             done();
           })
           .catch(err => {
@@ -135,9 +139,8 @@ describe('Get Fit', () => {
           followAllRedirects: true,
           jar: cookieJar,
         })
-        .then(res => {
-          const $ = cheerio.load(res);
-          console.log($('body').html());
+        .then(() => {
+          // could check that authentication was unsuccessful here
           done();
         })
         .catch(() => {
