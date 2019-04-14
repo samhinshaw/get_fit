@@ -8,6 +8,11 @@ import cheerio from 'cheerio';
 
 const TEST_USER_NAME = 'john';
 
+const loginForm = {
+  username: TEST_USER_NAME,
+  password: 'testpassword',
+};
+
 const waitTimes = {
   // wait a long time for the login, since we increased our bcrypt cost factor significantly
   LOGIN: 10 * 1000,
@@ -87,23 +92,22 @@ describe('Get Fit', () => {
         waitTimes.LOGIN
       );
 
-      xit(
+      it(
         'should redirect a user to the overview page when given correct credentials',
         done => {
-          axios
-            .post(route, form, {
-              headers: form.getHeaders(),
-              maxRedirects: 0,
-              validateStatus: null,
+          request
+            .post(route, {
+              form: loginForm,
+              followAllRedirects: true,
             })
             .then(res => {
-              expect(res.status).toBe(302);
-              expect(res.headers.location).toBe('/overview');
+              const $ = cheerio.load(res);
+              const results = $('.hero-body').find('.title');
+              console.log(results.length);
               done();
             })
             .catch(err => {
-              fail(err);
-              done();
+              done.fail(err);
             });
         },
         waitTimes.LOGIN
@@ -117,16 +121,19 @@ describe('Get Fit', () => {
       });
 
       it('should redirect us to the login page', done => {
-        axios
-          .get(route, { maxRedirects: 0, validateStatus: null })
+        request
+          .get(route, { followAllRedirects: true })
           .then(res => {
-            expect(res.status).toBe(302);
-            expect(res.headers.location).toBe('/login');
+            const $ = cheerio.load(res);
+            const loginPageSection = $('body').find('.login-page').length > 0;
+            expect(loginPageSection).toBe(
+              true,
+              'at least one ".login-page" element should exist on the page'
+            );
             done();
           })
           .catch(err => {
-            fail(err);
-            done();
+            done.fail(err);
           });
       });
     });
@@ -140,10 +147,7 @@ describe('Get Fit', () => {
       // log in and put the cookies in the cookie jar
       request
         .post(route, {
-          form: {
-            username: TEST_USER_NAME,
-            password: 'testpassword',
-          },
+          form: loginForm,
           followAllRedirects: true,
           jar: cookieJar,
         })
@@ -168,13 +172,10 @@ describe('Get Fit', () => {
             const $ = cheerio.load(res);
             const title = $('#userTitle').text();
             expect(title.toLowerCase()).toContain(TEST_USER_NAME.toLowerCase());
-            // expect(res.status).toBe(302);
-            // expect(res.headers.location).toBe('/user');
             done();
           })
           .catch(err => {
-            fail(err);
-            done();
+            done.fail(err);
           });
       });
     });
