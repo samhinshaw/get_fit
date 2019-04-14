@@ -4,32 +4,6 @@ import mongoose from 'mongoose';
 
 const { Schema } = mongoose;
 
-const exerciseGroupSchema = new Schema({
-  group: {
-    type: String,
-    required: true,
-  },
-  pointsPerHour: {
-    type: Number,
-    required: true,
-  },
-  exercises: {
-    type: [String],
-    required: true,
-  },
-});
-
-const exerciseMappingSchema = new Schema({
-  mfpName: {
-    type: String,
-    required: true,
-  },
-  mappedName: {
-    type: String,
-    required: true,
-  },
-});
-
 const userSchema = new Schema({
   firstname: {
     type: String,
@@ -67,12 +41,20 @@ const userSchema = new Schema({
     type: String,
     required: false,
   },
-  exerciseMappings: {
-    type: [exerciseMappingSchema],
+  startDate: {
+    type: String,
     required: false,
   },
+  exerciseMappings: {
+    type: [[String, String]],
+    required: true,
+  },
   exerciseGroups: {
-    type: [exerciseGroupSchema],
+    type: [[String, String]],
+    required: true,
+  },
+  exerciseGroupPoints: {
+    type: [[String, Number]],
     required: true,
   },
 });

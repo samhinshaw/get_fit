@@ -10,15 +10,22 @@ import Promise from 'bluebird';
 // import bruteForceSchema from 'express-brute-mongoose/dist/schema';
 import nodeEmailVer from 'email-verification';
 import emoji from 'node-emoji';
+import Moment from 'moment-timezone';
+import { extendMoment } from 'moment-range';
 
 import logger from '../methods/logger';
 import ensureAuthenticated from '../methods/auth';
 import User from '../models/user';
+import asyncMiddleware from '../middlewares/async-middleware';
+import {
+  exerciseMappings,
+  exerciseGroups,
+  exerciseGroupPoints,
+} from '../myfitnesspal/exercises.const';
 
-// Define Async middleware wrapper to avoid try-catch
-const asyncMiddleware = fn => (req, res, next) => {
-  Promise.resolve(fn(req, res, next)).catch(next);
-};
+const moment = extendMoment(Moment);
+
+const COST_FACTOR = 14;
 
 /*= ============================================
 =          Email Verification Setup          =
@@ -26,15 +33,15 @@ const asyncMiddleware = fn => (req, res, next) => {
 
 const emailVer = Promise.promisifyAll(nodeEmailVer(mongoose));
 
-const saltAndHash = function saltAndHash(pwd, tempUserData, insertTempUser, callback) {
-  bcrypt.genSalt(10, (saltErr, salt) => {
+function saltAndHash(pwd, tempUserData, insertTempUser, callback) {
+  bcrypt.genSalt(COST_FACTOR, (saltErr, salt) => {
     if (saltErr) {
       logger.error('Error salting password: %j', saltErr);
       return;
     }
     bcrypt.hash(pwd, salt, (err, hash) => insertTempUser(hash, tempUserData, callback));
   });
-};
+}
 
 emailVer.configure(
   {
@@ -94,7 +101,7 @@ router.get('/register', (req, res) => {
     res.render('register', {
       routeInfo: {
         heroType: 'dark',
-        route: '/register',
+        route: `/register`,
       },
     });
   }
@@ -109,7 +116,7 @@ router.get('/login', (req, res) => {
     res.render('login', {
       routeInfo: {
         heroType: 'dark',
-        route: '/login',
+        route: `/login`,
       },
     });
   }
@@ -130,11 +137,15 @@ router.post('/login', (req, res, next) => {
       res.cookie(
         'username',
         req.user.username,
-
-        { maxAge: 2592000000, signed: false },
+        // 7 days = 1000ms * 60s * 60m * 24h * 7d
+        {
+          maxAge: 1000 * 60 * 60 * 24 * 7,
+          signed: false,
+          sameSite: 'strict',
+          // only set to secure in production
+          secure: process.env.NODE_ENV === 'production',
+        }
       );
-      // secure: true for HTTPS only
-      // res.cookie('userid', req.user.id, { maxAge: 2592000000, secure: true, signed: false });
       res.redirect('/overview');
       return next();
     });
@@ -142,9 +153,10 @@ router.post('/login', (req, res, next) => {
   })(req, res, next);
 });
 
-// Loogout option
+// Logout option
 router.get('/logout', (req, res) => {
   res.clearCookie('username');
+  res.clearCookie('pointTally');
   req.logout();
   req.flash('info', 'Logged out');
   res.redirect('/');
@@ -171,7 +183,7 @@ router.get('/overview', ensureAuthenticated, (req, res) => {
   res.render('overview', {
     routeInfo: {
       heroType: 'dark',
-      route: '/overview',
+      route: `/overview`,
     },
     emoji: emoji.get(exerciseEmoji),
   });
@@ -181,7 +193,7 @@ router.get('/help', (req, res) => {
   res.render('help', {
     routeInfo: {
       heroType: 'dark',
-      route: '/help',
+      route: `/help`,
     },
   });
 });
@@ -190,7 +202,7 @@ router.get('/privacy', (req, res) => {
   res.render('privacy', {
     routeInfo: {
       heroType: 'dark',
-      route: '/privacy',
+      route: `/privacy`,
     },
   });
 });
@@ -305,7 +317,8 @@ router.post(
       res.redirect('#');
       return next(errors);
       // temporarily hard-wiring adding access code
-    } else if (accessCode !== process.env.NODEJS_REGISTRATION_SECRET) {
+    }
+    if (accessCode !== process.env.NODEJS_REGISTRATION_SECRET) {
       logger.error('Access code provided: ');
       logger.error(accessCode);
       req.flash('danger', 'Incorrect Access Code');
@@ -339,17 +352,7 @@ router.post(
       res.redirect('#');
       return next();
     }
-    const existingUserEmail = await User.findOne(
-      {
-        email,
-      },
-      (queryErr, user) => {
-        if (queryErr) {
-          logger.error('Error finding existing user: %j', queryErr);
-        }
-        return user;
-      },
-    );
+    const existingUserEmail = await User.findOne({ email });
 
     if (existingUserEmail) {
       logger.warn(`${existingUserEmail.email} was attempted to be registered`);
@@ -373,35 +376,12 @@ router.post(
         partner,
         fitnessGoal,
         password,
+        startDate: moment.tz('US/Pacific').format('YYYY-MM-DD'),
         currentPoints: 0,
-        // Default exercise groups:
-        exerciseGroups: [
-          {
-            group: 'Very Light Exercise',
-            pointsPerHour: 0.5,
-            exercises: ['walking', 'stretching'],
-          },
-          {
-            group: 'Light Exercise',
-            pointsPerHour: 1,
-            exercises: ['yoga', 'hiking'],
-          },
-          {
-            group: 'Cardio',
-            pointsPerHour: 2,
-            exercises: ['jogging', 'running', 'dancing', 'paddleboarding', 'parkour'],
-          },
-          {
-            group: 'Cross Training',
-            pointsPerHour: 4,
-            exercises: [
-              'low intensity strength training',
-              'high intensity strength training',
-              'bodyweight training',
-              'kelly tape',
-            ],
-          },
-        ],
+        // Default exercise mappings, groups, and points
+        exerciseMappings,
+        exerciseGroups,
+        exerciseGroupPoints,
       });
 
       await emailVer.createTempUser(newUser, (createErr, existingPermUser, newTempUser) => {
@@ -413,11 +393,13 @@ router.post(
           );
           res.redirect('#');
           return next();
-        } else if (existingPermUser) {
+        }
+        if (existingPermUser) {
           req.flash('danger', 'Username Taken');
           res.redirect('#');
           return next();
-        } else if (!newTempUser) {
+        }
+        if (!newTempUser) {
           // otherwise if newTempUser is null
           logger.info('Temp user already exists');
           req.flash(
@@ -439,7 +421,8 @@ router.post(
             );
             res.redirect('#');
             return next();
-          } else if (sendInfo) {
+          }
+          if (sendInfo) {
             logger.info('Email send info: %j', sendInfo);
           }
           // If user has registered with partner, flow is:

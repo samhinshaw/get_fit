@@ -30,10 +30,6 @@ const entrySchema = new Schema(
       type: Schema.Types.Mixed,
       required: false,
     },
-    isEmpty: {
-      type: Boolean,
-      required: true,
-    },
     complete: {
       type: Boolean,
       required: true,

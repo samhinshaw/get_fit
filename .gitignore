@@ -16,5 +16,6 @@ yarn-error.log*
 logs/*.log
 data/__pycache__
 .env
-mongo/init.js
 python.log
+pass.env
+mongo/seed-local.js

@@ -9,28 +9,29 @@ import User from '../models/user';
 
 export default function authMiddleware(passport) {
   // Local Strategy
-  passport.use(new Strategy((username, password, done) => {
-    // Match username
-    const query = {
-      username,
-    };
-    User.findOne(query, (queryErr, user) => {
-      if (queryErr) throw queryErr;
-      if (!user) {
-        return done(null, false, { message: 'No user found.' });
-      }
-
-      // Match Password
-      bcrypt.compare(password, user.password, (compareErr, isMatch) => {
-        if (compareErr) throw compareErr;
-        if (isMatch) {
-          return done(null, user);
+  passport.use(
+    new Strategy((username, password, done) => {
+      // Match username
+      const query = {
+        username,
+      };
+      User.findOne(query, (queryErr, user) => {
+        if (queryErr) throw queryErr;
+        if (!user) {
+          return done(null, false, { message: 'No user found.' });
         }
-        return done(null, false, { message: 'Invalid password.' });
+
+        // Match Password
+        bcrypt.compare(password, user.password, (compareErr, isMatch) => {
+          if (compareErr) throw compareErr;
+          if (isMatch) {
+            return done(null, user);
+          }
+          return done(null, false, { message: 'Invalid password.' });
+        });
+        return true;
       });
-      return true;
-    });
-  }));
+    }));
 
   passport.serializeUser((user, done) => {
     done(null, {

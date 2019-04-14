@@ -7,6 +7,9 @@ import Moment from 'moment-timezone';
 import { extendMoment } from 'moment-range';
 
 import ensureAuthenticated from '../methods/auth';
+import { getPoints, setPointsCookie } from '../methods/update-point-tally';
+
+import asyncMiddleware from '../middlewares/async-middleware';
 
 import logger from '../methods/logger';
 import Request from '../models/request';
@@ -15,17 +18,13 @@ import Period from '../models/period';
 // import Gift from '../models/gift';
 import User from '../models/user';
 import Entry from '../models/entry';
+
 // const flash = require('connect-flash');
 const moment = extendMoment(Moment);
 
 // Bring in config files
 
 const router = express.Router();
-
-// Define Async middleware wrapper to avoid try-catch
-const asyncMiddleware = fn => (req, res, next) => {
-  Promise.resolve(fn(req, res, next)).catch(next);
-};
 
 // Call this function with 3 options:
 // user: the currently logged in user sending the request
@@ -55,53 +54,65 @@ router.get('/', ensureAuthenticated, (req, res) => {
   });
 });
 
-router.post('/', ensureAuthenticated, (req, res) => {
-  const userObject = {};
+router.post(
+  '/',
+  ensureAuthenticated,
+  asyncMiddleware(async (req, res) => {
+    const userObject = {};
 
-  // console.log('pre-validation name: ', firstname);
-  let firstname = req.sanitize('firstname').trim();
-  firstname = firstname !== '' ? firstname : null;
+    let firstname = req.sanitize('firstname').trim();
+    firstname = firstname !== '' ? firstname : null;
 
-  if (firstname) userObject.firstname = firstname;
+    if (firstname) userObject.firstname = firstname;
 
-  let lastname = req.sanitize('lastname').trim();
-  lastname = lastname !== '' ? lastname : null;
+    let lastname = req.sanitize('lastname').trim();
+    lastname = lastname !== '' ? lastname : null;
 
-  if (lastname) userObject.lastname = lastname;
-  // const username = req.sanitize('username').trim();
-  // const email = req.sanitize('email').trim();
-  // req
-  // .checkBody('email', 'Email is not valid')
-  // .isEmail()
-  // .trim()
-  // .normalizeEmail();
-  let fitnessGoal = req.sanitize('fitness-goal').trim();
-  fitnessGoal = fitnessGoal !== '' ? fitnessGoal : null;
-  if (fitnessGoal) userObject.fitnessGoal = fitnessGoal;
+    if (lastname) userObject.lastname = lastname;
+    // const username = req.sanitize('username').trim();
+    // const email = req.sanitize('email').trim();
+    // req
+    // .checkBody('email', 'Email is not valid')
+    // .isEmail()
+    // .trim()
+    // .normalizeEmail();
+    let fitnessGoal = req.sanitize('fitness-goal').trim();
+    fitnessGoal = fitnessGoal !== '' ? fitnessGoal : null;
+    if (fitnessGoal) userObject.fitnessGoal = fitnessGoal;
 
-  let startDate = req.sanitize('start-date').trim();
-  startDate = startDate !== '' ? startDate : null;
-  if (startDate) userObject.startDate = startDate;
+    let startDate = req.sanitize('start-date').trim();
+    startDate = startDate !== '' ? startDate : null;
+    if (startDate) userObject.startDate = startDate;
 
-  let mfp = req.sanitize('mfp').trim();
-  mfp = mfp !== '' ? mfp : null;
-  if (mfp) userObject.mfp = mfp;
+    let mfp = req.sanitize('mfp').trim();
+    mfp = mfp !== '' ? mfp : null;
+    if (mfp) userObject.mfp = mfp;
 
-  User.findOneAndUpdate(
-    { username: req.user.username },
-    {
-      $set: userObject,
-    },
-    (err) => {
+    const updatedUser = await User.findOneAndUpdate(
+      { username: req.user.username },
+      {
+        $set: userObject,
+      },
+      // make sure we return the *new* User object
+      { new: true }
+    ).catch(err => {
       if (err) {
         req.flash('danger', 'Oops, there was an error updating your settings!');
         res.redirect('#');
       }
+    });
+
+    const pointTally = {
+      user: updatedUser.currentPoints,
+      partner: await getPoints(req.user.partner),
+    };
+
+    setPointsCookie(res, pointTally).then(() => {
       req.flash('success', 'Settings successfully updated!');
       res.redirect('#');
-    },
-  );
-});
+    });
+  })
+);
 
 router.get('/spend', ensureAuthenticated, (req, res) => {
   Reward.find({ for: res.locals.user.username }, (err, rewards) => {
@@ -137,7 +148,9 @@ router.post(
       return reward;
     });
 
-    if (rewardEntry.cost > res.locals.pointTally.user) {
+    const newPointTally = req.user.currentPoints - rewardEntry.cost;
+
+    if (newPointTally < 0) {
       req.flash('danger', 'Not enough points!');
       res.redirect('/account/spend');
       return;
@@ -153,10 +166,34 @@ router.post(
       status: 'unapproved',
     });
 
-    newRequest.save((saveErr) => {
-      if (saveErr) {
-        logger.error(saveErr);
-      } else {
+    // deduct points from user's 'currentPoints'
+    const updatedUser = await User.findOneAndUpdate(
+      { username: req.user.username },
+      {
+        $set: {
+          currentPoints: newPointTally,
+        },
+      },
+      // make sure we return the *new* User object
+      { new: true }
+    ).catch(err => {
+      if (err) {
+        req.flash('danger', 'Oops, there was an error making your request!');
+        res.redirect('#');
+      }
+    });
+
+    const pointTally = {
+      user: updatedUser.currentPoints,
+      partner: await getPoints(req.user.partner),
+    };
+    // Update the current points
+    setPointsCookie(res, pointTally)
+      // then save the new request
+      .then(() => newRequest.save())
+      // catch any database saving errors
+      .catch(dbSaveErr => logger.error(dbSaveErr))
+      .then(() =>
         // If saved, send request via IFTTT
         request(
           // this function will return our configuration object with
@@ -166,108 +203,18 @@ router.post(
               res.locals.user.firstname.slice(1),
             partnerToken: process.env[`IFTTT_TOKEN_${res.locals.partner.username.toUpperCase()}`],
             messageType: 'reward_request',
-          }),
-          (error, response) => {
-            // (error, response, body)
-            if (error) {
-              logger.error(error);
-            } else if (!error && response.statusCode === 200) {
-              // Print out the response body
-              // console.log(body);
-              req.flash('success', 'Request sent! Points deducted from your account.');
-              res.redirect('/account/spend');
-            }
-          },
-        );
-      }
-    });
-  }),
+          })
+        )
+      )
+      .catch(iftttError => logger.error(iftttError))
+      .then(response => {
+        if (response.statusCode === 200) {
+          req.flash('success', 'Request sent! Points deducted from your account.');
+          res.redirect('/account/spend');
+        }
+      });
+  })
 );
-
-// router.get('/send', ensureAuthenticated, (req, res) => {
-//   Reward.find({ for: res.locals.partner.username }, (err, rewards) => {
-//     if (err) {
-//       logger.error(err);
-//     }
-//     const sortedRewards = _.orderBy(rewards, 'cost', 'asc');
-//     res.render('account/send', {
-//       moment,
-//       rewards: sortedRewards,
-//       routeInfo: {
-//         heroType: 'twitter',
-//         route: '/account/send'
-//       }
-//     });
-//   });
-// });
-
-// Receive POST request
-// router.post(
-//   '/send',
-//   asyncMiddleware(async (req, res) => {
-//     let rewardKey;
-//     let rewardEntry;
-//     if (req.params.reward) {
-//       rewardKey = req.sanitize('reward').trim();
-
-//       const query = {
-//         key: rewardKey
-//       };
-
-//       // Pull up reward entry in DB
-//       rewardEntry = await Reward.findOne(query, (err, reward) => {
-//         if (err) {
-//           logger.error(err);
-//         }
-//         return reward;
-//       });
-//     }
-
-//     // If these values exist, assign them, otherwise use 'null'
-//     const newGift = new Gift({
-//       reward: rewardKey || null,
-//       displayName: rewardEntry.displayName || null,
-//       points: req.sanitize('message').trim() || null,
-//       sender: res.locals.user.username, // replace with session
-//       timeSent: moment.tz('US/Pacific').toDate(),
-//       message: req.sanitize('message').trim() || null
-//     });
-
-//     // Pull up request entry in DB
-//     // Note: Model.findByIdAndUpdate() is specifically for when we need the found
-//     // document returned as well.
-//     newGift.save(saveErr => {
-//       if (saveErr) {
-//         logger.error(saveErr);
-//       } else {
-//         // If saved, send request via IFTTT
-//         request(
-//           // this function will return our configuration object with
-//           configureIFTTT({
-//             user:
-//               res.locals.user.firstname.charAt(0).toUpperCase() +
-//               res.locals.user.firstname.slice(1),
-//             partnerToken: iftttToken[res.locals.partner.username].token,
-//             messageType: 'gift'
-//           }),
-//           (error, response) => {
-//             // (error, response, body)
-//             if (error) {
-//               logger.error(error);
-//               req.flash('danger', 'Oops, there was an error sending your gift!');
-//               res.redirect('/account/send');
-//             } else if (!error && response.statusCode === 200) {
-//               // Print out the response body
-//               // console.log(body);
-//               req.flash('success', 'Gift sent!');
-//               res.redirect('/account/send');
-//             }
-//           }
-//         );
-//       }
-//     });
-//   })
-// );
 
 router.get('/requests', ensureAuthenticated, (req, res) => {
   // Our requests are pulled in via middleware in app.js so we can display the #
@@ -330,8 +277,6 @@ router.post('/requests/respond', ensureAuthenticated, (req, res) => {
               req.flash('danger', 'Error sending response. Please try again.');
               res.redirect('/account/requests');
             } else if (!error && response.statusCode === 200) {
-              // Print out the response body
-              // console.log(body);
               req.flash('success', 'Response sent!');
               res.redirect('/account/requests');
             }

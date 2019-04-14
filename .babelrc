@@ -9,5 +9,5 @@
       }
     ]
   ],
-  "plugins": ["babel-plugin-inline-import", "inline-dotenv"]
+  "plugins": ["inline-import", "transform-object-rest-spread"]
 }

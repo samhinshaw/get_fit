@@ -36,11 +36,13 @@ const logger = createLogger({
 
 // If we're not in production then log to the `console` with the format:
 if (env !== 'production') {
-  logger.add(new transports.Console({
-    format: combine(splat(), timestamp(), myFormat),
-    timestamp: dateFmt(),
-    colorize: true,
-  }));
+  logger.add(
+    new transports.Console({
+      format: combine(splat(), timestamp(), myFormat),
+      timestamp: dateFmt(),
+      colorize: true,
+    })
+  );
 }
 
 export default logger;
