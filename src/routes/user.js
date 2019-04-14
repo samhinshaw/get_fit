@@ -13,8 +13,9 @@ const asyncMiddleware = fn => (req, res, next) => {
 const router = express.Router();
 
 // Middleware to tell the route which user to populate information for
-function getDataForUser(req) {
+function getDataForUser(req, res, next) {
   req.getDataFor = 'user';
+  next();
 }
 
 // Route to User's Calorie & Exercise Data
