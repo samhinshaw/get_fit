@@ -1,12 +1,10 @@
 import { Session } from 'mfp';
 import _ from 'lodash';
 
-import {
-  exerciseMappings,
-  exerciseGroups,
-  exerciseGroupPoints,
-  commonPartialNames,
-} from './exercises.const';
+import logger from '../methods/logger';
+import Exercise from '../models/exercise';
+
+import { commonPartialNames } from './exercises.const';
 import { getPrevDayFormatted, getDatesBetweenFormatted } from '../methods/dates-functions';
 
 export async function getGoals(session, startDate, endDate) {
@@ -87,35 +85,70 @@ export async function authMFP(username, password = '') {
 }
 
 export function partialMatch(name) {
-  const matchIndex = commonPartialNames.find(partialName => name.includes(partialName));
+  const matchIndex = commonPartialNames.indexOf(partialName => name.includes(partialName));
   if (matchIndex === -1) {
     return name;
   }
   return commonPartialNames[matchIndex];
 }
 
-export function calculatePoints(entry) {
-  let exercisePoints;
-  if (!_.get(entry, 'exercise.cardiovascular.exercises')) {
-    exercisePoints = 0;
-  } else {
-    entry.exercise.cardiovascular.exercises.forEach(exercise => {
-      console.log(exercise);
-      try {
-        const mappedName = partialMatch(exercise.name.toLowerCase());
-        console.log(mappedName);
-        const exerciseName = exerciseMappings.get(mappedName) || '';
-        const exerciseMinutes = exercise.minutes || 0;
-        const exerciseGroup = exerciseGroups.get(exerciseName) || '';
-        const pointsPerHour = exerciseGroupPoints.get(exerciseGroup) || 0;
+export function calculateExercisePoints(entry, user) {
+  return new Promise(async resolve => {
+    if (!_.get(entry, 'exercise.cardiovascular.exercises')) {
+      resolve({
+        points: 0,
+        exercises: [],
+      });
+    } else {
+      // Create map objects from user arrays
+      // - commonPartialNames (in the future)
+      const exerciseMappings = new Map(user.exerciseMappings);
+      const exerciseGroups = new Map(user.exerciseGroups);
+      const exerciseGroupPoints = new Map(user.exerciseGroupPoints);
+      let totalPoints = 0;
+      const exercises = entry.exercise.cardiovascular.exercises.map(async exercise => {
+        try {
+          const mappedName = partialMatch(exercise.name.toLowerCase());
+          const exerciseName = exerciseMappings.get(mappedName) || '';
+          const exerciseMinutes = exercise.minutes || 0;
+          const exerciseGroup = exerciseGroups.get(exerciseName) || '';
+          const pointsPerHour = exerciseGroupPoints.get(exerciseGroup) || 0;
+          const rawExercisePoints = pointsPerHour * (exerciseMinutes / 60);
 
-        const totalPoints = pointsPerHour * (exerciseMinutes / 60);
+          const exercisePoints = Math.round(rawExercisePoints * 10) / 10;
 
-        exercisePoints += totalPoints;
-      } catch (err) {
-        console.error(err);
-      }
-    });
-  }
-  return 0 + exercisePoints;
+          const exerciseEntry = await Exercise.findOne({ exercise: exerciseName });
+          const exerciseIcon = exerciseEntry ? exerciseEntry.image : 'exercise.png';
+
+          totalPoints += exercisePoints;
+
+          return {
+            name: exerciseName,
+            minutes: exercise.minutes,
+            cals: exercise.calories,
+            points: exercisePoints,
+            icon: exerciseIcon,
+          };
+        } catch (err) {
+          // log error and return sensible defaults
+          logger.error(err);
+          totalPoints += 0;
+          return {
+            ...exercise,
+            icon: 'exercise.png',
+            points: 0,
+          };
+        }
+      });
+
+      Promise.all(exercises).then(allExercises => {
+        // Ensure we only resolve after all exercises have computed
+        // This will ensure totalPoints is accurate
+        resolve({
+          points: totalPoints,
+          exercises: allExercises,
+        });
+      });
+    }
+  });
 }
