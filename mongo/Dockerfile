@@ -4,7 +4,9 @@ FROM mongo:4.0.5-xenial
 COPY mongo.conf /etc/
 
 # /docker-entrypoint-initdb.d already exists, so copy our init file to it.
-# This contains the logic to create our first users and setup admin accounts
-# COPY init.js /docker-entrypoint-initdb.d/init.js
-# Use a bash script instead of a JS script so we have access to environment variables
-COPY init.sh /docker-entrypoint-initdb.d/init.sh
+# This sets up admin accounts
+COPY admin.sh /docker-entrypoint-initdb.d/
+
+# Additionally, copy in any other config files we have
+# This creates our first users
+COPY seed*.js /docker-entrypoint-initdb.d/

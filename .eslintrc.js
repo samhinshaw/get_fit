@@ -4,21 +4,33 @@ module.exports = {
   parser: 'babel-eslint',
   parserOptions: {
     ecmaVersion: 2017,
-    sourceType: 'module'
+    sourceType: 'module',
   },
   env: {
     browser: true,
     node: true,
-    es6: true
+    es6: true,
     // jasmine: true
   },
   globals: {
     jQuery: true,
-    $: true
+    $: true,
   },
   rules: {
     'no-underscore-dangle': ['error', { allow: ['_id'] }],
-    'no-console': 0,
-    'no-param-reassign': ['error', { props: true, ignorePropertyModificationsFor: ['err'] }]
-  }
+    'no-param-reassign': [
+      'error',
+      // allow property modifications on error objects, and express request and
+      // response params
+      { props: true, ignorePropertyModificationsFor: ['err', 'req', 'res'] },
+    ],
+    'prettier/prettier': [
+      'error',
+      {
+        singleQuote: true,
+        trailingComma: 'es5',
+        printWidth: 100,
+      },
+    ],
+  },
 };

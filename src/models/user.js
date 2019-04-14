@@ -4,77 +4,59 @@ import mongoose from 'mongoose';
 
 const { Schema } = mongoose;
 
-const exerciseGroupSchema = new Schema({
-  group: {
-    type: String,
-    required: true
-  },
-  pointsPerHour: {
-    type: Number,
-    required: true
-  },
-  exercises: {
-    type: [String],
-    required: true
-  }
-});
-
-const exerciseMappingSchema = new Schema({
-  mfpName: {
-    type: String,
-    required: true
-  },
-  mappedName: {
-    type: String,
-    required: true
-  }
-});
-
 const userSchema = new Schema({
   firstname: {
     type: String,
-    required: true
+    required: true,
   },
   lastname: {
     type: String,
-    required: false
+    required: false,
   },
   username: {
     type: String,
-    required: true
+    required: true,
   },
   email: {
     type: String,
-    required: true
+    required: true,
   },
   partner: {
     type: String,
-    required: false
+    required: false,
   },
   password: {
     type: String,
-    required: true
+    required: true,
   },
   mfp: {
     type: String,
-    required: true
+    required: true,
   },
   currentPoints: {
     type: Number,
-    required: true
+    required: true,
   },
   fitnessGoal: {
     type: String,
-    required: false
+    required: false,
+  },
+  startDate: {
+    type: String,
+    required: false,
   },
   exerciseMappings: {
-    type: [exerciseMappingSchema],
-    required: false
+    type: [[String, String]],
+    required: true,
   },
   exerciseGroups: {
-    type: [exerciseGroupSchema],
-    required: true
-  }
+    type: [[String, String]],
+    required: true,
+  },
+  exerciseGroupPoints: {
+    type: [[String, Number]],
+    required: true,
+  },
 });
 
 export default mongoose.model('User', userSchema);

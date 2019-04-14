@@ -13,7 +13,7 @@ export default function authMiddleware(passport) {
     new Strategy((username, password, done) => {
       // Match username
       const query = {
-        username
+        username,
       };
       User.findOne(query, (queryErr, user) => {
         if (queryErr) throw queryErr;
@@ -37,7 +37,7 @@ export default function authMiddleware(passport) {
   passport.serializeUser((user, done) => {
     done(null, {
       id: user.id,
-      username: user.username
+      username: user.username,
     });
   });
 

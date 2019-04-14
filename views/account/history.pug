@@ -18,7 +18,7 @@ block content
             | You have yet to win any rewards, keep at it!
       else
        each request, i in approvedRequests
-        +HistoryCard(request, userName, partnerName)
+        +HistoryCard(request, user.firstname, partner.firstname)
         br
   //- Request Modal. Hidden until JS click event received.
   .modal#request-modal
@@ -29,8 +29,8 @@ block content
         button.delete(aria-label='close')
       section.modal-card-body
         .content
-          //- p 
-            | Are you sure you wish to 
+          //- p
+            | Are you sure you wish to
             span.response-type
             |  this request?
           .field

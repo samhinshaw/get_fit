@@ -12,40 +12,36 @@ const entrySchema = new Schema(
   {
     date: {
       type: Date,
-      required: true
+      required: true,
     },
     totalCals: {
       type: Number,
-      required: true
+      required: true,
     },
     goalCals: {
       type: Number,
-      required: true
+      required: true,
     },
     netCals: {
       type: Number,
-      required: true
+      required: true,
     },
     exercise: {
       type: Schema.Types.Mixed,
-      required: false
-    },
-    isEmpty: {
-      type: Boolean,
-      required: true
+      required: false,
     },
     complete: {
       type: Boolean,
-      required: true
+      required: true,
     },
     points: {
       type: Number,
-      required: true
+      required: true,
     },
     user: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
   { collection: 'entries' }
 );

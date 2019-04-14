@@ -78,7 +78,7 @@ const handlers = {
           // fired) there's no event handler yet! So we gotta make sure we add
           // it again.
           handlers.dismissMessagesNotification();
-        }
+        },
       });
     });
   },
@@ -178,7 +178,7 @@ const handlers = {
             message: $('#request-modal input[name="message"]').val(),
             // If approval = true, type will be 'approved'.
             // If approval = false, type will be 'denied'
-            type: approval ? 'approved' : 'denied'
+            type: approval ? 'approved' : 'denied',
           },
           // handle successes!
           success: () => {
@@ -189,7 +189,7 @@ const handlers = {
           error: err => {
             if (err) Rollbar.error(err);
             // window.location.reload();
-          }
+          },
         });
       }
     });
@@ -250,7 +250,7 @@ const handlers = {
         clearTimeout(delayedAction);
         const payload = {
           name: e.currentTarget.name,
-          value: e.currentTarget.value
+          value: e.currentTarget.value,
         };
         delayedAction = setTimeout(() => {
           // If we're querying checking password, don't need to leave client-side!
@@ -291,7 +291,7 @@ const handlers = {
               // handle errors
               error: err => {
                 if (err) Rollbar.error(err);
-              }
+              },
             });
           }
         }, 500);
@@ -305,7 +305,7 @@ const handlers = {
           const username = $('#partnerUsername input[name="partner"]').val();
           const payload = {
             name: 'partner',
-            value: username
+            value: username,
           };
           $.ajax({
             type: 'POST',
@@ -325,7 +325,7 @@ const handlers = {
             // handle errors
             error: err => {
               if (err) Rollbar.error(err);
-            }
+            },
           });
         }, 500);
       });
@@ -342,7 +342,7 @@ const handlers = {
       $('#partnerUsername').after(`
       <p id="${name}Validation" class="help is-${type}">${message}</p>
       `);
-    }
+    },
   },
   toggleCopyrightModal: () => {
     // Function to listen for: copyright logo/modal
@@ -363,7 +363,7 @@ const handlers = {
     copyrightModalBackground.addEventListener('click', () => {
       copyrightModal.classList.toggle('is-active');
     });
-  }
+  },
 };
 
 // Process all actions after DOM content has loaded

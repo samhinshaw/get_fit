@@ -12,20 +12,20 @@ const rewardSchema = new Schema(
   {
     key: {
       type: String,
-      required: true
+      required: true,
     },
     displayName: {
       type: String,
-      required: true
+      required: true,
     },
     cost: {
       type: Number,
-      required: true
+      required: true,
     },
     for: {
       type: String,
-      required: true
-    }
+      required: true,
+    },
   },
   { collection: 'rewards' }
 );

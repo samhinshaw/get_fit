@@ -4,10 +4,10 @@ block header
   p.title
     | Get Fit!
   p.subtitle
-    | #{userName} 
+    | #{user.firstname}
     if partner.firstname !== ''
-      | & #{partnerName} are gonna get fit! #{emoji}
-    else 
+      | & #{partner.firstname} are gonna get fit! #{emoji}
+    else
       | is gonna get fit! #{emoji}
 
 block subnav
@@ -20,7 +20,7 @@ block content
       .column.is-6
         .card.overview-card
           header.card-header(class=`is-user`)
-            a.card-header-title.is-size-4(href='/user') #{userName}
+            a.card-header-title.is-size-4(href='/user') #{user.firstname}
             .card-header-icon.dropdown.is-hoverable.is-right(href='#', aria-label='more options')
               .dropdown-trigger
                 span.icon
@@ -33,13 +33,13 @@ block content
                 .dropdown-content
                   .dropdown-item
                     p
-                      //- em Sent at: 
+                      //- em Sent at:
                       br
                       //- time #{moment(request.timeRequested).format('ddd, MMM Do, h:ma')}
           .card-content
             .content
-              h5.is-size-5 
-                u Points: 
+              h5.is-size-5
+                u Points:
               p #{pointTally.user.toFixed(1)}
           //- footer.card-footer
             a.card-footer-item.request-button.approve(href='#!') Approve
@@ -47,7 +47,7 @@ block content
       .column.is-6
         .card.overview-card
           header.card-header(class=`is-partner`)
-            a.card-header-title.is-size-4(href='/partner') #{partnerName}
+            a.card-header-title.is-size-4(href='/partner') #{partner.firstname}
             .card-header-icon.dropdown.is-hoverable.is-right(href='#', aria-label='more options')
               .dropdown-trigger
                 span.icon
@@ -60,16 +60,15 @@ block content
                 .dropdown-content
                   .dropdown-item
                     p
-                      //- em Sent at: 
+                      //- em Sent at:
                       br
                       //- time #{moment(request.timeRequested).format('ddd, MMM Do, h:ma')}
           .card-content
             .content
-              h5.is-size-5 
-                u Points: 
+              h5.is-size-5
+                u Points:
               p #{pointTally.partner.toFixed(1)}
           //- footer.card-footer
             a.card-footer-item.request-button.approve(href='#!') Approve
             a.card-footer-item.request-button.deny(href='#!') Deny
       //- .column.is-2
-        

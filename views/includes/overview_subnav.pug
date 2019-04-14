@@ -3,7 +3,7 @@
     .field.is-grouped
       .control
         span.icon.is-small
-          i.mdi.mdi-view-list 
+          i.mdi.mdi-view-list
       .control
         | Summary
   //- a.navbar-item.is-tab(href='/test')
@@ -14,6 +14,6 @@
   //-     .control
   //-       | Test
   a.navbar-item.is-tab(href=`/user`)
-    | #{userName}
+    | #{user.firstname}
   a.navbar-item.is-tab(href=`/partner`)
-    | #{partnerName}
+    | #{partner.firstname}
