@@ -85,7 +85,7 @@ export async function authMFP(username, password = '') {
 }
 
 export function partialMatch(name) {
-  const matchIndex = commonPartialNames.indexOf(partialName => name.includes(partialName));
+  const matchIndex = commonPartialNames.findIndex(partialName => name.includes(partialName));
   if (matchIndex === -1) {
     return name;
   }
