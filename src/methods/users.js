@@ -50,11 +50,13 @@ async function updateEntriesForUser(user, dateRange) {
       return Promise.resolve();
     }
     // get the goal for the range of this date
-    let goalCals;
+    let goalCals = 0;
     try {
       goalCals = mfpGoals.goals.get(mfpGoals.ranges.get(entry.date)).default_goal.energy.value;
     } catch (err) {
-      throw new Error('Error retreiving goals from MyFitnessPal.');
+      logger.warn('Error retreiving goals from MyFitnessPal, setting calorie goal to 2000');
+      logger.warn(err);
+      goalCals = 2000;
     }
 
     const exerciseSummary = await generateExerciseSummary(entry, user);
