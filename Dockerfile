@@ -23,11 +23,11 @@ WORKDIR /app
 
 # Copy dependency definitions and Snyk policy file
 COPY ./package.json /app
-COPY ./yarn.lock /app
+COPY ./package-lock.json /app
 COPY ./.snyk /app
 
 # Install dependecies
-RUN yarn install
+RUN npm ci
 
 #################
 ##     COPY    ##
@@ -50,5 +50,11 @@ RUN yarn bundle
 ##    START    ##
 #################
 
+# Run stage build
+# FROM node:11-alpine
+# WORKDIR /app
+# COPY --from=build /app/ ./
+
+RUN npm prune --production
 # Default command is to spin up server in production mode
 CMD ["yarn", "run:prod"]
