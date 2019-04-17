@@ -3,7 +3,9 @@ import 'winston-daily-rotate-file';
 
 const env = process.env.NODE_ENV || 'development';
 
-const { printf, combine, timestamp, splat } = format;
+const {
+  printf, combine, timestamp, splat,
+} = format;
 const myFormat = printf(info => `${info.timestamp} - ${info.level}: ${info.message}`);
 const dateFmt = () => new Date().toLocaleTimeString();
 

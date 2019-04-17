@@ -29,12 +29,30 @@ $partner-invert: findColorInvert($partner);
 // Setup $colors to use as bulma classes (e.g. 'is-twitter')
 @import '~bulma/sass/utilities/derived-variables';
 $addColors: (
-  'primary': ($primary, $primary-invert),
-  'twitter': ($twitter, $twitter-invert),
-  'facebook': ($facebook, $facebook-invert),
-  'google-plus': ($google-plus, $google-plus-invert),
-  'user': ($user, $user-invert),
-  'partner': ($partner, $partner-invert)
+  'primary': (
+    $primary,
+    $primary-invert,
+  ),
+  'twitter': (
+    $twitter,
+    $twitter-invert,
+  ),
+  'facebook': (
+    $facebook,
+    $facebook-invert,
+  ),
+  'google-plus': (
+    $google-plus,
+    $google-plus-invert,
+  ),
+  'user': (
+    $user,
+    $user-invert,
+  ),
+  'partner': (
+    $partner,
+    $partner-invert,
+  ),
 );
 
 $colors: map-merge($colors, $addColors);

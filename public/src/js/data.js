@@ -108,7 +108,12 @@ $.getJSON('/api/user_weight/', json => {
       weight: d.value, // and the weight as "weight"
     }));
 
-  const margin = { top: 40, right: 80, bottom: 80, left: 50 };
+  const margin = {
+    top: 40,
+    right: 80,
+    bottom: 80,
+    left: 50,
+  };
   const width = 960 - margin.left - margin.right;
   const height = 500 - margin.top - margin.bottom;
 

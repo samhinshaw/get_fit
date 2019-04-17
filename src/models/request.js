@@ -63,7 +63,7 @@ const requestSchema = new Schema(
     //   required: true
     // }
   },
-  { collection: 'requests' }
+  { collection: 'requests' },
 );
 
 const Request = mongoose.model('request', requestSchema);

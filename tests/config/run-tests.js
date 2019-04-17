@@ -35,7 +35,7 @@ tcpPortUsed
     // wait 100ms between pings
     5 * 1000,
     // wait 20sec in total for the port to be used
-    20 * 1000
+    20 * 1000,
   )
   // Then start tests
   .then(() => jasmine.execute())

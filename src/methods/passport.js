@@ -31,8 +31,7 @@ export default function authMiddleware(passport) {
         });
         return true;
       });
-    })
-  );
+    }));
 
   passport.serializeUser((user, done) => {
     done(null, {
