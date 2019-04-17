@@ -85,20 +85,23 @@ export async function authMFP(username, password = '') {
 }
 
 export function partialMatch(name) {
-  const matchIndex = commonPartialNames.indexOf(partialName => name.includes(partialName));
+  const matchIndex = commonPartialNames.findIndex(partialName => name.includes(partialName));
   if (matchIndex === -1) {
     return name;
   }
   return commonPartialNames[matchIndex];
 }
 
-export function calculateExercisePoints(entry, user) {
+const EMPTY_EXERCISE_ENTRY = {
+  calsBurnt: 0,
+  points: 0,
+  exercises: [],
+};
+
+export function generateExerciseSummary(entry, user) {
   return new Promise(async resolve => {
     if (!_.get(entry, 'exercise.cardiovascular.exercises')) {
-      resolve({
-        points: 0,
-        exercises: [],
-      });
+      resolve(EMPTY_EXERCISE_ENTRY);
     } else {
       // Create map objects from user arrays
       // - commonPartialNames (in the future)
@@ -106,10 +109,14 @@ export function calculateExercisePoints(entry, user) {
       const exerciseGroups = new Map(user.exerciseGroups);
       const exerciseGroupPoints = new Map(user.exerciseGroupPoints);
       let totalPoints = 0;
+      let totalCalsBurnt = 0;
       const exercises = entry.exercise.cardiovascular.exercises.map(async exercise => {
         try {
+          // grab calories burnt
+          totalCalsBurnt += exercise.calories;
+          // then start mapping exercises and calculating points
           const mappedName = partialMatch(exercise.name.toLowerCase());
-          const exerciseName = exerciseMappings.get(mappedName) || '';
+          const exerciseName = exerciseMappings.get(mappedName) || mappedName;
           const exerciseMinutes = exercise.minutes || 0;
           const exerciseGroup = exerciseGroups.get(exerciseName) || '';
           const pointsPerHour = exerciseGroupPoints.get(exerciseGroup) || 0;
@@ -119,7 +126,6 @@ export function calculateExercisePoints(entry, user) {
 
           const exerciseEntry = await Exercise.findOne({ exercise: exerciseName });
           const exerciseIcon = exerciseEntry ? exerciseEntry.image : 'exercise.png';
-
           totalPoints += exercisePoints;
 
           return {
@@ -131,8 +137,8 @@ export function calculateExercisePoints(entry, user) {
           };
         } catch (err) {
           // log error and return sensible defaults
-          logger.error(err);
-          totalPoints += 0;
+          logger.warn(err);
+          // don't increase totalPoints or totalCalsBurnt
           return {
             ...exercise,
             icon: 'exercise.png',
@@ -141,14 +147,20 @@ export function calculateExercisePoints(entry, user) {
         }
       });
 
-      Promise.all(exercises).then(allExercises => {
-        // Ensure we only resolve after all exercises have computed
-        // This will ensure totalPoints is accurate
-        resolve({
-          points: totalPoints,
-          exercises: allExercises,
+      Promise.all(exercises)
+        .then(allExercises => {
+          // Ensure we only resolve after all exercises have computed
+          // This will ensure totalPoints is accurate
+          resolve({
+            calsBurnt: totalCalsBurnt,
+            points: totalPoints,
+            exercises: allExercises,
+          });
+        })
+        .catch(err => {
+          logger.warn(err);
+          resolve(EMPTY_EXERCISE_ENTRY);
         });
-      });
     }
   });
 }

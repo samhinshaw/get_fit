@@ -6,7 +6,7 @@ import logger from './logger';
 
 import parseDateRange from './parse-date-range';
 import { updatePointTally } from './update-point-tally';
-import { getGoals, getDiaryData, authMFP, calculateExercisePoints } from '../myfitnesspal/mfp';
+import { getGoals, getDiaryData, authMFP, generateExerciseSummary } from '../myfitnesspal/mfp';
 
 const moment = extendMoment(Moment);
 
@@ -50,18 +50,23 @@ async function updateEntriesForUser(user, dateRange) {
       return Promise.resolve();
     }
     // get the goal for the range of this date
-    let goalCals;
+    let goalCals = 0;
     try {
       goalCals = mfpGoals.goals.get(mfpGoals.ranges.get(entry.date)).default_goal.energy.value;
     } catch (err) {
-      throw new Error('Error retreiving goals from MyFitnessPal.');
+      logger.warn('Error retreiving goals from MyFitnessPal, setting calorie goal to 2000');
+      logger.warn(err);
+      goalCals = 2000;
     }
 
-    const exerciseSummary = await calculateExercisePoints(entry, user);
+    const exerciseSummary = await generateExerciseSummary(entry, user);
+
+    const netGoalCals = goalCals + exerciseSummary.calsBurnt;
+
     const isComplete = await session.fetchCompletionStatus(entry.date);
     // If no calories,
     const totalCals = _.get(entry, 'food.totals.calories') ? entry.food.totals.calories : 0;
-    const netCals = goalCals - totalCals;
+    const netCals = netGoalCals - totalCals;
 
     // We can't round to anything but a whole number, so to avoid string coercion, divide, round, then divide
     // So 171 / 10 = 17.1 -> rounded = 17 -> 17/10 = 1.7
@@ -88,7 +93,7 @@ async function updateEntriesForUser(user, dateRange) {
       // store
       date: dateAsDateObject,
       totalCals,
-      goalCals,
+      goalCals: netGoalCals,
       netCals,
       complete: isComplete,
       points: totalPoints,
