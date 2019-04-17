@@ -92,7 +92,13 @@ export function partialMatch(name) {
   return commonPartialNames[matchIndex];
 }
 
-export function calculateExercisePoints(entry, user) {
+const EMPTY_EXERCISE_ENTRY = {
+  calsBurnt: 0,
+  points: 0,
+  exercises: [],
+};
+
+export function generateExerciseSummary(entry, user) {
   return new Promise(async resolve => {
     if (!_.get(entry, 'exercise.cardiovascular.exercises')) {
       resolve({
@@ -106,10 +112,14 @@ export function calculateExercisePoints(entry, user) {
       const exerciseGroups = new Map(user.exerciseGroups);
       const exerciseGroupPoints = new Map(user.exerciseGroupPoints);
       let totalPoints = 0;
+      let totalCalsBurnt = 0;
       const exercises = entry.exercise.cardiovascular.exercises.map(async exercise => {
         try {
+          // grab calories burnt
+          totalCalsBurnt += exercise.calories;
+          // then start mapping exercises and calculating points
           const mappedName = partialMatch(exercise.name.toLowerCase());
-          const exerciseName = exerciseMappings.get(mappedName) || '';
+          const exerciseName = exerciseMappings.get(mappedName) || mappedName;
           const exerciseMinutes = exercise.minutes || 0;
           const exerciseGroup = exerciseGroups.get(exerciseName) || '';
           const pointsPerHour = exerciseGroupPoints.get(exerciseGroup) || 0;
@@ -141,14 +151,20 @@ export function calculateExercisePoints(entry, user) {
         }
       });
 
-      Promise.all(exercises).then(allExercises => {
-        // Ensure we only resolve after all exercises have computed
-        // This will ensure totalPoints is accurate
-        resolve({
-          points: totalPoints,
-          exercises: allExercises,
+      Promise.all(exercises)
+        .then(allExercises => {
+          // Ensure we only resolve after all exercises have computed
+          // This will ensure totalPoints is accurate
+          resolve({
+            calsBurnt: totalCalsBurnt,
+            points: totalPoints,
+            exercises: allExercises,
+          });
+        })
+        .catch(err => {
+          logger.warn(err);
+          resolve(EMPTY_EXERCISE_ENTRY);
         });
-      });
     }
   });
 }
