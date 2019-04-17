@@ -2,6 +2,13 @@
 FROM node:11-alpine
 
 #################
+##   SYSTEM   ##
+#################
+
+RUN apk update && apk upgrade && \
+  apk add --no-cache bash git openssh
+
+#################
 ##   BACKEND   ##
 #################
 
