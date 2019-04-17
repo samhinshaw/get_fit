@@ -1,5 +1,5 @@
 # Start from small Node 11 Image
-FROM node:11-alpine
+FROM node:11-alpine AS build
 
 #################
 ##   SYSTEM   ##
@@ -41,14 +41,14 @@ COPY ./ /app
 #################
 
 # Transpile backend code
-RUN yarn transpile
+RUN npm run transpile
 
 # Bundle assets
-RUN yarn bundle
+RUN npm run bundle
 
-#################
-##    START    ##
-#################
+###################
+##    CLEANUP    ##
+###################
 
 # Run stage build
 # FROM node:11-alpine
@@ -56,5 +56,12 @@ RUN yarn bundle
 # COPY --from=build /app/ ./
 
 RUN npm prune --production
+
+RUN apk del bash git openssh
+
+#################
+##    START    ##
+#################
+
 # Default command is to spin up server in production mode
 CMD ["yarn", "run:prod"]
