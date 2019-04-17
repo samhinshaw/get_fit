@@ -64,4 +64,4 @@ RUN apk del bash git openssh
 #################
 
 # Default command is to spin up server in production mode
-CMD ["yarn", "run:prod"]
+CMD ["npm", "run", "run:prod"]
