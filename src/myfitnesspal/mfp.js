@@ -101,10 +101,7 @@ const EMPTY_EXERCISE_ENTRY = {
 export function generateExerciseSummary(entry, user) {
   return new Promise(async resolve => {
     if (!_.get(entry, 'exercise.cardiovascular.exercises')) {
-      resolve({
-        points: 0,
-        exercises: [],
-      });
+      resolve(EMPTY_EXERCISE_ENTRY);
     } else {
       // Create map objects from user arrays
       // - commonPartialNames (in the future)
@@ -129,7 +126,6 @@ export function generateExerciseSummary(entry, user) {
 
           const exerciseEntry = await Exercise.findOne({ exercise: exerciseName });
           const exerciseIcon = exerciseEntry ? exerciseEntry.image : 'exercise.png';
-
           totalPoints += exercisePoints;
 
           return {
@@ -141,8 +137,8 @@ export function generateExerciseSummary(entry, user) {
           };
         } catch (err) {
           // log error and return sensible defaults
-          logger.error(err);
-          totalPoints += 0;
+          logger.warn(err);
+          // don't increase totalPoints or totalCalsBurnt
           return {
             ...exercise,
             icon: 'exercise.png',
