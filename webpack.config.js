@@ -28,7 +28,7 @@ module.exports = {
           options: {
             presets: [
               [
-                'env',
+                '@babel/preset-env',
                 {
                   targets: {
                     browsers: 'last 2 versions',
@@ -118,12 +118,6 @@ module.exports = {
       $: 'jquery',
       jQuery: 'jquery',
     }),
-    // Mangle & minify
-    new webpack.optimize.UglifyJsPlugin(),
-    // Set node ENV to production!
-    // new webpack.DefinePlugin({
-    //   'process.env.NODE_ENV': '"production"'
-    // })
   ],
   resolve: {
     mainFields: ['module', 'browser', 'main'],
