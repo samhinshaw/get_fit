@@ -33,7 +33,7 @@ module.exports = {
                   targets: {
                     browsers: 'last 2 versions',
                   },
-                  useBuiltIns: true,
+                  useBuiltIns: 'usage',
                   loose: true,
                   modules: false,
                 },
