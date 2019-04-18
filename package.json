@@ -23,13 +23,13 @@
     "transpile": "babel ./src -d ./dist",
     "bundle": "webpack -p",
     "lint:js": "eslint --ignore-path .eslintignore --config .eslintrc.js \"**/*.js\"",
-    "format:js": "yarn lint:js --fix",
+    "format:js": "npm run lint:js --fix",
     "format:prettier": "prettier --config .prettierrc --ignore-path .prettierignore --write \"**/*.{yml,json,html,md,css,scss}\"",
     "run:prod": "node dist/app.js",
     "deploy": "pm2 deploy getfit.config.js production",
     "rollbar": "curl https://api.rollbar.com/api/1/deploy/ -F access_token=607807c2e15542d3bf8d2111b4fe5282 -F environment=production -F revision=`git log -n 1 --pretty=format:'%H'` -F local_username=`whoami`",
     "snyk-protect": "snyk protect",
-    "prepare": "yarn run snyk-protect"
+    "prepare": "npm run snyk-protect"
   },
   "repository": {
     "type": "git",
