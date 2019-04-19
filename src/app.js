@@ -53,7 +53,7 @@ const moment = extendMoment(Moment);
 // ************************** //
 
 // Set mongoose to debug mode in dev environment
-// mongoose.set('debug', !!developmentEnv);
+mongoose.set('debug', !!developmentEnv);
 // Tell mongoose to use Node.js' Promise implementation
 mongoose.Promise = Promise;
 const MongoStore = connectSession(session);
