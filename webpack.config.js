@@ -1,10 +1,9 @@
 const webpack = require('webpack');
 const path = require('path');
 // For writing CSS to files (not include with bundle.js)
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
-// Uglify & Minify. This adds to build time with no real difference
-// const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const inDevMode = process.env.NODE_ENV === 'development';
 
 // Set up webpack for front-end code
 // Babel is all we need for our back-end
@@ -23,43 +22,55 @@ module.exports = {
     rules: [
       {
         test: /\.js$/,
-        exclude: /(node_modules)/,
+        exclude: /node_modules/,
         use: {
           loader: 'babel-loader',
           options: {
             presets: [
               [
-                'env',
+                '@babel/preset-env',
                 {
                   targets: {
                     browsers: 'last 2 versions',
                   },
-                  useBuiltIns: true,
+                  useBuiltIns: 'usage',
                   loose: true,
                   modules: false,
+                  corejs: '3',
                 },
               ],
             ],
-            plugins: ['babel-plugin-inline-import'],
+            plugins: ['@babel/plugin-proposal-object-rest-spread'],
           },
         },
         include: path.join(__dirname, 'public', 'src', 'js'),
       },
       {
         test: /\.css$/,
-        use: ExtractTextPlugin.extract({
-          fallback: 'style-loader',
-          use: { loader: 'css-loader', options: { minimize: true } },
-        }),
-        include: path.join(__dirname, 'public', 'src', 'css'),
+        use: [
+          {
+            loader: MiniCssExtractPlugin.loader,
+            options: {
+              // fallback: 'style-loader',
+              hmr: inDevMode,
+            },
+          },
+          { loader: 'css-loader' },
+        ],
+        // include: path.join(__dirname, 'public', 'src', 'css'),
       },
       {
         test: /\.(scss|sass)$/,
-        use: ExtractTextPlugin.extract({
-          fallback: 'style-loader',
-          use: [{ loader: 'css-loader', options: { minimize: true } }, 'sass-loader'],
-        }),
-        // include: path.join(__dirname, 'public', 'src', 'sass')
+        use: [
+          {
+            loader: MiniCssExtractPlugin.loader,
+            options: {
+              hmr: inDevMode,
+            },
+          },
+          { loader: 'css-loader' },
+          'sass-loader',
+        ],
       },
       {
         test: /\.json$/,
@@ -99,22 +110,15 @@ module.exports = {
     // new webpack.NormalModuleReplacementPlugin(/\/iconv-loader$/, 'node-noop'),
     // new webpack.NormalModuleReplacementPlugin(/\/node-fetch$/, 'node-noop'),
     // Take compiled SASS & CSS and save to file
-    new ExtractTextPlugin({
-      filename: '[name]-styles.css',
-      disable: false,
-      allChunks: true,
+    new MiniCssExtractPlugin({
+      filename: inDevMode ? '[name]-styles.css' : '[name].[hash].css',
+      chunkFilename: inDevMode ? '[id].css' : '[id].[hash].css',
     }),
     // set globals for jquery (Use the ProvidePlugin to inject implicit globals)
     new webpack.ProvidePlugin({
       $: 'jquery',
       jQuery: 'jquery',
     }),
-    // Mangle & minify
-    new webpack.optimize.UglifyJsPlugin(),
-    // Set node ENV to production!
-    // new webpack.DefinePlugin({
-    //   'process.env.NODE_ENV': '"production"'
-    // })
   ],
   resolve: {
     mainFields: ['module', 'browser', 'main'],

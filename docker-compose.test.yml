@@ -1,4 +1,4 @@
-version: '3' # this specifies the docker-compose version
+version: '3.4'
 
 services:
   mongo:
@@ -51,7 +51,7 @@ services:
       - MFP_PASS_JETKNIFE
       - IFTTT_TOKEN_SAM
       - IFTTT_TOKEN_AMELIA
-    command: ['yarn', 'run:prod']
+    command: ['npm', 'run', 'run:prod']
     expose:
       - 8005
     depends_on:
@@ -66,6 +66,6 @@ services:
     # Set the NODE_ENV to the test environment
     environment:
       - NODE_ENV=test
-    command: ['yarn', 'test:once']
+    command: ['npm', 'run', 'test:once']
     depends_on:
       - node

@@ -1,4 +1,4 @@
-version: '3' # this specifies the docker-compose version
+version: '3.4'
 
 services:
   # Start backend Express.js server

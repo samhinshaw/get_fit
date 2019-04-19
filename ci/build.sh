@@ -14,4 +14,4 @@ else
   echo "Not tagging Docker image."
 fi
 
-yarn build:test
+npm run build:test
