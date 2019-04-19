@@ -55,9 +55,9 @@ RUN npm run bundle
 # WORKDIR /app
 # COPY --from=build /app/ ./
 
-RUN npm prune --production
-
-RUN apk del bash git openssh
+# Only run these when we've got multistage builds to differentiate between dev, test, and prod
+# RUN npm prune --production
+# RUN apk del bash git openssh
 
 #################
 ##    START    ##
