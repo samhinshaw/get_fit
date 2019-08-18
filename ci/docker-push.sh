@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [[ $TRAVIS_BRANCH == release* || -n "$TRAVIS_TAG" ]]; then
+if [[ $TRAVIS_BRANCH == release* || $TRAVIS_BRANCH == hotfix* || -n "$TRAVIS_TAG" ]]; then
   echo "Beginning deploy..."
 else
   echo "Not a release branch or tagged commit. Exiting..."

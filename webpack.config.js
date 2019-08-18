@@ -111,8 +111,7 @@ module.exports = {
     // new webpack.NormalModuleReplacementPlugin(/\/node-fetch$/, 'node-noop'),
     // Take compiled SASS & CSS and save to file
     new MiniCssExtractPlugin({
-      filename: inDevMode ? '[name]-styles.css' : '[name].[hash].css',
-      chunkFilename: inDevMode ? '[id].css' : '[id].[hash].css',
+      filename: '[name]-styles.css',
     }),
     // set globals for jquery (Use the ProvidePlugin to inject implicit globals)
     new webpack.ProvidePlugin({
