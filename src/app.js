@@ -140,6 +140,7 @@ app.use(
       secure: shouldUseSecureCookies,
       httpOnly: true,
       sameSite: 'strict',
+      proxy: true,
       // 7 days = 1000ms * 60s * 60m * 24h * 7d
       maxAge: 1000 * 60 * 60 * 24 * 7,
     },
