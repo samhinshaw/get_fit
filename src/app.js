@@ -135,12 +135,12 @@ app.use(
     secret: process.env.NODEJS_SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
+    proxy: true,
     cookie: {
       // Only set secure = true in production
       secure: shouldUseSecureCookies,
       httpOnly: true,
       sameSite: 'strict',
-      proxy: true,
       // 7 days = 1000ms * 60s * 60m * 24h * 7d
       maxAge: 1000 * 60 * 60 * 24 * 7,
     },
