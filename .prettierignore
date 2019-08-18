@@ -1,0 +1,5 @@
+public/dist/
+node_modules/
+dist/
+# This is actually a third party module we've brought in
+jquery.dragster.js

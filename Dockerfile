@@ -1,6 +1,12 @@
-# Start from a Python & Node Image
-# Reference from: https://hub.docker.com/r/nikolaik/python-nodejs/dockerfile
-FROM samhinshaw/python-node:2.1.0
+# Start from small Node 11 Image
+FROM node:11-alpine AS build
+
+#################
+##   SYSTEM   ##
+#################
+
+RUN apk update && apk upgrade && \
+  apk add --no-cache bash git openssh
 
 #################
 ##   BACKEND   ##
@@ -17,11 +23,11 @@ WORKDIR /app
 
 # Copy dependency definitions and Snyk policy file
 COPY ./package.json /app
-COPY ./yarn.lock /app
+COPY ./package-lock.json /app
 COPY ./.snyk /app
 
 # Install dependecies
-RUN yarn install
+RUN npm ci
 
 #################
 ##     COPY    ##
@@ -35,14 +41,27 @@ COPY ./ /app
 #################
 
 # Transpile backend code
-RUN yarn babel
+RUN npm run transpile
 
 # Bundle assets
-RUN yarn webpack
+RUN npm run bundle
+
+###################
+##    CLEANUP    ##
+###################
+
+# Run stage build
+# FROM node:11-alpine
+# WORKDIR /app
+# COPY --from=build /app/ ./
+
+# Only run these when we've got multistage builds to differentiate between dev, test, and prod
+# RUN npm prune --production
+# RUN apk del bash git openssh
 
 #################
 ##    START    ##
 #################
 
 # Default command is to spin up server in production mode
-CMD ["yarn", "run:prod"]
+CMD ["npm", "run", "run:prod"]

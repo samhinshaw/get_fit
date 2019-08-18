@@ -29,12 +29,30 @@ $partner-invert: findColorInvert($partner);
 // Setup $colors to use as bulma classes (e.g. 'is-twitter')
 @import '~bulma/sass/utilities/derived-variables';
 $addColors: (
-  'primary': ($primary, $primary-invert),
-  'twitter': ($twitter, $twitter-invert),
-  'facebook': ($facebook, $facebook-invert),
-  'google-plus': ($google-plus, $google-plus-invert),
-  'user': ($user, $user-invert),
-  'partner': ($partner, $partner-invert)
+  'primary': (
+    $primary,
+    $primary-invert,
+  ),
+  'twitter': (
+    $twitter,
+    $twitter-invert,
+  ),
+  'facebook': (
+    $facebook,
+    $facebook-invert,
+  ),
+  'google-plus': (
+    $google-plus,
+    $google-plus-invert,
+  ),
+  'user': (
+    $user,
+    $user-invert,
+  ),
+  'partner': (
+    $partner,
+    $partner-invert,
+  ),
 );
 
 $colors: map-merge($colors, $addColors);
@@ -58,19 +76,19 @@ $link-focus-border: $primary;
 }
 
 // $mdi-font-path: "../fonts" !default;
-$mdi-font-path: '~mdi/fonts';
+$mdi-font-path: '~@mdi/font/fonts';
 
 // don't import everything
-// "~mdi/scss/materialdesignicons"
+// "~@mdi/font/scss/materialdesignicons"
 
 /* MaterialDesignIcons.com */
-@import '~mdi/scss/_variables';
-@import '~mdi/scss/_functions';
+@import '~@mdi/font/scss/_variables';
+@import '~@mdi/font/scss/_functions';
 
 // don't import this path, we just want WOFF2
-// "~mdi/scss/_path";
+// "~@mdi/font/scss/_path";
 @import './path.scss';
-@import '~mdi/scss/_core';
-@import '~mdi/scss/_icons';
-@import '~mdi/scss/_extras';
-@import '~mdi/scss/_animated';
+@import '~@mdi/font/scss/_core';
+@import '~@mdi/font/scss/_icons';
+@import '~@mdi/font/scss/_extras';
+@import '~@mdi/font/scss/_animated';

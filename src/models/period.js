@@ -31,7 +31,7 @@ const periodSchema = new Schema(
       required: true,
     },
   },
-  { collection: 'periods' }
+  { collection: 'periods' },
 );
 
 const Period = mongoose.model('period', periodSchema);

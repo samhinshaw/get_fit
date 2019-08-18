@@ -43,7 +43,7 @@ const entrySchema = new Schema(
       required: true,
     },
   },
-  { collection: 'entries' }
+  { collection: 'entries' },
 );
 
 const Entry = mongoose.model('entry', entrySchema);

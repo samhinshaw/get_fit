@@ -27,7 +27,7 @@ const rewardSchema = new Schema(
       required: true,
     },
   },
-  { collection: 'rewards' }
+  { collection: 'rewards' },
 );
 
 const Reward = mongoose.model('reward', rewardSchema);

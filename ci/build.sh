@@ -5,7 +5,7 @@
 if [[ -n "$TRAVIS_TAG" ]]; then
   export DOCKER_TAG="$TRAVIS_TAG-$TRAVIS_BUILD_NUMBER"
   echo "Tagging Docker image with: $DOCKER_TAG"
-elif [[ $TRAVIS_BRANCH == release* ]]; then
+elif [[ $TRAVIS_BRANCH == release* || $TRAVIS_BRANCH == hotfix* ]]; then
   # Cut any preceding branch at "/"
   CUT_BRANCH=`echo "$TRAVIS_BRANCH" | cut -d "/" -f 2`
   export DOCKER_TAG="$CUT_BRANCH-$TRAVIS_BUILD_NUMBER"
@@ -14,4 +14,4 @@ else
   echo "Not tagging Docker image."
 fi
 
-yarn build:test
+npm run build:test

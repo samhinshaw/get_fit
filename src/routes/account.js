@@ -254,7 +254,7 @@ router.post('/requests/respond', ensureAuthenticated, (req, res) => {
         timeResponded: moment.tz('US/Pacific').toDate(),
       },
     },
-    err => {
+    (err) => {
       if (err) {
         logger.error(err);
         req.flash('danger', 'Error saving response. Please try again.');
@@ -280,10 +280,10 @@ router.post('/requests/respond', ensureAuthenticated, (req, res) => {
               req.flash('success', 'Response sent!');
               res.redirect('/account/requests');
             }
-          }
+          },
         );
       }
-    }
+    },
   );
 });
 
@@ -301,7 +301,7 @@ router.get(
           logger.error(err);
         }
         return response;
-      }
+      },
     );
 
     // const gifts = await Gift.find(
@@ -337,7 +337,7 @@ router.get(
         route: '/account/history',
       },
     });
-  })
+  }),
 );
 
 router.get('/delete', ensureAuthenticated, (req, res) => {
@@ -366,7 +366,7 @@ router.post(
       next();
     } else {
       // Delete user's entries
-      const deletedEntries = await Entry.remove({ user: res.locals.user.username }, err => {
+      const deletedEntries = await Entry.remove({ user: res.locals.user.username }, (err) => {
         if (err) {
           logger.error('Error removing entries: %j', err);
           req.flash('danger', 'There was an error deleting your account!');
@@ -376,7 +376,7 @@ router.post(
       });
 
       // Delete user's periods
-      const deletedPeriods = await Period.remove({ user: res.locals.user.username }, err => {
+      const deletedPeriods = await Period.remove({ user: res.locals.user.username }, (err) => {
         if (err) {
           logger.error('Error removing periods: %j', err);
           req.flash('danger', 'There was an error deleting your account!');
@@ -386,7 +386,7 @@ router.post(
       });
 
       // Delete user's requests
-      const deletedRequests = await Request.remove({ requester: res.locals.user.username }, err => {
+      const deletedRequests = await Request.remove({ requester: res.locals.user.username }, (err) => {
         if (err) {
           logger.error('Error removing requests: %j', err);
           req.flash('danger', 'There was an error deleting your account!');
@@ -396,7 +396,7 @@ router.post(
       });
 
       // Delete user's rewards
-      const deletedRewards = await Reward.remove({ for: res.locals.user.username }, err => {
+      const deletedRewards = await Reward.remove({ for: res.locals.user.username }, (err) => {
         if (err) {
           logger.error('Error removing rewards: %j', err);
           req.flash('danger', 'There was an error deleting your account!');
@@ -406,7 +406,7 @@ router.post(
       });
 
       // Delete user
-      const deletedUser = await User.remove({ username: res.locals.user.username }, err => {
+      const deletedUser = await User.remove({ username: res.locals.user.username }, (err) => {
         if (err) {
           logger.error('Error removing user: %j', err);
           req.flash('danger', 'There was an error deleting your account!');
@@ -427,7 +427,7 @@ router.post(
         res.redirect('../logout');
       });
     }
-  })
+  }),
 );
 
 export default router;

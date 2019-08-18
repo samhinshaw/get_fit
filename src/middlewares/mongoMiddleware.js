@@ -97,7 +97,7 @@ export async function queryCustomPeriodsFromMongo(user, customRange) {
         logger.error(err);
       }
       return res;
-    }
+    },
   );
 
   const requests = await Request.find(
@@ -116,7 +116,7 @@ export async function queryCustomPeriodsFromMongo(user, customRange) {
         logger.error(err);
       }
       return res;
-    }
+    },
   );
 
   // For each date that exists in this period, sum the points
@@ -132,7 +132,7 @@ export async function queryCustomPeriodsFromMongo(user, customRange) {
   if (customRange.key === 'sinceStart') {
     const customPeriodRequests = requests.reduce(
       (points, request) => points + request.pointCost,
-      0
+      0,
     );
     totalForPeriod = customPeriodPoints - customPeriodRequests;
   } else {
@@ -181,7 +181,7 @@ export async function getPendingRequests(partner) {
       }
       // If we get the results back, reorder the dates
       return res;
-    }
+    },
   );
   return requests;
 }

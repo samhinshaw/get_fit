@@ -33,7 +33,7 @@ router.get('/user_weight', ensureAuthenticated, (req, res) => {
     const weightDoc = new GoogleSpreadsheet('1q15E449k_0KP_elfptM7oyVx_qXsss9_K4ESExlM2MI'); // 2016 spreadsheet
     // const weightDoc = new GoogleSpreadsheet('13XR4qkzeMDVRPkiB3vUGV7n25sLqBpyLlE6yBC22aSM'); // All weight data
 
-    weightDoc.useServiceAccountAuth(googleCreds, authErr => {
+    weightDoc.useServiceAccountAuth(googleCreds, (authErr) => {
       if (authErr) {
         logger.info('auth error: ');
         logger.error(authErr);
@@ -47,7 +47,7 @@ router.get('/user_weight', ensureAuthenticated, (req, res) => {
         // initialize empty array for us to gather pruned rows
         const prunedRows = [];
         // For each row in the array of rows, return just the weight & date
-        rows.forEach(row => {
+        rows.forEach((row) => {
           const prunedRow = {
             date: row.date,
             weight: row.weight,

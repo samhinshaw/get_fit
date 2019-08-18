@@ -80,7 +80,7 @@ emailVer.configure(
       return;
     }
     logger.debug(`configured:  ${typeof options === 'object'}`);
-  }
+  },
 );
 
 emailVer
@@ -129,7 +129,7 @@ router.post('/login', (req, res, next) => {
       req.flash('danger', authErr.message);
       return next(authErr);
     }
-    req.logIn(user, loginErr => {
+    req.logIn(user, (loginErr) => {
       if (loginErr) {
         req.flash('danger', loginErr.message);
         return next(loginErr);
@@ -217,7 +217,7 @@ router.post('/login/resend', (req, res, next) => {
     .normalizeEmail();
   const errors = req.validationErrors();
   if (errors) {
-    errors.forEach(error => {
+    errors.forEach((error) => {
       req.flash('danger', error.msg);
     });
     res.redirect('/login/help');
@@ -226,12 +226,12 @@ router.post('/login/resend', (req, res, next) => {
 
   emailVer
     .resendVerificationEmailAsync(email)
-    .then(user => {
+    .then((user) => {
       if (!user) {
         // Handle tempuser expiration
         req.flash(
           'danger',
-          'Either your verification code expired, or no user was found with that email address. Please sign up again.'
+          'Either your verification code expired, or no user was found with that email address. Please sign up again.',
         );
         res.redirect('/login/help');
         return next();
@@ -241,7 +241,7 @@ router.post('/login/resend', (req, res, next) => {
       res.redirect('/login/help');
       return next();
     })
-    .catch(err => {
+    .catch((err) => {
       logger.error('error resending verification email: %j', err);
       req.flash('danger', 'Error resending verification email');
       res.redirect('/login/help');
@@ -311,7 +311,7 @@ router.post(
 
     if (errors) {
       // Or handle errors with flash
-      errors.forEach(error => {
+      errors.forEach((error) => {
         req.flash('danger', error.msg);
       });
       res.redirect('#');
@@ -343,7 +343,7 @@ router.post(
           logger.error('Error finding existing user: %j', queryErr);
         }
         return user;
-      }
+      },
     );
 
     if (existingUserUsername) {
@@ -389,7 +389,7 @@ router.post(
           logger.error('Error creating temp user: %j', createErr);
           req.flash(
             'danger',
-            'Oops, something went wrong on our end and we failed to create your account.'
+            'Oops, something went wrong on our end and we failed to create your account.',
           );
           res.redirect('#');
           return next();
@@ -404,7 +404,7 @@ router.post(
           logger.info('Temp user already exists');
           req.flash(
             'warning',
-            "Hmm, it looks like you've already created an account! Check your email for a verification link."
+            "Hmm, it looks like you've already created an account! Check your email for a verification link.",
           );
           res.redirect('#');
           return next();
@@ -417,7 +417,7 @@ router.post(
             logger.error('Error sending verification email: %j', sendErr);
             req.flash(
               'danger',
-              'Oops, something went wrong on our end and we failed to send your verification email.'
+              'Oops, something went wrong on our end and we failed to send your verification email.',
             );
             res.redirect('#');
             return next();
@@ -436,7 +436,7 @@ router.post(
           //    b) Invite user to Get Fit if email address is unregistered
           if (withPartner) {
             // 1. Check to see if username matches
-            const foundPartner = await User.findOne({ username: partner }, err => {
+            const foundPartner = await User.findOne({ username: partner }, (err) => {
               if (err) logger.error(err);
             });
             if (foundPartner) {
@@ -444,14 +444,14 @@ router.post(
               //        i) Invite user to be partner
             } else if (partnerEmail) {
               // 2. Check to see if email is taken
-              const partnerByEmail = await User.findOne({ email: partnerEmail }, err => {
+              const partnerByEmail = await User.findOne({ email: partnerEmail }, (err) => {
                 if (err) logger.error(err);
               });
               if (partnerByEmail) {
                 //    a) Inform user that email address is registered (and they should check username)
                 req.flash(
                   'danger',
-                  "The email address you entered for your partner is already registered&mdash;make sure you have your partner's username correct!"
+                  "The email address you entered for your partner is already registered&mdash;make sure you have your partner's username correct!",
                 );
                 res.redirect('#');
                 return next();
@@ -468,7 +468,7 @@ router.post(
       });
     }
     return false;
-  })
+  }),
 );
 
 router.post(
@@ -488,7 +488,7 @@ router.post(
         });
       } else {
         // Otherwise, check for the user in the database!
-        const user = await User.findOne({ username: value }, err => {
+        const user = await User.findOne({ username: value }, (err) => {
           if (err) logger.error(err);
         });
         if (user) {
@@ -515,7 +515,7 @@ router.post(
           classType: 'danger',
         });
       } else {
-        const userByEmail = await User.findOne({ email: value }, err => {
+        const userByEmail = await User.findOne({ email: value }, (err) => {
           if (err) logger.error(err);
         });
         if (userByEmail) {
@@ -531,7 +531,7 @@ router.post(
         }
       }
     } else if (name === 'partner') {
-      const partner = await User.findOne({ username: value }, err => {
+      const partner = await User.findOne({ username: value }, (err) => {
         if (err) logger.error(err);
       });
       if (partner) {
@@ -561,7 +561,7 @@ router.post(
           classType: 'danger',
         });
       } else {
-        const partnerByEmail = await User.findOne({ email: value }, err => {
+        const partnerByEmail = await User.findOne({ email: value }, (err) => {
           if (err) logger.error(err);
         });
         if (partnerByEmail) {
@@ -580,7 +580,7 @@ router.post(
     }
     // console.log('response obj: ', res);
     // res.status(500).json({ message: 'Error updating from MyFitnessPal', type: 'danger' });
-  })
+  }),
 );
 
 // user accesses the link that is sent
@@ -592,7 +592,7 @@ router.get('/email-verification/:url', (req, res, next) => {
       if (confirmErr) throw new Error(confirmErr);
       return foundUser;
     })
-    .catch(err => {
+    .catch((err) => {
       logger.error('Error confirming temporary user: %j', err);
       req.flash('danger', 'Error confirming email.');
       res.redirect('/');

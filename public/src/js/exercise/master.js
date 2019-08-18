@@ -11,7 +11,7 @@ import {
 } from './elements';
 import { makeEditable, fadeOutElement } from './methods';
 
-$('#exercise-groups').on('click', groupClick => {
+$('#exercise-groups').on('click', (groupClick) => {
   // currentTarget is where the listener is attached
   // target is the actual click target
   const groupClickTarget = $(groupClick.target);
@@ -22,11 +22,9 @@ $('#exercise-groups').on('click', groupClick => {
     // Hide edit control
     exerciseGroup.find('.edit-entry').fadeOut('fast', () => {
       // After edit fades out, fade in save/trash/cancel buttons
-      exerciseGroup.find('.box-controls').append(
-        $(boxControls)
-          .hide()
-          .fadeIn('fast')
-      );
+      exerciseGroup.find('.box-controls').append($(boxControls)
+        .hide()
+        .fadeIn('fast'));
 
       // and set the contents of the box to be editable!
       // List Elements
@@ -37,31 +35,27 @@ $('#exercise-groups').on('click', groupClick => {
       makeEditable({ group: exerciseGroup, selector: '.points-per-hour' });
 
       // Also add delete button to each exercise li
-      exerciseGroup.find('li').append(
-        $(deleteExerciseButton)
-          .hide()
-          .fadeIn('fast')
-      );
+      exerciseGroup.find('li').append($(deleteExerciseButton)
+        .hide()
+        .fadeIn('fast'));
     });
 
     // Add a button to add another list element
-    exerciseGroup.find('.buttons.exercises').append(
-      $(addExerciseButton)
-        .hide()
-        .fadeIn('fast')
-    );
+    exerciseGroup.find('.buttons.exercises').append($(addExerciseButton)
+      .hide()
+      .fadeIn('fast'));
 
     // HANDLERS FOR EDITING!!
 
     let counter = 0;
     // Add another list item
-    $('.add-exercise-to-group').on('click', buttonClick => {
+    $('.add-exercise-to-group').on('click', (buttonClick) => {
       const newExerciseButton = blankExercise(`exercise-${counter}`);
       $(buttonClick.currentTarget).before(newExerciseButton);
       counter += 1;
     });
 
-    exerciseGroup.find('ul').on('click', listClick => {
+    exerciseGroup.find('ul').on('click', (listClick) => {
       const listClickTarget = $(listClick.target);
       // Did we click a delete exercise button?
       if (listClickTarget.hasClass('delete-exercise')) {

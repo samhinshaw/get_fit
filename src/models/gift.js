@@ -35,7 +35,7 @@ const giftSchema = new Schema(
       required: false,
     },
   },
-  { collection: 'gifts' }
+  { collection: 'gifts' },
 );
 
 const Gift = mongoose.model('gift', giftSchema);
