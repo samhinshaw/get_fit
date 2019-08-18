@@ -100,8 +100,12 @@ db.on('error', (err) => {
 // initialize app
 const app = express();
 
-// Let Express know it's behind a nginx proxy
-app.set('trust proxy', 'loopback');
+// If we're in production, tell Express to trust/ignore local proxy IPs allow secure cookies
+let shouldUseSecureCookies = false;
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 'loopback');
+  shouldUseSecureCookies = true;
+}
 
 // Set environment
 app.use((req, res, next) => {
@@ -133,7 +137,7 @@ app.use(
     saveUninitialized: true,
     cookie: {
       // Only set secure = true in production
-      secure: process.env.NODE_ENV === 'production',
+      secure: shouldUseSecureCookies,
       httpOnly: true,
       sameSite: 'strict',
       // 7 days = 1000ms * 60s * 60m * 24h * 7d
