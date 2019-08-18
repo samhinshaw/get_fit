@@ -103,7 +103,7 @@ const app = express();
 // If we're in production, tell Express to trust/ignore local proxy IPs allow secure cookies
 let shouldUseSecureCookies = false;
 if (process.env.NODE_ENV === 'production') {
-  app.set('trust proxy', 'loopback');
+  app.set('trust proxy', 1);
   shouldUseSecureCookies = true;
 }
 
