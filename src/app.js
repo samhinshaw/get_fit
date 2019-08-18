@@ -64,16 +64,16 @@ if (productionEnv) {
   // if we're in production, connect to our production database
   mongoURI = `mongodb+srv://${process.env.MONGO_PROD_NODE_USER}:${
     process.env.MONGO_PROD_NODEJS_PASS
-    }@${process.env.MONGO_PROD_CONNECTION}/${process.env.MONGO_PROD_DBNAME}?retryWrites=true`;
+  }@${process.env.MONGO_PROD_CONNECTION}/${process.env.MONGO_PROD_DBNAME}?retryWrites=true`;
   // If we're in production, we also need to specify the dbName to connect to
   mongoOptions.dbName = process.env.MONGO_PROD_DBNAME;
 } else {
   // Otherwise, connect to our local instance.
   mongoURI = `mongodb://${process.env.MONGO_DEV_NODE_USER}:${process.env.MONGO_DEV_NODE_PASS}@${
     process.env.MONGO_LOCAL_SERVICENAME
-    }:${process.env.MONGO_LOCAL_PORT}/${process.env.MONGO_INITDB_DATABASE}?authMechanism=${
+  }:${process.env.MONGO_LOCAL_PORT}/${process.env.MONGO_INITDB_DATABASE}?authMechanism=${
     process.env.MONGO_LOCAL_AUTHMECH
-    }`;
+  }`;
 }
 
 // Declare a function to connect to mongo so that we can retry the connection
@@ -90,7 +90,7 @@ db.once('open', () => {
 });
 
 // Check for DB errors
-db.on('error', (err) => {
+db.on('error', err => {
   logger.error('Database error: %j', err);
   console.trace();
   db.close();
