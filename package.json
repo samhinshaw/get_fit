@@ -1,6 +1,6 @@
 {
   "name": "get_fit",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Fitness Tracker for MyFitnessPal",
   "main": "app.js",
   "scripts": {
@@ -82,7 +82,7 @@
     "jquery": "^3.4.0",
     "jquery-ui": "^1.12.1",
     "js-cookie": "^2.2.0",
-    "lodash": "4.17.11",
+    "lodash": "^4.17.15",
     "mfp": "https://github.com/samhinshaw/mfp#major-refactor",
     "moment": "^2.20.1",
     "moment-range": "^4.0.2",

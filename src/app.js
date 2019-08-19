@@ -64,16 +64,16 @@ if (productionEnv) {
   // if we're in production, connect to our production database
   mongoURI = `mongodb+srv://${process.env.MONGO_PROD_NODE_USER}:${
     process.env.MONGO_PROD_NODEJS_PASS
-    }@${process.env.MONGO_PROD_CONNECTION}/${process.env.MONGO_PROD_DBNAME}?retryWrites=true`;
+  }@${process.env.MONGO_PROD_CONNECTION}/${process.env.MONGO_PROD_DBNAME}?retryWrites=true`;
   // If we're in production, we also need to specify the dbName to connect to
   mongoOptions.dbName = process.env.MONGO_PROD_DBNAME;
 } else {
   // Otherwise, connect to our local instance.
   mongoURI = `mongodb://${process.env.MONGO_DEV_NODE_USER}:${process.env.MONGO_DEV_NODE_PASS}@${
     process.env.MONGO_LOCAL_SERVICENAME
-    }:${process.env.MONGO_LOCAL_PORT}/${process.env.MONGO_INITDB_DATABASE}?authMechanism=${
+  }:${process.env.MONGO_LOCAL_PORT}/${process.env.MONGO_INITDB_DATABASE}?authMechanism=${
     process.env.MONGO_LOCAL_AUTHMECH
-    }`;
+  }`;
 }
 
 // Declare a function to connect to mongo so that we can retry the connection
@@ -90,7 +90,7 @@ db.once('open', () => {
 });
 
 // Check for DB errors
-db.on('error', (err) => {
+db.on('error', err => {
   logger.error('Database error: %j', err);
   console.trace();
   db.close();
@@ -100,8 +100,12 @@ db.on('error', (err) => {
 // initialize app
 const app = express();
 
-// Let Express know it's behind a nginx proxy
-app.set('trust proxy', 'loopback');
+// If we're in production, tell Express to trust/ignore local proxy IPs allow secure cookies
+let shouldUseSecureCookies = false;
+if (process.env.NODE_ENV === 'production') {
+  app.set('trust proxy', 1);
+  shouldUseSecureCookies = true;
+}
 
 // Set environment
 app.use((req, res, next) => {
@@ -131,9 +135,10 @@ app.use(
     secret: process.env.NODEJS_SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
+    proxy: true,
     cookie: {
       // Only set secure = true in production
-      secure: process.env.NODE_ENV === 'production',
+      secure: shouldUseSecureCookies,
       httpOnly: true,
       sameSite: 'strict',
       // 7 days = 1000ms * 60s * 60m * 24h * 7d
