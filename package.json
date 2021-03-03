@@ -91,7 +91,7 @@
     "node-emoji": "^1.8.1",
     "passport": "^0.4.0",
     "passport-local": "^1.0.0",
-    "pug": "2.0.3",
+    "pug": "3.0.1",
     "range-inclusive": "^1.0.2",
     "request": "^2.88.0",
     "request-promise-native": "^1.0.7",
