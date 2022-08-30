@@ -86,7 +86,7 @@
     "mfp": "https://github.com/samhinshaw/mfp#major-refactor",
     "moment": "^2.20.1",
     "moment-range": "^4.0.2",
-    "moment-timezone": "0.5.23",
+    "moment-timezone": "0.5.35",
     "mongoose": "^5.5.2",
     "node-emoji": "^1.8.1",
     "passport": "^0.4.0",
